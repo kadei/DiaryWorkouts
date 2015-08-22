@@ -8,17 +8,18 @@ import ru.kadei.diaryworkouts.database.annotations.Column;
 import ru.kadei.diaryworkouts.database.annotations.Ignore;
 import ru.kadei.diaryworkouts.database.annotations.Table;
 
-import static ru.kadei.diaryworkouts.utils.StringUtils.extractNameClass;
+import static ru.kadei.diaryworkouts.database.utils.AnnotationUtils.getAnnotation;
+import static ru.kadei.diaryworkouts.database.utils.StringUtils.extractNameClass;
 
 /**
  * Created by kadei on 22.08.15.
  */
 public class SchemaBuilder {
 
-    private DatabaseManager dbManager;
+    private TypeConverter typeConverter;
 
     public SchemaBuilder(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
+        typeConverter = new TypeConverter(dbManager);
     }
 
     public Schema buildSchemaFor(Class target) {
@@ -59,57 +60,23 @@ public class SchemaBuilder {
         return a == null ? field.getName() : ((Column) a).name();
     }
 
-    private Annotation getAnnotation(Annotation[] annotations, Class target) {
-        for (Annotation a : annotations) {
-            if(a.annotationType() == target)
-                return a;
-        }
-        return null;
-    }
-
     private String getTypeFor(Field field) {
-        Class typeField = field.getType();
-        if(isId(field))
-            return getTypeForId();
-        else if(typeField.isPrimitive())
-            return getTypeForPrimitive(typeField);
-        else if(isEntity(typeField))
-            return getTypeForEntity();
+        switch (typeConverter.getType(field)) {
+            case ID:
+                return "INTEGER PRIMARY KEY AUTOINCREMENT";
+            case INTEGER:
+                return "INTEGER";
+            case REAL:
+                return "REAL";
+            case TEXT:
+                return "TEXT";
+            case ENTITY:
+                return "INTEGER";
+            case SERIALIZABLE:
+                return "BLOB";
 
-        return null;
-    }
-
-    private boolean isId(Field field) {
-        return getNameColumnFor(field).equals("_id");
-    }
-
-    private String getTypeForId() {
-        return "INTEGER PRIMARY KEY AUTOINCREMENT";
-    }
-
-    private String getTypeForPrimitive(Class type) {
-        if(isInteger(type))
-            return "INTEGER";
-        else if(isReal(type))
-            return "REAL";
-        else // if(type == char.class)
-            return "TEXT";
-    }
-
-    private static boolean isInteger(Class type) {
-        return type == byte.class || type == short.class || type == int.class
-                || type == long.class || type == boolean.class;
-    }
-
-    private static boolean isReal(Class type) {
-        return type == float.class || type == double.class;
-    }
-
-    private boolean isEntity(Class type) {
-        return dbManager.isEntity(type);
-    }
-
-    private String getTypeForEntity() {
-        return "INTEGER"; // for _id
+            default:
+                throw new RuntimeException("Unexpected type field [" + field.getType().getName() + "]");
+        }
     }
 }

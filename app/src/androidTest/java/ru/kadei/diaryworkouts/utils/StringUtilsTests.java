@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import ru.kadei.diaryworkouts.ApplicationTest;
 
-import static ru.kadei.diaryworkouts.utils.StringUtils.extractNameClass;
+import static ru.kadei.diaryworkouts.database.utils.StringUtils.extractNameClass;
 
 /**
  * Created by kadei on 22.08.15.

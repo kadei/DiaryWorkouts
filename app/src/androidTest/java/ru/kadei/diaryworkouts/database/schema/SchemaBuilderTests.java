@@ -6,7 +6,9 @@ import ru.kadei.diaryworkouts.ApplicationTest;
 import ru.kadei.diaryworkouts.database.DatabaseManager;
 import ru.kadei.diaryworkouts.models.entities.Entity1;
 import ru.kadei.diaryworkouts.models.entities.EntityWithAnnotation;
+import ru.kadei.diaryworkouts.models.entities.EntityWithDuplicateAnnotation;
 import ru.kadei.diaryworkouts.models.entities.EntityWithIgnoreFields;
+import ru.kadei.diaryworkouts.models.entities.EntityWithSerializable;
 
 /**
  * Created by kadei on 22.08.15.
@@ -54,5 +56,23 @@ public class SchemaBuilderTests extends ApplicationTest {
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "xPosition REAL" +
                 ");");
+    }
+
+    public void testBuildSchemaWithDuplicateAnnotation() throws Exception {
+        try {
+            Schema schema = schemaBuilder.buildSchemaFor(EntityWithDuplicateAnnotation.class);
+            fail("Should throws exception about [duplication name column]");
+        } catch (Exception e) {
+            // successfully
+        }
+    }
+
+    public void testBuildSchemaWithSerializable() throws Exception {
+        Schema schema = schemaBuilder.buildSchemaFor(EntityWithSerializable.class);
+        Assert.assertEquals(schema.toString(), "CREATE TABLE EntityWithSerializable (" +
+                "name TEXT, " +
+                "serial BLOB, " +
+                "x REAL, " +
+                "y REAL);");
     }
 }

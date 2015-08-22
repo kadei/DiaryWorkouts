@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.utils;
+package ru.kadei.diaryworkouts.database.utils;
 
 /**
  * Created by kadei on 22.08.15.
