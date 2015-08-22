@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by kadei on 15.08.15.
  */
-public class Entities<T extends EntityWorkout> {
+public class Entities<T extends Description> {
 
     private ArrayList<T> entities;
 

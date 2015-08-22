@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.activities;
+package ru.kadei.simpleandroidorm;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -6,47 +6,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-import ru.kadei.diaryworkouts.R;
-
 public class MainActivity extends AppCompatActivity {
-
-    class T {
-
-        int integer;
-        String str;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        final T t = new T();
-        t.integer = 10;
-        t.str = "hello";
-
-        Field[] fields = t.getClass().getDeclaredFields();
-        for (Field f : fields) {
-            String name = f.getName();
-            Class typeClass = f.getType();
-            try {
-                if(typeClass == int.class) {
-                    Log.d("TEST", "integer value = ");
-                    int val = (int) f.get(t);
-                    Log.d("TEST", String.valueOf(val));
-                }
-                else if(typeClass == String.class) {
-                    Log.d("TEST", "String");
-                    String str = (String) f.get(t);
-                    Log.d("TEST", str);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override

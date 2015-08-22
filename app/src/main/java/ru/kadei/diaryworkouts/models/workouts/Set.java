@@ -1,11 +1,11 @@
 package ru.kadei.diaryworkouts.models.workouts;
 
-import static ru.kadei.diaryworkouts.models.workouts.MeasureSpec.MEASURE_AMOUNT;
-import static ru.kadei.diaryworkouts.models.workouts.MeasureSpec.DISTANCE;
-import static ru.kadei.diaryworkouts.models.workouts.MeasureSpec.REPEAT;
-import static ru.kadei.diaryworkouts.models.workouts.MeasureSpec.SPEED;
-import static ru.kadei.diaryworkouts.models.workouts.MeasureSpec.TIME;
-import static ru.kadei.diaryworkouts.models.workouts.MeasureSpec.WEIGHT;
+import static ru.kadei.diaryworkouts.models.workouts.Measure.MEASURE_AMOUNT;
+import static ru.kadei.diaryworkouts.models.workouts.Measure.DISTANCE;
+import static ru.kadei.diaryworkouts.models.workouts.Measure.REPEAT;
+import static ru.kadei.diaryworkouts.models.workouts.Measure.SPEED;
+import static ru.kadei.diaryworkouts.models.workouts.Measure.TIME;
+import static ru.kadei.diaryworkouts.models.workouts.Measure.WEIGHT;
 
 /**
  * Created by kadei on 15.08.15.

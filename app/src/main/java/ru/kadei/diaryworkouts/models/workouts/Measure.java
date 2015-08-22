@@ -3,7 +3,7 @@ package ru.kadei.diaryworkouts.models.workouts;
 /**
  * Created by kadei on 15.08.15.
  */
-public interface MeasureSpec {
+public interface Measure {
 
     int MEASURE_AMOUNT = 5;
 
