@@ -1,5 +1,7 @@
 package ru.kadei.diaryworkouts.database;
 
+import junit.framework.Assert;
+
 import ru.kadei.diaryworkouts.ApplicationTest;
 
 /**
@@ -9,16 +11,14 @@ public class DatabaseTests extends ApplicationTest {
 
     DatabaseManager db;
 
-    public void testLoadEntities() throws Exception {
-
-        db = new DatabaseManager(getContext(), "");
-
-        String[] names = new String[] {"ru.kadei.diaryworkouts.models.workouts.Description",
-                "ru.kadei.diaryworkouts.models.workouts.DescriptionProgram",
-                "ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout",
-                "ru.kadei.diaryworkouts.models.workouts.DescriptionStandardExercise",
-                "ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise"};
-
-        assertEquals(toArray(db.getNameEntities()), names);
+    public void testLoadEntitiesWithDuplicate() throws Exception {
+        try {
+            db = new DatabaseManager(getContext(), "entitiesWithDuplicate.xml", "my2.db");
+            fail("Should throw Exception about duplicate entities");
+        } catch (Exception e) {
+            Assert.assertEquals(e.getMessage(), "File [entitiesWithDuplicate.xml] contains duplicates " +
+                    "[ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise]");
+            // successful
+        }
     }
 }

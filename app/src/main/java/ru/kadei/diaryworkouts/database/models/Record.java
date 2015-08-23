@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.database;
+package ru.kadei.diaryworkouts.database.models;
 
 import ru.kadei.diaryworkouts.database.annotations.Column;
 

@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.utils;
+package ru.kadei.diaryworkouts.database.utils;
 
 import junit.framework.Assert;
 

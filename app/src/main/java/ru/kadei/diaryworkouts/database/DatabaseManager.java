@@ -1,6 +1,7 @@
 package ru.kadei.diaryworkouts.database;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -8,46 +9,87 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ru.kadei.diaryworkouts.database.schema.Schema;
+import ru.kadei.diaryworkouts.database.schema.SchemaBuilder;
+
 import static ru.kadei.diaryworkouts.database.ParserOfEntities.newParser;
+import static ru.kadei.diaryworkouts.database.utils.ArrayUtils.containsDuplicate;
 
 /**
  * Created by kadei on 21.08.15.
  */
 public class DatabaseManager {
 
-    public static final String FILE_ENTITIES = "entities.xml";
+    final Context context;
+    final DBHelper dbHelper;
+    final SchemaBuilder schemaBuilder;
 
-    private final Context context;
+    ArrayList<String> nameEntities;
 
-    private final String nameDatabase;
-    private ArrayList<String> nameEntities;
+    public DatabaseManager(@NonNull Context context, @NonNull String nameFileEntities, @NonNull String nameDatabase)
+            throws IOException, XmlPullParserException, ClassNotFoundException {
 
-    public DatabaseManager(@NonNull Context context, @NonNull String nameDatabase)
-            throws IOException, XmlPullParserException {
         this.context = context;
-        this.nameDatabase = nameDatabase;
-        checkSchemas();
+        dbHelper = new DBHelper(context, nameDatabase, 1);
+        schemaBuilder = new SchemaBuilder(this);
+
+        loadAndCheckNameEntities(nameFileEntities);
+        checkOrCreateSchemas();
     }
 
-    private void checkSchemas() throws XmlPullParserException, IOException {
-        loadNameEntities();
+    private void loadAndCheckNameEntities(String nameFileEntities)
+            throws XmlPullParserException, IOException {
+
+        nameEntities = newParser(context).getNameEntitiesFrom(nameFileEntities);
+        if(!nameEntities.isEmpty()) {
+            int posDuplicate = containsDuplicate(nameEntities);
+            if(posDuplicate != -1)
+                throw new RuntimeException("File ["+ nameFileEntities +"]" +
+                        " contains duplicates ["+nameEntities.get(posDuplicate)+"]");
+        }
+        else
+            throw new RuntimeException("No registered entities, check file ["+ nameFileEntities +"]");
     }
 
-    private void loadNameEntities() throws XmlPullParserException, IOException {
-        nameEntities = newParser(context).getNameEntitiesFrom(FILE_ENTITIES);
-        if(nameEntities.isEmpty())
-            throw new RuntimeException("no registered entities, check file " + FILE_ENTITIES);
+    private void checkOrCreateSchemas() throws ClassNotFoundException {
+        ArrayList<Schema> schemaEntities = getSchemaEntities();
+        ArrayList<Schema> createdSchemas = getCreatedSchemas();
+        if(!schemaEntities.equals(createdSchemas)) {
+
+        }
+    }
+
+    private ArrayList<Schema> getSchemaEntities() throws ClassNotFoundException {
+        final SchemaBuilder builder = schemaBuilder;
+        ArrayList<Schema> schemas = new ArrayList<>(nameEntities.size());
+        for(String nameEntity : nameEntities)
+            schemas.add(builder.buildSchemaFor(Class.forName(nameEntity)));
+        return schemas;
+    }
+
+    private ArrayList<Schema> getCreatedSchemas() {
+        SQLiteDatabase db = getDatabase();
+        ArrayList<Schema> schemas = dbHelper.getCreatedSchemas(db);
+        db.close();
+        return schemas;
+    }
+
+    private SQLiteDatabase getDatabase() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        if(db == null)
+            throw new RuntimeException("Error open connection to ["+dbHelper.getDatabaseName()+"]");
+        return db;
     }
 
     public boolean isEntity(Class c) {
-        final String name = c.getName();
-        for(String ne : nameEntities)
-            if(name.equals(ne)) return true;
-
-        return false;
+        return nameEntities.contains(c.getName());
     }
 
     public ArrayList<String> getNameEntities() {
         return nameEntities;
+    }
+
+    public SchemaBuilder getSchemaBuilder() {
+        return schemaBuilder;
     }
 }

@@ -15,18 +15,19 @@ import ru.kadei.diaryworkouts.models.entities.EntityWithSerializable;
  */
 public class SchemaBuilderTests extends ApplicationTest {
 
-    DatabaseManager db;
-    SchemaBuilder schemaBuilder;
+    SchemaBuilder builder;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        db = new DatabaseManager(getContext(), "");
-        schemaBuilder = new SchemaBuilder(db);
+        DatabaseManager db = new DatabaseManager(getContext(),
+                "entitiesWithOneEntity.xml",
+                "schemaBuilderTests.db");
+        builder = db.getSchemaBuilder();
     }
 
     public void testBuildSchema() throws Exception {
-        Schema schema = schemaBuilder.buildSchemaFor(Entity1.class);
+        Schema schema = builder.buildSchemaFor(Entity1.class);
         Assert.assertEquals(schema.toString(), "CREATE TABLE Entity1 " +
                 "(" +
                 "aBoolean INTEGER, " +
@@ -41,7 +42,7 @@ public class SchemaBuilderTests extends ApplicationTest {
     }
 
     public void testBuildSchemaWithAnnotation() throws Exception {
-        Schema schema = schemaBuilder.buildSchemaFor(EntityWithAnnotation.class);
+        Schema schema = builder.buildSchemaFor(EntityWithAnnotation.class);
         Assert.assertEquals(schema.toString(), "CREATE TABLE table_for_entity (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "isExists INTEGER, " +
@@ -50,7 +51,7 @@ public class SchemaBuilderTests extends ApplicationTest {
     }
 
     public void testBuildSchemaWithIgnoreFields() throws Exception {
-        Schema schema = schemaBuilder.buildSchemaFor(EntityWithIgnoreFields.class);
+        Schema schema = builder.buildSchemaFor(EntityWithIgnoreFields.class);
         Assert.assertEquals(schema.toString(), "CREATE TABLE ignoreFields (" +
                 "distance REAL, " +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -60,7 +61,7 @@ public class SchemaBuilderTests extends ApplicationTest {
 
     public void testBuildSchemaWithDuplicateAnnotation() throws Exception {
         try {
-            Schema schema = schemaBuilder.buildSchemaFor(EntityWithDuplicateAnnotation.class);
+            Schema schema = builder.buildSchemaFor(EntityWithDuplicateAnnotation.class);
             fail("Should throws exception about [duplication name column]");
         } catch (Exception e) {
             // successfully
@@ -68,7 +69,7 @@ public class SchemaBuilderTests extends ApplicationTest {
     }
 
     public void testBuildSchemaWithSerializable() throws Exception {
-        Schema schema = schemaBuilder.buildSchemaFor(EntityWithSerializable.class);
+        Schema schema = builder.buildSchemaFor(EntityWithSerializable.class);
         Assert.assertEquals(schema.toString(), "CREATE TABLE EntityWithSerializable (" +
                 "name TEXT, " +
                 "serial BLOB, " +

@@ -1,6 +1,6 @@
 package ru.kadei.diaryworkouts.models.entities;
 
-import ru.kadei.diaryworkouts.database.Record;
+import ru.kadei.diaryworkouts.database.models.Record;
 import ru.kadei.diaryworkouts.database.annotations.Column;
 
 /**

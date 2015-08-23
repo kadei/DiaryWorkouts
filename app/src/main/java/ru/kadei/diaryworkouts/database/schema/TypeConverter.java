@@ -7,13 +7,13 @@ import java.lang.reflect.Field;
 import ru.kadei.diaryworkouts.database.DatabaseManager;
 import ru.kadei.diaryworkouts.database.annotations.Column;
 
-import static ru.kadei.diaryworkouts.database.utils.AnnotationUtils.getAnnotation;
+import static ru.kadei.diaryworkouts.database.utils.ReflectionUtils.getAnnotationFor;
+import static ru.kadei.diaryworkouts.database.utils.ReflectionUtils.implementsInterface;
 
 /**
  * Created by kadei on 22.08.15.
  */
 public class TypeConverter {
-
 
     private DatabaseManager dbManager;
 
@@ -22,8 +22,10 @@ public class TypeConverter {
         INTEGER,
         REAL,
         TEXT,
-        ENTITY,
-        SERIALIZABLE
+        TO_ONE,
+        TO_MANY,
+        SERIALIZABLE,
+        SERIALIZABLE_ARRAY
     }
 
     public TypeConverter(DatabaseManager dbManager) {
@@ -45,45 +47,54 @@ public class TypeConverter {
         else {
             if(isText(type))
                 return TYPE.TEXT;
-            else if(isEntity(type))
-                return TYPE.ENTITY;
+            else if(isToOne(type))
+                return TYPE.TO_ONE;
+            else if(isToMany(type))
+                return TYPE.TO_MANY;
             else if(isSerializable(type))
                 return TYPE.SERIALIZABLE;
+            else if(isSerializableArray(type))
+                return TYPE.SERIALIZABLE_ARRAY;
         }
-
-        throw new RuntimeException("Unexpected type [" + type.getName() + "]");
+        throw new RuntimeException("Unexpected type ["+type.getName()+"]");
     }
 
-    private static boolean isId(Field field) {
-        Annotation annotation = getAnnotation(field.getDeclaredAnnotations(), Column.class);
+    private boolean isId(Field field) {
+        Annotation annotation = getAnnotationFor(field, Column.class);
         String name = annotation == null ? field.getName() : ((Column)annotation).name();
         return name.equals("_id");
     }
 
-    private static boolean isInteger(Class type) {
+    private boolean isInteger(Class type) {
         return type == byte.class || type == short.class || type == int.class
                 || type == long.class || type == boolean.class;
     }
 
-    private static boolean isReal(Class type) {
+    private boolean isReal(Class type) {
         return type == float.class || type == double.class;
     }
 
-    private static boolean isText(Class type) {
+    private boolean isText(Class type) {
         return type == char.class || type == String.class;
     }
 
-    private boolean isEntity(Class type) {
+    private boolean isToMany(Class type) {
+        return isIterable(type) && isToOne(type.getComponentType());
+    }
+
+    private boolean isIterable(Class type) {
+        return type.isArray() || implementsInterface(type, Iterable.class);
+    }
+
+    private boolean isToOne(Class type) {
         return dbManager.isEntity(type);
     }
 
-    private static boolean isSerializable(Class type) {
-        Class[] interfaces = type.getInterfaces();
-        if(interfaces != null) {
-            for(Class i : interfaces)
-                if(i == Serializable.class)
-                    return true;
-        }
-        return false;
+    private boolean isSerializable(Class type) {
+        return implementsInterface(type, Serializable.class);
+    }
+
+    private boolean isSerializableArray(Class type) {
+        return isIterable(type) && isSerializable(type);
     }
 }

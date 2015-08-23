@@ -1,0 +1,8 @@
+<entities>
+    <entity>ru.kadei.diaryworkouts.models.workouts.Description</entity>
+    <entity>ru.kadei.diaryworkouts.models.workouts.DescriptionProgram</entity>
+    <entity>ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout</entity>
+    <entity>ru.kadei.diaryworkouts.models.workouts.DescriptionStandardExercise</entity>
+    <entity>ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise</entity>
+    <entity>ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise</entity>
+</entities>

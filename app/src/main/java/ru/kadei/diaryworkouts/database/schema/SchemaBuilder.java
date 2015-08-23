@@ -8,7 +8,7 @@ import ru.kadei.diaryworkouts.database.annotations.Column;
 import ru.kadei.diaryworkouts.database.annotations.Ignore;
 import ru.kadei.diaryworkouts.database.annotations.Table;
 
-import static ru.kadei.diaryworkouts.database.utils.AnnotationUtils.getAnnotation;
+import static ru.kadei.diaryworkouts.database.utils.ReflectionUtils.getAnnotationFor;
 import static ru.kadei.diaryworkouts.database.utils.StringUtils.extractNameClass;
 
 /**
@@ -18,45 +18,54 @@ public class SchemaBuilder {
 
     private TypeConverter typeConverter;
 
+    private Class target;
+
     public SchemaBuilder(DatabaseManager dbManager) {
         typeConverter = new TypeConverter(dbManager);
     }
 
     public Schema buildSchemaFor(Class target) {
         final Schema schema = new Schema();
+        this.target = target;
+        schema.nameEntity = target.getName();
         schema.nameTable = getNameTableFor(target);
-        schema.schemaRecord = getSchemaRecordFor(target);
+        schema.schemaCortege = getSchemaCortegeFor(target);
         return schema;
     }
 
     private String getNameTableFor(Class target) {
-        Annotation a = getAnnotation(target.getDeclaredAnnotations(), Table.class);
+        Annotation a = getAnnotationFor(target, Table.class);
         return a == null ? extractNameClass(target) : ((Table)a).name();
     }
 
-    private SchemaRecord getSchemaRecordFor(Class target) {
-        final SchemaRecord schemaRecord = new SchemaRecord();
+    private SchemaCortege getSchemaCortegeFor(Class target) {
+        final TypeConverter converter = typeConverter;
+        final SchemaCortege schemaCortege = new SchemaCortege();
         do {
-            final Field[] fields = target.getDeclaredFields();
-            for (Field f : fields) {
-                if (!ignore(f)) {
-                    String nameField = f.getName();
-                    String nameColumn = getNameColumnFor(f);
-                    String typeColumn = getTypeFor(f);
-                    schemaRecord.addElement(nameField, nameColumn, typeColumn);
+            for (Field field : target.getDeclaredFields()) {
+                if (!ignore(field)) {
+                    if(converter.getType(field) == TypeConverter.TYPE.TO_MANY) {
+
+                    }
+                    else {
+                        String nameField = field.getName();
+                        String nameColumn = getNameColumnFor(field);
+                        String typeColumn = getTypeFor(field);
+                        schemaCortege.addElement(nameField, nameColumn, typeColumn);
+                    }
                 }
             }
             target = target.getSuperclass();
         } while (target != null && target != Object.class);
-        return schemaRecord;
+        return schemaCortege;
     }
 
     private boolean ignore(Field field) {
-        return getAnnotation(field.getDeclaredAnnotations(), Ignore.class) != null;
+        return getAnnotationFor(field, Ignore.class) != null;
     }
 
     private String getNameColumnFor(Field field) {
-        Annotation a = getAnnotation(field.getDeclaredAnnotations(), Column.class);
+        Annotation a = getAnnotationFor(field, Column.class);
         return a == null ? field.getName() : ((Column) a).name();
     }
 
@@ -70,13 +79,15 @@ public class SchemaBuilder {
                 return "REAL";
             case TEXT:
                 return "TEXT";
-            case ENTITY:
+            case TO_ONE:
                 return "INTEGER";
             case SERIALIZABLE:
                 return "BLOB";
+            case TO_MANY:
+                return "";
 
             default:
-                throw new RuntimeException("Unexpected type field [" + field.getType().getName() + "]");
+                throw new RuntimeException("Unexpected type field ["+field.getType().getName()+"]");
         }
     }
 }

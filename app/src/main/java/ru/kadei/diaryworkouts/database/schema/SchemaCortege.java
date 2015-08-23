@@ -1,17 +1,18 @@
 package ru.kadei.diaryworkouts.database.schema;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by kadei on 22.08.15.
  */
-public class SchemaRecord {
+public class SchemaCortege implements Serializable {
 
     public final ArrayList<String> nameFields;
     public final ArrayList<String> nameColumns;
     public final ArrayList<String> typeColumns;
 
-    public SchemaRecord() {
+    public SchemaCortege() {
         nameFields = new ArrayList<>(4);
         nameColumns = new ArrayList<>(4);
         typeColumns = new ArrayList<>(4);
@@ -25,10 +26,8 @@ public class SchemaRecord {
     }
 
     private void checkDuplicateColumn(String nameColumn) {
-        final ArrayList<String> list = nameColumns;
-        for(int i = 0, end = list.size(); i < end; ++i)
-            if(nameColumn.equals(list.get(i)))
-                throw new RuntimeException("Duplicate name of column [" + nameColumn + "]");
+        if(nameColumns.contains(nameColumn))
+            throw new RuntimeException("Duplicate name of column ["+nameColumn+"]");
     }
 
     @Override
@@ -40,5 +39,16 @@ public class SchemaRecord {
                 sb.append(", ");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || o instanceof SchemaCortege && allElementsEquals((SchemaCortege)o);
+    }
+
+    private boolean allElementsEquals(SchemaCortege sc) {
+        return nameFields.equals(sc.nameFields)
+                && nameColumns.equals(sc.nameColumns)
+                && typeColumns.equals(sc.typeColumns);
     }
 }
