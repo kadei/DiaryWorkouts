@@ -8,6 +8,10 @@ public class Spec {
     public int spec = 0;
     private static final int[] extractedValues = new int[32];
 
+    public Spec(int spec) {
+        this.spec = spec;
+    }
+
     public int[] extract() {
         int count = _extract();
         int[] values = new int[count];

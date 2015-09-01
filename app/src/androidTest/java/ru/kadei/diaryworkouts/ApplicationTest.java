@@ -7,11 +7,6 @@ import junit.framework.Assert;
 
 import java.util.List;
 
-import ru.kadei.diaryworkouts.database.utils.ArrayUtils;
-import ru.kadei.diaryworkouts.database.utils.ArrayUtilsTests;
-
-import static junit.framework.Assert.assertEquals;
-
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */

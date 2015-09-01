@@ -10,12 +10,7 @@ public class DescriptionExercise extends Description {
     public static final int SUPERSET =  0xf00;
     public static final int CARDIO =    0xf000;
 
-    public final int type;
-
-    public DescriptionExercise(long id, String name, String description, int type) {
-        super(id, name, description);
-        this.type = type;
-    }
+    public int type;
 
     public boolean isSuperset() {
         return type == SUPERSET;
