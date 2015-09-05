@@ -122,4 +122,8 @@ public class Task {
     boolean isSuccessful() {
         return exception == null;
     }
+
+    void forgetParameters() {
+        parameters = null;
+    }
 }

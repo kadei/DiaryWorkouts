@@ -16,4 +16,5 @@ public interface WorkoutManagerClient {
     void allExercisesLoaded(ArrayList<DescriptionExercise> exercises);
     void allHistoryLoaded(ArrayList<Workout> history);
     void allHistoryLoadedFor(Workout target, ArrayList<Workout> history);
+    void lastWorkoutLoaded(Workout workout);
 }

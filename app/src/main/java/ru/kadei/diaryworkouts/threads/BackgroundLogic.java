@@ -22,6 +22,7 @@ public class BackgroundLogic {
         @Override
         public boolean handleMessage(Message msg) {
             Task task = (Task) msg.obj;
+            task.forgetParameters();
 
             if (task.isSuccessful())
                 task.noticeCompletion();
