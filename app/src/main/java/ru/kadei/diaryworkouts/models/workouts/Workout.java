@@ -5,9 +5,10 @@ package ru.kadei.diaryworkouts.models.workouts;
  */
 public class Workout {
 
-    public long id;
     private final DescriptionProgram descriptionProgram;
-    private final int posCurrentWorkout;
+    public final int posCurrentWorkout;
+
+    public long id;
     public long date;
     public long duration;
     public String comment;

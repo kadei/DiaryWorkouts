@@ -1,7 +1,6 @@
 package ru.kadei.diaryworkouts.builder_models;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 
@@ -15,16 +14,17 @@ public class DescriptionWorkoutBuilder extends DescriptionBuilder {
 
     private DescriptionBuilder exerciseBuilder;
 
-    public DescriptionWorkoutBuilder(SQLiteDatabase db, DescriptionBuilder exerciseBuilder) {
-        super(db);
+    public DescriptionWorkoutBuilder(BufferDescriptions bufferDescriptions,
+                                     DescriptionBuilder exerciseBuilder) {
+        super(bufferDescriptions);
         this.exerciseBuilder = exerciseBuilder;
     }
 
     @Override
-    public void buildDescriptionWorkout(String query) {
+    public void buildObjects(String query) {
         Cursor c = db.rawQuery(query, null);
         if(c.moveToFirst()) {
-            descriptions = buildList(c);
+            objects = buildList(c);
         }
         c.close();
     }
@@ -32,20 +32,28 @@ public class DescriptionWorkoutBuilder extends DescriptionBuilder {
     @SuppressWarnings("unchecked")
     private ArrayList<DescriptionWorkout> buildList(Cursor c) {
         final DescriptionBuilder builder = exerciseBuilder;
+        final BufferDescriptions buffer = bufferDescriptions;
         final ArrayList<DescriptionWorkout> list = new ArrayList<>(c.getCount());
 
         final int indexID = c.getColumnIndex("_id");
         final int indexName = c.getColumnIndex("name");
         final int indexDescription = c.getColumnIndex("description");
 
+        builder.setDb(db);
         do {
-            DescriptionWorkout dw = new DescriptionWorkout();
-            dw.id = c.getLong(indexID);
-            dw.name = c.getString(indexName);
-            dw.description = c.getString(indexDescription);
+            long id = c.getLong(indexID);
+            DescriptionWorkout dw = buffer.getWorkout(id);
+            if(dw == null) {
+                dw = new DescriptionWorkout();
+                dw.id = id;
+                dw.name = c.getString(indexName);
+                dw.description = c.getString(indexDescription);
 
-            builder.buildDescriptionExercise(createQueryFor(dw.id));
-            dw.exercises = (ArrayList<DescriptionExercise>) builder.get();
+                builder.buildObjects(createQueryFor(dw.id));
+                dw.exercises = (ArrayList<DescriptionExercise>) builder.getObjects();
+
+                buffer.addWorkout(dw);
+            }
 
             list.add(dw);
         } while(c.moveToNext());

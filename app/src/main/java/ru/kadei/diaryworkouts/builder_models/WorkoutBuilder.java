@@ -1,7 +1,6 @@
 package ru.kadei.diaryworkouts.builder_models;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 
@@ -14,17 +13,16 @@ import ru.kadei.diaryworkouts.models.workouts.Workout;
 public class WorkoutBuilder extends DefaultBuilder {
 
     private final DescriptionBuilder programBuilder;
-    private ArrayList<Workout> workouts;
 
-    public WorkoutBuilder(SQLiteDatabase db, DescriptionBuilder programBuilder) {
-        super(db);
+    public WorkoutBuilder(DescriptionBuilder programBuilder) {
         this.programBuilder = programBuilder;
     }
 
-    public void buildWorkout(String query) {
+    @Override
+    public void buildObjects(String query) {
         Cursor c = db.rawQuery(query, null);
         if(c.moveToFirst()) {
-            workouts = buildList(c);
+            objects = buildList(c);
         }
         c.close();
     }
@@ -58,14 +56,9 @@ public class WorkoutBuilder extends DefaultBuilder {
         sb.append("SELECT descriptionProgram._id, descriptionProgram.name, descriptionProgram.description " +
                 "FROM descriptionProgram WHERE descriptionProgram._id = ").append(id);
 
-        programBuilder.buildDescriptionProgram(sb.toString());
-        ArrayList<?> list = programBuilder.get();
+        programBuilder.setDb(db);
+        programBuilder.buildObjects(sb.toString());
+        ArrayList<?> list = programBuilder.getObjects();
         return (DescriptionProgram) list.get(0);
-    }
-
-    public ArrayList<Workout> get() {
-        ArrayList<Workout> list = workouts;
-        workouts = null;
-        return list;
     }
 }

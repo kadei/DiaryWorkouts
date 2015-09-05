@@ -1,52 +1,64 @@
 package ru.kadei.diaryworkouts.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
 import ru.kadei.diaryworkouts.R;
+import ru.kadei.diaryworkouts.threads.BackgroundLogic;
+import ru.kadei.diaryworkouts.threads.Task;
 
 public class MainActivity extends AppCompatActivity {
 
-    class T {
-
-        int integer;
-        String str;
-    }
+    BackgroundLogic bg;
+    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final T t = new T();
-        t.integer = 10;
-        t.str = "hello";
+        bg = new BackgroundLogic();
 
-        Field[] fields = t.getClass().getDeclaredFields();
-        for (Field f : fields) {
-            String name = f.getName();
-            Class typeClass = f.getType();
-            try {
-                if(typeClass == int.class) {
-                    Log.d("TEST", "integer value = ");
-                    int val = (int) f.get(t);
-                    Log.d("TEST", String.valueOf(val));
-                }
-                else if(typeClass == String.class) {
-                    Log.d("TEST", "String");
-                    String str = (String) f.get(t);
-                    Log.d("TEST", str);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+        for (double val = 0.0; val < 100.0; val += 11.0) {
+            Task t = new Task()
+                    .setClient(this)
+                    .setExecutedMethod("sqrt", Double.TYPE)
+                    .setParameters(val)
+                    .setCompleteMethod("resultSqrt")
+                    .setFailMethod("failSqrt");
+
+            bg.execute(t);
         }
+        Log.d("TEST", "end onCreate()");
+    }
+
+    double sqrt(double val) {
+        Log.d("TEST", "calculate sqrt for " + val);
+        if(val * val > 600.0)
+            throw new RuntimeException("value should not be better 600");
+        return val * val;
+    }
+
+    void resultSqrt(double val) {
+        Log.d("TEST", "result = " + val);
+    }
+
+    void failSqrt(Throwable t) {
+        Log.e("TEST", t.getMessage());
+    }
+
+    private void taskWithoutException() throws InterruptedException {
+        Thread.sleep(2000l);
+        count++;
+    }
+
+    private void taskWithException() throws InterruptedException {
+        Thread.sleep(2000l);
+        count++;
+        throw new RuntimeException("test exception");
     }
 
     @Override
