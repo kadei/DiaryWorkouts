@@ -2,13 +2,25 @@ package ru.kadei.diaryworkouts.managers;
 
 import android.content.Context;
 
-import ru.kadei.diaryworkouts.builder_models.BufferDescriptions;
-import ru.kadei.diaryworkouts.builder_models.DescriptionBuilder;
-import ru.kadei.diaryworkouts.builder_models.DescriptionExerciseBuilder;
-import ru.kadei.diaryworkouts.builder_models.DescriptionProgramBuilder;
-import ru.kadei.diaryworkouts.builder_models.DescriptionWorkoutBuilder;
-import ru.kadei.diaryworkouts.builder_models.WorkoutBuilder;
+import ru.kadei.diaryworkouts.builders.DescriptionBuilder;
+import ru.kadei.diaryworkouts.builders.DescriptionExerciseBuilder;
+import ru.kadei.diaryworkouts.builders.DescriptionExerciseCortegeBuilder;
+import ru.kadei.diaryworkouts.builders.DescriptionProgramBuilder;
+import ru.kadei.diaryworkouts.builders.DescriptionProgramCortegeBuilder;
+import ru.kadei.diaryworkouts.builders.DescriptionWorkoutBuilder;
+import ru.kadei.diaryworkouts.builders.DescriptionWorkoutCortegeBuilder;
+import ru.kadei.diaryworkouts.builders.WorkoutBuilder;
 import ru.kadei.diaryworkouts.database.Database;
+import ru.kadei.diaryworkouts.managers.bridges.BridgeLoadAllExercises;
+import ru.kadei.diaryworkouts.managers.bridges.BridgeLoadAllHistory;
+import ru.kadei.diaryworkouts.managers.bridges.BridgeLoadAllProgram;
+import ru.kadei.diaryworkouts.managers.bridges.BridgeLoadAllWorkouts;
+import ru.kadei.diaryworkouts.managers.bridges.BridgeLoadHistoryFor;
+import ru.kadei.diaryworkouts.managers.bridges.BridgeLoadLastWorkout;
+import ru.kadei.diaryworkouts.managers.bridges.BridgeSaveDescription;
+import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
+import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
+import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
 
 /**
@@ -65,5 +77,17 @@ public class WorkoutManager {
         String query = "SELECT * FROM historyWorkout WHERE idProgram = " + idPrg +
                 " AND posWorkout = " + workout.posCurrentWorkout;
         database.load(query, workoutBuilder, new BridgeLoadHistoryFor(client, workout));
+    }
+
+    public void saveDescriptionProgram(DescriptionProgram program, WorkoutManagerClient client) {
+        database.save(program, new DescriptionProgramCortegeBuilder(), new BridgeSaveDescription(client));
+    }
+
+    public void saveDescriptionWorkout(DescriptionWorkout workout, WorkoutManagerClient client) {
+        database.save(workout, new DescriptionWorkoutCortegeBuilder(), new BridgeSaveDescription(client));
+    }
+
+    public void saveDescriptionExercise(DescriptionExercise exercise, WorkoutManagerClient client) {
+        database.save(exercise, new DescriptionExerciseCortegeBuilder(), new BridgeSaveDescription(client));
     }
 }

@@ -1,14 +1,15 @@
 package ru.kadei.diaryworkouts.models.workouts;
 
+import ru.kadei.diaryworkouts.database.Record;
+
 /**
  * Created by kadei on 15.08.15.
  */
-public class Workout {
+public class Workout extends Record {
 
     private final DescriptionProgram descriptionProgram;
     public final int posCurrentWorkout;
 
-    public long id;
     public long date;
     public long duration;
     public String comment;

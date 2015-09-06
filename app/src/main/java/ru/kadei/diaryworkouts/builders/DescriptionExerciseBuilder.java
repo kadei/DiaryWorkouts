@@ -1,9 +1,10 @@
-package ru.kadei.diaryworkouts.builder_models;
+package ru.kadei.diaryworkouts.builders;
 
 import android.database.Cursor;
 
 import java.util.ArrayList;
 
+import ru.kadei.diaryworkouts.managers.BufferDescriptions;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionStandardExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise;
@@ -61,8 +62,8 @@ public class DescriptionExerciseBuilder extends DescriptionBuilder {
                     stdExe.name = c.getString(indexName);
                     stdExe.description = c.getString(indexDescription);
                     stdExe.type = type;
-                    stdExe.measureSpec = c.getInt(indexMeasureSpec);
-                    stdExe.muscleGroupSpec = c.getInt(indexMuscleGroupSpec);
+                    stdExe.setMeasureSpec(c.getInt(indexMeasureSpec));
+                    stdExe.setMuscleGroupSpec(c.getInt(indexMuscleGroupSpec));
                     de = stdExe;
                 }
                 buffer.addExercise(de);

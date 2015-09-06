@@ -90,7 +90,7 @@ public class ReflectionTaskTests extends ApplicationTest implements TaskInterfac
         Assert.assertEquals(e.getMessage(), "test exception");
     }
 
-    public void testExecuteIntefaceMethods() throws Exception {
+    public void testExecuteInterfaceMethods() throws Exception {
         Task t = new Task()
                 .setClient(this)
                 .setExecutedMethod("exe")

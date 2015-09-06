@@ -9,9 +9,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
 
-import ru.kadei.diaryworkouts.builder_models.DefaultBuilder;
-import ru.kadei.diaryworkouts.models.db.Cortege;
-import ru.kadei.diaryworkouts.models.db.Relation;
 import ru.kadei.diaryworkouts.threads.BackgroundLogic;
 import ru.kadei.diaryworkouts.threads.Task;
 
@@ -40,24 +37,24 @@ public class Database {
     private void initialTasks() {
         taskLoadFromDatabase
                 .setClient(this)
-                .setExecutedMethod("executeLoad", String.class, DefaultBuilder.class)
+                .setExecutedMethod("executeLoad", String.class, ObjectBuilder.class)
                 .setCompleteMethod("completeLoad")
                 .setFailMethod("fail");
 
         taskSaveInDatabase
                 .setClient(this)
-                .setExecutedMethod("executeSave", Cortege.class)
+                .setExecutedMethod("executeSave", Record.class, CortegeBuilder.class)
                 .setCompleteMethod("completeSave")
                 .setFailMethod("fail");
     }
 
-    public void load(String query, DefaultBuilder builder, DatabaseClient client) {
+    public void load(String query, ObjectBuilder builder, DatabaseClient client) {
         clients.offer(client);
         taskLoadFromDatabase.setParameters(query, builder);
         bgLogic.execute(taskLoadFromDatabase);
     }
 
-    private DefaultBuilder executeLoad(String query, DefaultBuilder builder) {
+    private ObjectBuilder executeLoad(String query, ObjectBuilder builder) {
         SQLiteDatabase db = getDB();
         try {
             builder.setDb(db);
@@ -69,7 +66,7 @@ public class Database {
         return builder;
     }
 
-    private void completeLoad(DefaultBuilder builder) {
+    private void completeLoad(ObjectBuilder builder) {
         clients.poll().loaded(builder);
     }
 
@@ -77,25 +74,27 @@ public class Database {
         clients.poll().fail(throwable);
     }
 
-    public void save(Cortege cortege, DatabaseClient client) {
+    public void save(Record record, CortegeBuilder builder, DatabaseClient client) {
         clients.offer(client);
-        taskSaveInDatabase.setParameters(cortege);
+        taskSaveInDatabase.setParameters(record, builder);
         bgLogic.execute(taskSaveInDatabase);
     }
 
-    private Cortege executeSave(Cortege cortege) {
-        long id = cortege.id;
-        String table = cortege.nameTable;
-        if(!existsRecordsInTable(table, id))
-            insertCortege(cortege);
-        else
-            updateCortege(cortege);
+    private Record executeSave(Record record, CortegeBuilder builder) {
+        builder.buildCortegeFor(record);
+        Cortege cortege = builder.getCortege();
 
-        return cortege;
+        final long id = record.id;
+        if(!existsRecordsInTable(cortege.nameTable, id))
+            record.id = insertCortege(cortege);
+        else
+            updateCortege(cortege, id);
+
+        return record;
     }
 
-    private void completeSave(Cortege cortege) {
-        clients.poll().saved(cortege);
+    private void completeSave(Record record) {
+        clients.poll().saved(record);
     }
 
     private boolean existsRecordsInTable(String nameTable, long id) {
@@ -111,12 +110,13 @@ public class Database {
         return exists;
     }
 
-    private void insertCortege(Cortege cortege) {
+    private long insertCortege(Cortege cortege) {
         final SQLiteDatabase db = getDB();
+        long id;
         try {
             db.beginTransaction();
 
-            insert(db, cortege.nameTable, cortege.values);
+            id = insert(db, cortege.nameTable, cortege.values);
             insertRelations(db, cortege.relations);
 
             db.setTransactionSuccessful();
@@ -124,12 +124,14 @@ public class Database {
             db.endTransaction();
             db.close();
         }
+        return id;
     }
 
-    private void insert(SQLiteDatabase db, String nameTable, ContentValues values) {
+    private long insert(SQLiteDatabase db, String nameTable, ContentValues values) {
         long id = db.insert(nameTable, null, values);
         if(id == -1)
             throw new RuntimeException("Error insert in table ["+nameTable+"]");
+        return id;
     }
 
     private void insertRelations(SQLiteDatabase db, ArrayList<Relation> relations) {
@@ -140,12 +142,12 @@ public class Database {
         }
     }
 
-    private void updateCortege(Cortege cortege) {
+    private void updateCortege(Cortege cortege, long id) {
         final SQLiteDatabase db = getDB();
         try {
             db.beginTransaction();
 
-            update(db, cortege.nameTable, "_id = " + cortege.id, cortege.values);
+            update(db, cortege.nameTable, "_id = " + id, cortege.values);
             updateRelations(db, cortege.relations);
 
             db.setTransactionSuccessful();

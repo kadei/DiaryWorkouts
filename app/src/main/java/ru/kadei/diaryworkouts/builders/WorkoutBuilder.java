@@ -1,16 +1,17 @@
-package ru.kadei.diaryworkouts.builder_models;
+package ru.kadei.diaryworkouts.builders;
 
 import android.database.Cursor;
 
 import java.util.ArrayList;
 
+import ru.kadei.diaryworkouts.database.ObjectBuilder;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
 
 /**
  * Created by kadei on 01.09.15.
  */
-public class WorkoutBuilder extends DefaultBuilder {
+public class WorkoutBuilder extends ObjectBuilder {
 
     private final DescriptionBuilder programBuilder;
 

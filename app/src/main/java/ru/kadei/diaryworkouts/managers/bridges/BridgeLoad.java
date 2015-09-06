@@ -1,7 +1,8 @@
-package ru.kadei.diaryworkouts.managers;
+package ru.kadei.diaryworkouts.managers.bridges;
 
 import ru.kadei.diaryworkouts.database.DatabaseClient;
-import ru.kadei.diaryworkouts.models.db.Cortege;
+import ru.kadei.diaryworkouts.database.Record;
+import ru.kadei.diaryworkouts.managers.WorkoutManagerClient;
 
 /**
  * Created by kadei on 06.09.15.
@@ -15,7 +16,7 @@ public abstract class BridgeLoad implements DatabaseClient {
     }
 
     @Override
-    public void saved(Cortege cortege) {
+    public void saved(Record record) {
 
     }
 

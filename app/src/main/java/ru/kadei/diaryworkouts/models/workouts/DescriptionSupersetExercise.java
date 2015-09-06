@@ -8,4 +8,22 @@ import java.util.ArrayList;
 public class DescriptionSupersetExercise extends DescriptionExercise {
 
     public ArrayList<DescriptionStandardExercise> exercises;
+
+    @Override
+    public int getMeasureSpec() {
+        int measureSpec = 0;
+        for(DescriptionStandardExercise stdExe : exercises) {
+            measureSpec |= stdExe.getMeasureSpec();
+        }
+        return measureSpec;
+    }
+
+    @Override
+    public int getMuscleGroupSpec() {
+        int muscleGroupSpec = 0;
+        for(DescriptionStandardExercise stdExe : exercises) {
+            muscleGroupSpec |= stdExe.getMuscleGroupSpec();
+        }
+        return muscleGroupSpec;
+    }
 }

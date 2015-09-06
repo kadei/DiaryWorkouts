@@ -1,14 +1,13 @@
-package ru.kadei.diaryworkouts.builder_models;
+package ru.kadei.diaryworkouts.builders;
 
 import android.content.ContentValues;
-
-import junit.framework.Assert;
 
 import java.util.ArrayList;
 
 import ru.kadei.diaryworkouts.ApplicationTest;
-import ru.kadei.diaryworkouts.models.db.Cortege;
-import ru.kadei.diaryworkouts.models.db.Relation;
+import ru.kadei.diaryworkouts.database.CortegeBuilder;
+import ru.kadei.diaryworkouts.database.Cortege;
+import ru.kadei.diaryworkouts.database.Relation;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 
@@ -17,7 +16,7 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
  */
 public class DescriptionProgramCortegeBuilderTests extends ApplicationTest {
 
-    final long[] idsWorkout = new long[] {
+    static final long[] idsWorkout = new long[] {
             2l,
             3l,
             7l
@@ -32,14 +31,22 @@ public class DescriptionProgramCortegeBuilderTests extends ApplicationTest {
         builder.buildCortegeFor(program);
         Cortege cortege = builder.getCortege();
 
-        Assert.assertEquals(cortege.id, 23l);
-        assertEquals(cortege.nameTable, "descriptionProgram");
+        assertNameTableFor(cortege);
+        assertValuesFor(cortege);
+        assertRelationFor(cortege);
+    }
 
-        assertEquals(cortege.values.size(), 3);
-        assertEquals(cortege.values.get("_id"), 23l);
+    static void assertNameTableFor(Cortege cortege) {
+        assertEquals(cortege.nameTable, "descriptionProgram");
+    }
+
+    static void assertValuesFor(Cortege cortege) {
+        assertEquals(cortege.values.size(), 2);
         assertEquals(cortege.values.get("name"), "my first program");
         assertEquals(cortege.values.get("description"), "description for program");
+    }
 
+    static void assertRelationFor(Cortege cortege) {
         final ArrayList<Relation> relations = cortege.relations;
         for (Relation r : relations) {
             assertEquals(r.nameTable, "listDescriptionWorkout");
@@ -55,7 +62,7 @@ public class DescriptionProgramCortegeBuilderTests extends ApplicationTest {
         }
     }
 
-    private DescriptionProgram createDescriptionProgram(long id, String name, String description) {
+    static DescriptionProgram createDescriptionProgram(long id, String name, String description) {
         ArrayList<DescriptionWorkout> workouts = new ArrayList<>(idsWorkout.length);
         for (long anIdsWorkout : idsWorkout) {
             workouts.add(createDescriptionWorkout(anIdsWorkout));
@@ -68,7 +75,7 @@ public class DescriptionProgramCortegeBuilderTests extends ApplicationTest {
         return dp;
     }
 
-    private static DescriptionWorkout createDescriptionWorkout(long id) {
+    static DescriptionWorkout createDescriptionWorkout(long id) {
         DescriptionWorkout dw = new DescriptionWorkout();
         dw.id = id;
         return dw;

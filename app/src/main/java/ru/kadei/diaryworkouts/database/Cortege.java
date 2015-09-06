@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.models.db;
+package ru.kadei.diaryworkouts.database;
 
 import android.content.ContentValues;
 
@@ -9,7 +9,6 @@ import java.util.ArrayList;
  */
 public class Cortege {
 
-    public long id;
     public String nameTable;
     public ContentValues values;
     public final ArrayList<Relation> relations;

@@ -2,6 +2,7 @@ package ru.kadei.diaryworkouts.managers;
 
 import java.util.ArrayList;
 
+import ru.kadei.diaryworkouts.models.workouts.Description;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
@@ -17,4 +18,6 @@ public interface WorkoutManagerClient {
     void allHistoryLoaded(ArrayList<Workout> history);
     void allHistoryLoadedFor(Workout target, ArrayList<Workout> history);
     void lastWorkoutLoaded(Workout workout);
+    void descriptionSaved(Description description);
+    void workoutSaved(Workout workout);
 }

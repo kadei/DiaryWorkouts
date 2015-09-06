@@ -5,6 +5,24 @@ package ru.kadei.diaryworkouts.models.workouts;
  */
 public class DescriptionStandardExercise extends DescriptionExercise {
 
-    public int measureSpec;
-    public int muscleGroupSpec;
+    private int measureSpec;
+    private int muscleGroupSpec;
+
+    @Override
+    public int getMeasureSpec() {
+        return measureSpec;
+    }
+
+    @Override
+    public int getMuscleGroupSpec() {
+        return muscleGroupSpec;
+    }
+
+    public void setMeasureSpec(int measureSpec) {
+        this.measureSpec = measureSpec;
+    }
+
+    public void setMuscleGroupSpec(int muscleGroupSpec) {
+        this.muscleGroupSpec = muscleGroupSpec;
+    }
 }

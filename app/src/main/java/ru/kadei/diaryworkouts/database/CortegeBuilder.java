@@ -1,6 +1,4 @@
-package ru.kadei.diaryworkouts.builder_models;
-
-import ru.kadei.diaryworkouts.models.db.Cortege;
+package ru.kadei.diaryworkouts.database;
 
 /**
  * Created by kadei on 03.09.15.

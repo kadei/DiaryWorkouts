@@ -1,11 +1,12 @@
-package ru.kadei.diaryworkouts.builder_models;
+package ru.kadei.diaryworkouts.builders;
 
 import android.content.ContentValues;
 
 import java.util.ArrayList;
 
-import ru.kadei.diaryworkouts.models.db.Cortege;
-import ru.kadei.diaryworkouts.models.db.Relation;
+import ru.kadei.diaryworkouts.database.CortegeBuilder;
+import ru.kadei.diaryworkouts.database.Cortege;
+import ru.kadei.diaryworkouts.database.Relation;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 
@@ -24,11 +25,9 @@ public class DescriptionProgramCortegeBuilder extends CortegeBuilder {
 
     private Cortege buildCortege(DescriptionProgram program) {
         final Cortege cortege = new Cortege();
-        cortege.id = program.id;
         cortege.nameTable = "descriptionProgram";
 
-        ContentValues cv = new ContentValues(3);
-        cv.put("_id", program.id);
+        ContentValues cv = new ContentValues(2);
         cv.put("name", program.name);
         cv.put("description", program.description);
         cortege.values = cv;

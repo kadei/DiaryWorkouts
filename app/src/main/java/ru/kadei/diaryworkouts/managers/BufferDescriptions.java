@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.builder_models;
+package ru.kadei.diaryworkouts.managers;
 
 import android.util.LongSparseArray;
 

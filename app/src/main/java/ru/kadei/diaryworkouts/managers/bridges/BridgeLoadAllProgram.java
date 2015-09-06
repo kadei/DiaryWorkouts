@@ -1,8 +1,9 @@
-package ru.kadei.diaryworkouts.managers;
+package ru.kadei.diaryworkouts.managers.bridges;
 
 import java.util.ArrayList;
 
-import ru.kadei.diaryworkouts.builder_models.DefaultBuilder;
+import ru.kadei.diaryworkouts.database.ObjectBuilder;
+import ru.kadei.diaryworkouts.managers.WorkoutManagerClient;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 
 /**
@@ -16,7 +17,7 @@ public class BridgeLoadAllProgram extends BridgeLoad {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void loaded(DefaultBuilder builder) {
+    public void loaded(ObjectBuilder builder) {
         ArrayList<DescriptionProgram> programs = (ArrayList<DescriptionProgram>) builder.getObjects();
         client.allProgramsLoaded(programs);
     }

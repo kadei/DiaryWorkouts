@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.models.db;
+package ru.kadei.diaryworkouts.database;
 
 import android.content.ContentValues;
 

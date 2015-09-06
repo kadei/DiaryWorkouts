@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.builder_models;
+package ru.kadei.diaryworkouts.database;
 
 import android.database.sqlite.SQLiteDatabase;
 
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * Created by kadei on 01.09.15.
  */
-public abstract class DefaultBuilder {
+public abstract class ObjectBuilder {
 
     protected SQLiteDatabase db;
     protected ArrayList<?> objects;

@@ -1,9 +1,10 @@
-package ru.kadei.diaryworkouts.builder_models;
+package ru.kadei.diaryworkouts.builders;
 
 import android.database.Cursor;
 
 import java.util.ArrayList;
 
+import ru.kadei.diaryworkouts.managers.BufferDescriptions;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 
@@ -57,6 +58,8 @@ public class DescriptionProgramBuilder extends DescriptionBuilder {
 
             list.add(dp);
         } while (c.moveToNext());
+        builder.forgetReferenceDB();
+
         return list;
     }
 
