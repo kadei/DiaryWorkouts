@@ -8,4 +8,13 @@ import java.util.ArrayList;
 public class DescriptionWorkout extends Description {
 
     public ArrayList<DescriptionExercise> exercises;
+
+    public static DescriptionWorkout newWorkout(long id, String name, String description, int capacity) {
+        DescriptionWorkout dw = new DescriptionWorkout();
+        dw.id = id;
+        dw.name = name;
+        dw.description = description;
+        dw.exercises = new ArrayList<>(capacity);
+        return dw;
+    }
 }

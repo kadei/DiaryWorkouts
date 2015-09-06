@@ -8,8 +8,12 @@ import ru.kadei.diaryworkouts.ApplicationTest;
 import ru.kadei.diaryworkouts.database.CortegeBuilder;
 import ru.kadei.diaryworkouts.database.Cortege;
 import ru.kadei.diaryworkouts.database.Relation;
+import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
+
+import static ru.kadei.diaryworkouts.models.workouts.DescriptionProgram.newProgram;
+import static ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout.newWorkout;
 
 /**
  * Created by kadei on 04.09.15.
@@ -24,8 +28,11 @@ public class DescriptionProgramCortegeBuilderTests extends ApplicationTest {
 
     public void testCreateCortege() throws Exception {
 
-        DescriptionProgram program = createDescriptionProgram(
-                23l, "my first program", "description for program");
+        DescriptionProgram program = newProgram(
+                23l, "my first program", "description for program", 3);
+
+        for(long id : idsWorkout)
+            program.workouts.add(newWorkout(id, null, null, 0));
 
         CortegeBuilder builder = new DescriptionProgramCortegeBuilder();
         builder.buildCortegeFor(program);
@@ -60,24 +67,5 @@ public class DescriptionProgramCortegeBuilderTests extends ApplicationTest {
                 assertEquals(cv.get("orderInList"), i);
             }
         }
-    }
-
-    static DescriptionProgram createDescriptionProgram(long id, String name, String description) {
-        ArrayList<DescriptionWorkout> workouts = new ArrayList<>(idsWorkout.length);
-        for (long anIdsWorkout : idsWorkout) {
-            workouts.add(createDescriptionWorkout(anIdsWorkout));
-        }
-        DescriptionProgram dp = new DescriptionProgram();
-        dp.id = id;
-        dp.name = name;
-        dp.description = description;
-        dp.workouts = workouts;
-        return dp;
-    }
-
-    static DescriptionWorkout createDescriptionWorkout(long id) {
-        DescriptionWorkout dw = new DescriptionWorkout();
-        dw.id = id;
-        return dw;
     }
 }

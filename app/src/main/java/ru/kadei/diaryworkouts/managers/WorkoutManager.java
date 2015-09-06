@@ -1,7 +1,5 @@
 package ru.kadei.diaryworkouts.managers;
 
-import android.content.Context;
-
 import ru.kadei.diaryworkouts.builders.DescriptionBuilder;
 import ru.kadei.diaryworkouts.builders.DescriptionExerciseBuilder;
 import ru.kadei.diaryworkouts.builders.DescriptionExerciseCortegeBuilder;
@@ -36,7 +34,7 @@ public class WorkoutManager {
     private DescriptionBuilder descriptionProgramBuilder;
     private WorkoutBuilder workoutBuilder;
 
-    public WorkoutManager(Context context, Database database) {
+    public WorkoutManager(Database database) {
         this.database = database;
 
         bufferDescriptions = new BufferDescriptions();

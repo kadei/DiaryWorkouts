@@ -21,5 +21,6 @@ public abstract class BridgeSave implements DatabaseClient {
 
     @Override
     public void fail(Throwable throwable) {
+        client.fail(throwable);
     }
 }

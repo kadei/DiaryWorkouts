@@ -18,6 +18,8 @@ public class BackgroundLogic {
     private boolean stop = false;
     private boolean pause = true;
 
+    private final boolean thisThread;
+
     private final Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
@@ -40,8 +42,10 @@ public class BackgroundLogic {
         }
     });
 
-    public BackgroundLogic() {
-        thread.start();
+    public BackgroundLogic(boolean thisThread) {
+        this.thisThread = thisThread;
+        if(!thisThread)
+            thread.start();
     }
 
     private void runBackgroundThread() {
@@ -92,9 +96,23 @@ public class BackgroundLogic {
     }
 
     public synchronized void execute(Task task) {
-        tasks.offer(task);
-        if (pause)
-            thread.interrupt();
+        if(thisThread)
+            executeInThisThread(task);
+        else {
+            tasks.offer(task);
+            if (pause)
+                thread.interrupt();
+        }
+    }
+
+    private void executeInThisThread(Task task) {
+        try {
+            task.execute();
+            task.noticeCompletion();
+        } catch (TaskException e) {
+            task.exception = e.getOriginalException();
+            task.noticeFail();
+        }
     }
 
     private synchronized void stop() {

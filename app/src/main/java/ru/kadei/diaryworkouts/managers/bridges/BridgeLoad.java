@@ -22,6 +22,6 @@ public abstract class BridgeLoad implements DatabaseClient {
 
     @Override
     public void fail(Throwable throwable) {
-
+        client.fail(throwable);
     }
 }

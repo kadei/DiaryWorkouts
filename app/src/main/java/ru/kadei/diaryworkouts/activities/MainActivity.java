@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bg = new BackgroundLogic();
+        bg = new BackgroundLogic(false);
 
         for (double val = 0.0; val < 100.0; val += 11.0) {
             Task t = new Task()

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -17,15 +18,15 @@ import ru.kadei.diaryworkouts.threads.Task;
  */
 public class Database {
 
-    private final DBHelper dbHelper;
+    private final SQLiteOpenHelper dbHelper;
     private final BackgroundLogic bgLogic;
     private final Queue<DatabaseClient> clients;
 
     private final Task taskLoadFromDatabase;
     private final Task taskSaveInDatabase;
 
-    public Database(Context context, BackgroundLogic bgLogic) {
-        dbHelper = new DBHelper(context);
+    public Database(SQLiteOpenHelper dbHelper, Context context, BackgroundLogic bgLogic) {
+        this.dbHelper = dbHelper;
         this.bgLogic = bgLogic;
         clients = new ArrayDeque<>();
 
@@ -101,7 +102,7 @@ public class Database {
         SQLiteDatabase db = getDB();
         boolean exists = false;
         try {
-            Cursor c = db.rawQuery("SELECT _id FORM " + nameTable + " WHERE _id = " + id, null);
+            Cursor c = db.rawQuery("SELECT _id FROM " + nameTable + " WHERE _id = " + id, null);
             exists = c.moveToFirst();
             c.close();
         } finally {

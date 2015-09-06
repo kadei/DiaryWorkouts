@@ -5,8 +5,8 @@ import android.content.ContentValues;
 import java.util.ArrayList;
 
 import ru.kadei.diaryworkouts.ApplicationTest;
-import ru.kadei.diaryworkouts.database.CortegeBuilder;
 import ru.kadei.diaryworkouts.database.Cortege;
+import ru.kadei.diaryworkouts.database.CortegeBuilder;
 import ru.kadei.diaryworkouts.database.Relation;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionStandardExercise;
@@ -15,6 +15,8 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise;
 import static ru.kadei.diaryworkouts.models.workouts.DescriptionExercise.BASE;
 import static ru.kadei.diaryworkouts.models.workouts.DescriptionExercise.ISOLATED;
 import static ru.kadei.diaryworkouts.models.workouts.DescriptionExercise.SUPERSET;
+import static ru.kadei.diaryworkouts.models.workouts.DescriptionExercise.newStandardExercise;
+import static ru.kadei.diaryworkouts.models.workouts.DescriptionExercise.newSupersetExercise;
 import static ru.kadei.diaryworkouts.models.workouts.Measure.DISTANCE;
 import static ru.kadei.diaryworkouts.models.workouts.Measure.REPEAT;
 import static ru.kadei.diaryworkouts.models.workouts.Measure.SPEED;
@@ -36,7 +38,7 @@ public class DescriptionExerciseCortegeBuilderTests extends ApplicationTest {
 
     public void testCreateCortegeForStandard() throws Exception {
 
-        DescriptionExercise exercise = createStandardExercise(
+        DescriptionExercise exercise = newStandardExercise(
                 155l, "my first exercise", "description for exercise",
                 ISOLATED, DISTANCE | SPEED, 123);
 
@@ -63,7 +65,15 @@ public class DescriptionExerciseCortegeBuilderTests extends ApplicationTest {
     }
 
     public void testCreateCotegeForSuperset() throws Exception {
-        DescriptionExercise exercise = createSupersetExercise(555l, "my first superset", "description for superset");
+        DescriptionSupersetExercise exercise = newSupersetExercise(
+                555l, "my first superset", "description for superset", 2);
+
+        for(int i = 0; i < idsExercise.length; ++i) {
+            long idExe = idsExercise[i];
+            int measure = measures[i];
+            DescriptionStandardExercise std = newStandardExercise(idExe, null, null, BASE, measure, 222);
+            exercise.exercises.add(std);
+        }
 
         CortegeBuilder builder = new DescriptionExerciseCortegeBuilder();
         builder.buildCortegeFor(exercise);
@@ -98,33 +108,5 @@ public class DescriptionExerciseCortegeBuilderTests extends ApplicationTest {
                 assertEquals(cv.get("orderInList"), i);
             }
         }
-    }
-
-    static DescriptionStandardExercise createStandardExercise(long id, String name, String description,
-                                                      int type, int measureSpec, int muscleGroupSpec) {
-        DescriptionStandardExercise std = new DescriptionStandardExercise();
-        std.id = id;
-        std.name = name;
-        std.description = description;
-        std.type = type;
-        std.setMeasureSpec(measureSpec);
-        std.setMuscleGroupSpec(muscleGroupSpec);
-        return std;
-    }
-
-    static DescriptionSupersetExercise createSupersetExercise(long id, String name, String description) {
-        DescriptionSupersetExercise superExe = new DescriptionSupersetExercise();
-        superExe.id = id;
-        superExe.name = name;
-        superExe.description = description;
-        superExe.type = SUPERSET;
-        superExe.exercises = new ArrayList<>(idsExercise.length);
-        for(int i = 0; i < idsExercise.length; ++i) {
-            long idExe = idsExercise[i];
-            int measure = measures[i];
-            DescriptionStandardExercise std = createStandardExercise(idExe, null, null, BASE, measure, 222);
-            superExe.exercises.add(std);
-        }
-        return superExe;
     }
 }

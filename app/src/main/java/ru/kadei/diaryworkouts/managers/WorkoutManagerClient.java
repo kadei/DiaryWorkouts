@@ -20,4 +20,5 @@ public interface WorkoutManagerClient {
     void lastWorkoutLoaded(Workout workout);
     void descriptionSaved(Description description);
     void workoutSaved(Workout workout);
+    void fail(Throwable throwable);
 }

@@ -5,12 +5,13 @@ import android.content.ContentValues;
 import java.util.ArrayList;
 
 import ru.kadei.diaryworkouts.ApplicationTest;
-import ru.kadei.diaryworkouts.database.CortegeBuilder;
 import ru.kadei.diaryworkouts.database.Cortege;
+import ru.kadei.diaryworkouts.database.CortegeBuilder;
 import ru.kadei.diaryworkouts.database.Relation;
-import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
-import ru.kadei.diaryworkouts.models.workouts.DescriptionStandardExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
+
+import static ru.kadei.diaryworkouts.models.workouts.DescriptionExercise.newStandardExercise;
+import static ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout.newWorkout;
 
 /**
  * Created by kadei on 04.09.15.
@@ -26,8 +27,12 @@ public class DescriptionWorkoutCortegeBuilderTests extends ApplicationTest {
 
     public void testCreateCortege() throws Exception {
 
-        DescriptionWorkout workout = createWorkout(
-                55l, "my first workout", "description for workout");
+        DescriptionWorkout workout = newWorkout(
+                55l, "my first workout", "description for workout", 4);
+
+        for (long id : idsExercise) {
+            workout.exercises.add(newStandardExercise(id, null, null, 0, 0, 0));
+        }
 
         CortegeBuilder builder = new DescriptionWorkoutCortegeBuilder();
         builder.buildCortegeFor(workout);
@@ -63,24 +68,5 @@ public class DescriptionWorkoutCortegeBuilderTests extends ApplicationTest {
                 assertEquals(cv.get("orderInList"), i);
             }
         }
-    }
-
-    static DescriptionWorkout createWorkout(long id, String name, String description) {
-        ArrayList<DescriptionExercise> exercises = new ArrayList<>(idsExercise.length);
-        for (long anIdsWorkout : idsExercise) {
-            exercises.add(createDescriptionExercise(anIdsWorkout));
-        }
-        DescriptionWorkout dw = new DescriptionWorkout();
-        dw.id = id;
-        dw.name = name;
-        dw.description = description;
-        dw.exercises = exercises;
-        return dw;
-    }
-
-    static DescriptionExercise createDescriptionExercise(long id) {
-        DescriptionExercise dw = new DescriptionStandardExercise();
-        dw.id = id;
-        return dw;
     }
 }
