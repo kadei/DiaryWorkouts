@@ -13,12 +13,12 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
  */
 public class DescriptionProgramReader extends DescriptionReader {
 
-    private final DescriptionReader workoutBuilder;
+    private final DescriptionReader workoutReader;
 
     public DescriptionProgramReader(BufferDescriptions bufferDescriptions,
-                                    DescriptionReader workoutBuilder) {
+                                    DescriptionWorkoutReader workoutReader) {
         super(bufferDescriptions);
-        this.workoutBuilder = workoutBuilder;
+        this.workoutReader = workoutReader;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class DescriptionProgramReader extends DescriptionReader {
 
     @SuppressWarnings(value = "unchecked")
     private ArrayList<DescriptionProgram> buildList(Cursor c) {
-        final DescriptionReader builder = workoutBuilder;
+        final DescriptionReader reader = workoutReader;
         final BufferDescriptions buffer = bufferDescriptions;
         final ArrayList<DescriptionProgram> list = new ArrayList<>(c.getCount());
 
@@ -40,7 +40,7 @@ public class DescriptionProgramReader extends DescriptionReader {
         final int indexName = c.getColumnIndex("name");
         final int indexDescription = c.getColumnIndex("description");
 
-        builder.setDb(db);
+        reader.setDb(db);
         do {
             long id = c.getLong(indexID);
             DescriptionProgram dp = buffer.getProgram(id);
@@ -50,15 +50,15 @@ public class DescriptionProgramReader extends DescriptionReader {
                 dp.name = c.getString(indexName);
                 dp.description = c.getString(indexDescription);
 
-                builder.readObjects(createQueryFor(dp.id));
-                dp.workouts = (ArrayList<DescriptionWorkout>) builder.getObjects();
+                reader.readObjects(createQueryFor(dp.id));
+                dp.workouts = (ArrayList<DescriptionWorkout>) reader.getObjects();
 
                 buffer.addProgram(dp);
             }
 
             list.add(dp);
         } while (c.moveToNext());
-        builder.forgetReferenceDB();
+        reader.forgetReferenceDB();
 
         return list;
     }

@@ -30,24 +30,23 @@ public class WorkoutManager {
     private final Database database;
 
     private BufferDescriptions bufferDescriptions;
-    private DescriptionReader descriptionExerciseBuilder;
-    private DescriptionReader descriptionWorkoutBuilder;
-    private DescriptionReader descriptionProgramBuilder;
-    private HistoryWorkoutReader workoutBuilder;
+    private DescriptionReader descriptionExerciseReader;
+    private DescriptionReader descriptionWorkoutReader;
+    private DescriptionReader descriptionProgramReader;
+    private HistoryWorkoutReader workoutReader;
 
     public WorkoutManager(Database database) {
         this.database = database;
 
         bufferDescriptions = new BufferDescriptions();
-        descriptionExerciseBuilder = new DescriptionExerciseReader(bufferDescriptions);
-        descriptionWorkoutBuilder = new DescriptionWorkoutReader(bufferDescriptions, descriptionExerciseBuilder);
-        descriptionProgramBuilder = new DescriptionProgramReader(bufferDescriptions, descriptionWorkoutBuilder);
-
-        workoutBuilder = new HistoryWorkoutReader(descriptionProgramBuilder);
+        descriptionExerciseReader = new DescriptionExerciseReader(bufferDescriptions);
+        descriptionWorkoutReader = new DescriptionWorkoutReader(bufferDescriptions, descriptionExerciseReader);
+        descriptionProgramReader = new DescriptionProgramReader(bufferDescriptions, descriptionWorkoutReader);
+        workoutReader = new HistoryWorkoutReader(descriptionProgramReader);
     }
 
     public void loadAllDescriptionPrograms(WorkoutManagerClient client) {
-        database.load("SELECT * FROM descriptionProgram", descriptionProgramBuilder,
+        database.load("SELECT * FROM descriptionProgram", descriptionProgramReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
@@ -59,7 +58,7 @@ public class WorkoutManager {
     }
 
     public void loadAllDescriptionWorkout(WorkoutManagerClient client) {
-        database.load("SELECT * FROM descriptionWorkout", descriptionWorkoutBuilder,
+        database.load("SELECT * FROM descriptionWorkout", descriptionWorkoutReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
@@ -71,7 +70,7 @@ public class WorkoutManager {
     }
 
     public void loadAllDescriptionExercise(WorkoutManagerClient client) {
-        database.load("SELECT * FROM descriptionExercise", descriptionExerciseBuilder,
+        database.load("SELECT * FROM descriptionExercise", descriptionExerciseReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
@@ -83,7 +82,7 @@ public class WorkoutManager {
     }
 
     public void loadAllHistory(WorkoutManagerClient client) {
-        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC", workoutBuilder,
+        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC", workoutReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
@@ -94,7 +93,7 @@ public class WorkoutManager {
     }
 
     public void loadLastWorkout(WorkoutManagerClient client) {
-        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC LIMIT 1", workoutBuilder,
+        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC LIMIT 1", workoutReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
@@ -109,7 +108,7 @@ public class WorkoutManager {
         String query = "SELECT * FROM historyWorkout WHERE idProgram = " + workout.getIdProgram() +
                 " AND posWorkout = " + workout.getPosCurrentWorkout();
 
-        database.load(query, workoutBuilder, new BridgeLoad(client) {
+        database.load(query, workoutReader, new BridgeLoad(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader builder) {

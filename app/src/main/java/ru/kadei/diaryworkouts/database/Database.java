@@ -48,36 +48,36 @@ public class Database {
                 .setFailMethod("fail");
     }
 
-    public void load(String query, DatabaseReader builder, DatabaseClient client) {
+    public void load(String query, DatabaseReader reader, DatabaseClient client) {
         clients.offer(client);
-        taskLoadFromDatabase.setParameters(query, builder);
+        taskLoadFromDatabase.setParameters(query, reader);
         bgLogic.execute(taskLoadFromDatabase);
     }
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
-    private DatabaseReader executeLoad(String query, DatabaseReader builder) {
+    private DatabaseReader executeLoad(String query, DatabaseReader reader) {
         SQLiteDatabase db = getDB();
         try {
-            builder.setDb(db);
-            builder.readObjects(query);
-            builder.forgetReferenceDB();
+            reader.setDb(db);
+            reader.readObjects(query);
+            reader.forgetReferenceDB();
         } finally {
             db.close();
         }
-        return builder;
+        return reader;
     }
 
-    private void completeLoad(DatabaseReader builder) {
-        clients.poll().loaded(builder);
+    private void completeLoad(DatabaseReader reader) {
+        clients.poll().loaded(reader);
     }
 
     private void fail(Throwable throwable) {
         clients.poll().fail(throwable);
     }
 
-    public void save(Record record, DatabaseWriter builder, DatabaseClient client) {
+    public void save(Record record, DatabaseWriter writer, DatabaseClient client) {
         clients.offer(client);
-        taskSaveInDatabase.setParameters(record, builder);
+        taskSaveInDatabase.setParameters(record, writer);
         bgLogic.execute(taskSaveInDatabase);
     }
 

@@ -11,7 +11,7 @@ public abstract class DatabaseReader {
 
     protected SQLiteDatabase db;
     protected ArrayList<?> objects;
-    private final StringBuilder sb = new StringBuilder(256);
+    private final StringBuilder sb = new StringBuilder(512);
 
     public abstract void readObjects(String query);
 

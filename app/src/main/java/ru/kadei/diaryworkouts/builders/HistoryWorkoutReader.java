@@ -25,14 +25,14 @@ import static ru.kadei.diaryworkouts.models.workouts.Set.computeIndex;
  */
 public class HistoryWorkoutReader extends DatabaseReader {
 
-    private final DescriptionReader programBuilder;
+    private final DescriptionReader programReader;
 
     private final Measure measure = new Measure();
     private String[] nameColumns;
     private SparseArray<String[]> bufferNameColumns = new SparseArray<>(4);
 
-    public HistoryWorkoutReader(DescriptionReader programBuilder) {
-        this.programBuilder = programBuilder;
+    public HistoryWorkoutReader(DescriptionProgramReader programReader) {
+        this.programReader = programReader;
     }
 
     @Override
@@ -76,13 +76,13 @@ public class HistoryWorkoutReader extends DatabaseReader {
     }
 
     private DescriptionProgram getDescriptionProgram(long idProgram) {
-        final DescriptionReader builder = programBuilder;
-        DescriptionProgram dp = builder.getBufferDescriptions().getProgram(idProgram);
+        final DescriptionReader reader = programReader;
+        DescriptionProgram dp = reader.getBufferDescriptions().getProgram(idProgram);
         if (dp == null) {
-            builder.setDb(db);
-            builder.readObjects("SELECT * FROM descriptionProgram WHERE _id = " + idProgram);
-            builder.forgetReferenceDB();
-            dp = (DescriptionProgram) builder.getObjects().get(0);
+            reader.setDb(db);
+            reader.readObjects("SELECT * FROM descriptionProgram WHERE _id = " + idProgram);
+            reader.forgetReferenceDB();
+            dp = (DescriptionProgram) reader.getObjects().get(0);
         }
         return dp;
     }
@@ -108,7 +108,7 @@ public class HistoryWorkoutReader extends DatabaseReader {
         final int indexIdExercise = c.getColumnIndex("idExercise");
         final int indexComment = c.getColumnIndex("comment");
 
-        final BufferDescriptions buffer = programBuilder.getBufferDescriptions();
+        final BufferDescriptions buffer = programReader.getBufferDescriptions();
         do {
             long idExercise = c.getLong(indexIdExercise);
             DescriptionExercise descriptionExercise = buffer.getExercise(idExercise);
