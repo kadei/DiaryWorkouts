@@ -14,9 +14,9 @@ import static ru.kadei.diaryworkouts.models.workouts.DescriptionExercise.SUPERSE
 /**
  * Created by kadei on 01.09.15.
  */
-public class DescriptionExerciseReader extends DescriptionReader {
+public class ExerciseReader extends DescriptionReader {
 
-    public DescriptionExerciseReader(BufferDescriptions bufferDescriptions) {
+    public ExerciseReader(BufferDescriptions bufferDescriptions) {
         super(bufferDescriptions);
     }
 

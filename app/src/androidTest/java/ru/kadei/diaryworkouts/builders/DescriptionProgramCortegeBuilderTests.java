@@ -32,7 +32,7 @@ public class DescriptionProgramCortegeBuilderTests extends ApplicationTest {
 //        for(long id : idsWorkout)
 //            program.workouts.add(newWorkout(id, null, null, 0));
 //
-//        DatabaseWriter builder = new DescriptionProgramWriter();
+//        DatabaseWriter builder = new ProgramWriter();
 //        builder.writeObject(program);
 //        Cortege cortege = builder.getCortege();
 //

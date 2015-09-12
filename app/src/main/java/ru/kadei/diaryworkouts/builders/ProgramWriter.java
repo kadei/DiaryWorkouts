@@ -13,7 +13,7 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 /**
  * Created by kadei on 03.09.15.
  */
-public class DescriptionProgramWriter extends DatabaseWriter {
+public class ProgramWriter extends DatabaseWriter {
 
     @Override
     public void writeObject(Object object) {

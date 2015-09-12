@@ -42,7 +42,7 @@ public class DescriptionExerciseCortegeBuilderTests extends ApplicationTest {
 //                155l, "my first exercise", "description for exercise",
 //                ISOLATED, DISTANCE | SPEED, 123);
 //
-//        DatabaseWriter builder = new DescriptionExerciseWriter();
+//        DatabaseWriter builder = new ExerciseWriter();
 //        builder.writeObject(exercise);
 //        Cortege cortege = builder.getCortege();
 //
@@ -75,7 +75,7 @@ public class DescriptionExerciseCortegeBuilderTests extends ApplicationTest {
 //            exercise.exercises.add(std);
 //        }
 //
-//        DatabaseWriter builder = new DescriptionExerciseWriter();
+//        DatabaseWriter builder = new ExerciseWriter();
 //        builder.writeObject(exercise);
 //        Cortege cortege = builder.getCortege();
 //

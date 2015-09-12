@@ -34,7 +34,7 @@ public class DescriptionWorkoutCortegeBuilderTests extends ApplicationTest {
 //            workout.exercises.add(newStandardExercise(id, null, null, 0, 0, 0));
 //        }
 //
-//        DatabaseWriter writer = new DescriptionWorkoutWriter();
+//        DatabaseWriter writer = new WorkoutWriter();
 //        writer.writeObject(workout);
 //        Cortege cortege = writer.getCortege();
 //

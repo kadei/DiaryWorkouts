@@ -16,7 +16,7 @@ public abstract class BridgeSave implements DatabaseClient {
     }
 
     @Override
-    public void loaded(DatabaseReader builder) {
+    public void loaded(DatabaseReader reader) {
     }
 
     @Override

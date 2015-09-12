@@ -14,7 +14,7 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise;
 /**
  * Created by kadei on 06.09.15.
  */
-public class DescriptionExerciseWriter extends DatabaseWriter {
+public class ExerciseWriter extends DatabaseWriter {
 
     @Override
     public void writeObject(Object object) {

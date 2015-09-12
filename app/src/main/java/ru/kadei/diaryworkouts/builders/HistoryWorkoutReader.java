@@ -31,7 +31,7 @@ public class HistoryWorkoutReader extends DatabaseReader {
     private String[] nameColumns;
     private SparseArray<String[]> bufferNameColumns = new SparseArray<>(4);
 
-    public HistoryWorkoutReader(DescriptionProgramReader programReader) {
+    public HistoryWorkoutReader(ProgramReader programReader) {
         this.programReader = programReader;
     }
 

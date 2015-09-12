@@ -11,12 +11,12 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 /**
  * Created by kadei on 30.08.15.
  */
-public class DescriptionProgramReader extends DescriptionReader {
+public class ProgramReader extends DescriptionReader {
 
     private final DescriptionReader workoutReader;
 
-    public DescriptionProgramReader(BufferDescriptions bufferDescriptions,
-                                    DescriptionWorkoutReader workoutReader) {
+    public ProgramReader(BufferDescriptions bufferDescriptions,
+                         WorkoutReader workoutReader) {
         super(bufferDescriptions);
         this.workoutReader = workoutReader;
     }

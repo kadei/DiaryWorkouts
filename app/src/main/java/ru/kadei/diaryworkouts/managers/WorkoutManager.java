@@ -2,13 +2,12 @@ package ru.kadei.diaryworkouts.managers;
 
 import java.util.ArrayList;
 
-import ru.kadei.diaryworkouts.builders.DescriptionReader;
-import ru.kadei.diaryworkouts.builders.DescriptionExerciseReader;
-import ru.kadei.diaryworkouts.builders.DescriptionExerciseWriter;
-import ru.kadei.diaryworkouts.builders.DescriptionProgramReader;
-import ru.kadei.diaryworkouts.builders.DescriptionProgramWriter;
-import ru.kadei.diaryworkouts.builders.DescriptionWorkoutReader;
-import ru.kadei.diaryworkouts.builders.DescriptionWorkoutWriter;
+import ru.kadei.diaryworkouts.builders.ExerciseReader;
+import ru.kadei.diaryworkouts.builders.ExerciseWriter;
+import ru.kadei.diaryworkouts.builders.ProgramReader;
+import ru.kadei.diaryworkouts.builders.ProgramWriter;
+import ru.kadei.diaryworkouts.builders.WorkoutReader;
+import ru.kadei.diaryworkouts.builders.WorkoutWriter;
 import ru.kadei.diaryworkouts.builders.HistoryWorkoutReader;
 import ru.kadei.diaryworkouts.builders.HistoryWorkoutWriter;
 import ru.kadei.diaryworkouts.database.Database;
@@ -29,76 +28,75 @@ public class WorkoutManager {
 
     private final Database database;
 
-    private BufferDescriptions bufferDescriptions;
-    private DescriptionReader descriptionExerciseReader;
-    private DescriptionReader descriptionWorkoutReader;
-    private DescriptionReader descriptionProgramReader;
-    private HistoryWorkoutReader workoutReader;
+    private ExerciseReader exerciseReader;
+    private WorkoutReader workoutReader;
+    private ProgramReader programReader;
+    private HistoryWorkoutReader historyReader;
 
     public WorkoutManager(Database database) {
         this.database = database;
 
-        bufferDescriptions = new BufferDescriptions();
-        descriptionExerciseReader = new DescriptionExerciseReader(bufferDescriptions);
-        descriptionWorkoutReader = new DescriptionWorkoutReader(bufferDescriptions, descriptionExerciseReader);
-        descriptionProgramReader = new DescriptionProgramReader(bufferDescriptions, descriptionWorkoutReader);
-        workoutReader = new HistoryWorkoutReader(descriptionProgramReader);
+        BufferDescriptions buffer = new BufferDescriptions();
+        exerciseReader = new ExerciseReader(buffer);
+        workoutReader = new WorkoutReader(buffer, exerciseReader);
+        programReader = new ProgramReader(buffer, workoutReader);
+        historyReader = new HistoryWorkoutReader(programReader);
     }
 
     public void loadAllDescriptionPrograms(WorkoutManagerClient client) {
-        database.load("SELECT * FROM descriptionProgram", descriptionProgramReader,
+        database.load("SELECT * FROM descriptionProgram", programReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public void loaded(DatabaseReader builder) {
+                    public void loaded(DatabaseReader reader) {
                         client.allProgramsLoaded(
-                                (ArrayList<DescriptionProgram>) builder.getObjects());
+                                (ArrayList<DescriptionProgram>) reader.getObjects());
                     }
                 });
     }
 
     public void loadAllDescriptionWorkout(WorkoutManagerClient client) {
-        database.load("SELECT * FROM descriptionWorkout", descriptionWorkoutReader,
+        database.load("SELECT * FROM descriptionWorkout", workoutReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public void loaded(DatabaseReader builder) {
+                    public void loaded(DatabaseReader reader) {
                         client.allWorkoutsLoaded(
-                                (ArrayList<DescriptionWorkout>) builder.getObjects());
+                                (ArrayList<DescriptionWorkout>) reader.getObjects());
                     }
                 });
     }
 
     public void loadAllDescriptionExercise(WorkoutManagerClient client) {
-        database.load("SELECT * FROM descriptionExercise", descriptionExerciseReader,
+        database.load("SELECT * FROM descriptionExercise", exerciseReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public void loaded(DatabaseReader builder) {
+                    public void loaded(DatabaseReader reader) {
                         client.allExercisesLoaded(
-                                (ArrayList<DescriptionExercise>) builder.getObjects());
+                                (ArrayList<DescriptionExercise>) reader.getObjects());
                     }
                 });
     }
 
     public void loadAllHistory(WorkoutManagerClient client) {
-        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC", workoutReader,
+        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC", historyReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public void loaded(DatabaseReader builder) {
-                        client.allHistoryLoaded((ArrayList<Workout>) builder.getObjects());
+                    public void loaded(DatabaseReader reader) {
+                        client.allHistoryLoaded((ArrayList<Workout>) reader.getObjects());
                     }
                 });
     }
 
     public void loadLastWorkout(WorkoutManagerClient client) {
-        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC LIMIT 1", workoutReader,
+        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC LIMIT 1", historyReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public void loaded(DatabaseReader builder) {
-                        ArrayList<Workout> workouts = (ArrayList<Workout>) builder.getObjects();
+                    public void loaded(DatabaseReader reader) {
+                        ArrayList<Workout> workouts = (ArrayList<Workout>) reader.getObjects();
                         client.lastWorkoutLoaded(workouts.isEmpty() ? null : workouts.get(0));
                     }
                 });
@@ -108,26 +106,26 @@ public class WorkoutManager {
         String query = "SELECT * FROM historyWorkout WHERE idProgram = " + workout.getIdProgram() +
                 " AND posWorkout = " + workout.getPosCurrentWorkout();
 
-        database.load(query, workoutReader, new BridgeLoad(client) {
+        database.load(query, historyReader, new BridgeLoad(client) {
             @SuppressWarnings("unchecked")
             @Override
-            public void loaded(DatabaseReader builder) {
-                ArrayList<Workout> history = (ArrayList<Workout>) builder.getObjects();
+            public void loaded(DatabaseReader reader) {
+                ArrayList<Workout> history = (ArrayList<Workout>) reader.getObjects();
                 client.allHistoryLoadedFor(workout, history);
             }
         });
     }
 
     public void saveDescriptionProgram(DescriptionProgram program, WorkoutManagerClient client) {
-        database.save(program, new DescriptionProgramWriter(), new BridgeSaveDescription(client));
+        database.save(program, new ProgramWriter(), new BridgeSaveDescription(client));
     }
 
     public void saveDescriptionWorkout(DescriptionWorkout workout, WorkoutManagerClient client) {
-        database.save(workout, new DescriptionWorkoutWriter(), new BridgeSaveDescription(client));
+        database.save(workout, new WorkoutWriter(), new BridgeSaveDescription(client));
     }
 
     public void saveDescriptionExercise(DescriptionExercise exercise, WorkoutManagerClient client) {
-        database.save(exercise, new DescriptionExerciseWriter(), new BridgeSaveDescription(client));
+        database.save(exercise, new ExerciseWriter(), new BridgeSaveDescription(client));
     }
 
     public void saveWorkout(Workout workout, WorkoutManagerClient client) {
