@@ -1,6 +1,6 @@
 package ru.kadei.diaryworkouts.managers.bridges;
 
-import ru.kadei.diaryworkouts.database.ObjectBuilder;
+import ru.kadei.diaryworkouts.database.DatabaseReader;
 import ru.kadei.diaryworkouts.database.DatabaseClient;
 import ru.kadei.diaryworkouts.managers.WorkoutManagerClient;
 
@@ -16,7 +16,7 @@ public abstract class BridgeSave implements DatabaseClient {
     }
 
     @Override
-    public void loaded(ObjectBuilder builder) {
+    public void loaded(DatabaseReader builder) {
     }
 
     @Override

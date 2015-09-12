@@ -25,7 +25,36 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private void buildSchema(SQLiteDatabase db) {
 
-        // base tables
+        // history tables
+        db.execSQL("CREATE TABLE `historyWorkout` (" +
+                "`_id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "`idProgram` INTEGER," +
+                "`idWorkout` INTEGER," +
+                "`posWorkout` INTEGER," +
+                "`startDate` INTEGER," +
+                "`duration` INTEGER," +
+                "`comment` TEXT);");
+
+        db.execSQL("CREATE TABLE `historyExercise` (" +
+                "`_id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "`idHistoryWorkout` INTEGER," +
+                "`idExercise` INTEGER," +
+                "`orderInList` INTEGER," +
+                "`comment` TEXT);");
+
+        db.execSQL("CREATE TABLE `historySet` (" +
+                "`_id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "`idHistoryExercise` INTEGER," +
+                "`orderInList` INTEGER," +
+                "`cheat` INTEGER," +
+                "`weight` REAL," +
+                "`repeat` REAL," +
+                "`speed` REAL," +
+                "`distance` REAL," +
+                "`duration` REAL," +
+                "`comment` TEXT);");
+
+        // description tables
         db.execSQL("CREATE TABLE `descriptionProgram` (" +
                 "`_id` INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "`name` TEXT," +

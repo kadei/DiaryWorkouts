@@ -7,13 +7,13 @@ import java.util.ArrayList;
 /**
  * Created by kadei on 01.09.15.
  */
-public abstract class ObjectBuilder {
+public abstract class DatabaseReader {
 
     protected SQLiteDatabase db;
     protected ArrayList<?> objects;
     private final StringBuilder sb = new StringBuilder(256);
 
-    public abstract void buildObjects(String query);
+    public abstract void readObjects(String query);
 
     public ArrayList<?> getObjects() {
         ArrayList<?> tmp = objects;
@@ -27,6 +27,12 @@ public abstract class ObjectBuilder {
 
     public final void forgetReferenceDB() {
         db = null;
+    }
+
+    protected final StringBuilder query(String s) {
+        sb.delete(0, sb.length());
+        sb.append(s);
+        return sb;
     }
 
     protected final StringBuilder getClearStringBuilder() {

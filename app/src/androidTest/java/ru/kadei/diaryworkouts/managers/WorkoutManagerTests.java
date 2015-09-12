@@ -40,11 +40,17 @@ public class WorkoutManagerTests extends ApplicationTest implements WorkoutManag
         super.setUp();
 
         SQLiteOpenHelper helper = new DBHelper(getContext(), "test.db", 1);
-        Database db = new Database(helper, getContext(), new BackgroundLogic(true));
+        Database db = new Database(helper, new BackgroundLogic(true));
         manager = new WorkoutManager(db);
     }
 
-    public void testSaveExercise() throws Exception {
+    public void testSaveLoad() throws Exception {
+        saveLoadExercise();
+        saveLoadWorkout();
+        saveLoadProgram();
+    }
+
+    void saveLoadExercise() {
         type = TYPE.TEST_SAVE_EXERCISE;
 
         DescriptionExercise exercise = defaultExercise();
@@ -57,7 +63,7 @@ public class WorkoutManagerTests extends ApplicationTest implements WorkoutManag
                 1l, "First exercise", "without description", CARDIO, DISTANCE, 8);
     }
 
-    public void testSaveWorkout() throws Exception {
+    void saveLoadWorkout() {
         type = TYPE.TEST_SAVE_WORKOUT;
 
         DescriptionWorkout workout = defaultWorkout();
@@ -72,7 +78,7 @@ public class WorkoutManagerTests extends ApplicationTest implements WorkoutManag
         return workout;
     }
 
-    public void testSaveProgram() throws Exception {
+    void saveLoadProgram() {
         type = TYPE.TEST_SAVE_PROGRAM;
 
         DescriptionProgram program = defaultProgram();
@@ -136,7 +142,7 @@ public class WorkoutManagerTests extends ApplicationTest implements WorkoutManag
         }
     }
 
-    void assertDefaultExercise(DescriptionExercise exercise) {
+    public static void assertDefaultExercise(DescriptionExercise exercise) {
         assertEquals(exercise.id, 1l);
         assertEquals(exercise.name, "First exercise");
         assertEquals(exercise.description, "without description");
@@ -145,7 +151,7 @@ public class WorkoutManagerTests extends ApplicationTest implements WorkoutManag
         assertEquals(exercise.getMuscleGroupSpec(), 8);
     }
 
-    void assertDefaultWorkout(DescriptionWorkout workout) {
+    public static void assertDefaultWorkout(DescriptionWorkout workout) {
         assertEquals(workout.id, 1l);
         assertEquals(workout.name, "Тестовая тренировка");
         assertEquals(workout.description, "Описание для тестовой тренировки");
@@ -153,7 +159,7 @@ public class WorkoutManagerTests extends ApplicationTest implements WorkoutManag
         assertDefaultExercise(workout.exercises.get(0));
     }
 
-    void assertDefaultProgram(DescriptionProgram program) {
+    public static void assertDefaultProgram(DescriptionProgram program) {
         assertEquals(program.id, 1l);
         assertEquals(program.name, "My first program");
         assertEquals(program.description, "");

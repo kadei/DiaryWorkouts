@@ -11,18 +11,18 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 /**
  * Created by kadei on 30.08.15.
  */
-public class DescriptionProgramBuilder extends DescriptionBuilder {
+public class DescriptionProgramReader extends DescriptionReader {
 
-    private final DescriptionBuilder workoutBuilder;
+    private final DescriptionReader workoutBuilder;
 
-    public DescriptionProgramBuilder(BufferDescriptions bufferDescriptions,
-                                     DescriptionBuilder workoutBuilder) {
+    public DescriptionProgramReader(BufferDescriptions bufferDescriptions,
+                                    DescriptionReader workoutBuilder) {
         super(bufferDescriptions);
         this.workoutBuilder = workoutBuilder;
     }
 
     @Override
-    public void buildObjects(String query) {
+    public void readObjects(String query) {
         Cursor c = db.rawQuery(query, null);
         if(c.moveToFirst()) {
             objects = buildList(c);
@@ -32,7 +32,7 @@ public class DescriptionProgramBuilder extends DescriptionBuilder {
 
     @SuppressWarnings(value = "unchecked")
     private ArrayList<DescriptionProgram> buildList(Cursor c) {
-        final DescriptionBuilder builder = workoutBuilder;
+        final DescriptionReader builder = workoutBuilder;
         final BufferDescriptions buffer = bufferDescriptions;
         final ArrayList<DescriptionProgram> list = new ArrayList<>(c.getCount());
 
@@ -50,7 +50,7 @@ public class DescriptionProgramBuilder extends DescriptionBuilder {
                 dp.name = c.getString(indexName);
                 dp.description = c.getString(indexDescription);
 
-                builder.buildObjects(createQueryFor(dp.id));
+                builder.readObjects(createQueryFor(dp.id));
                 dp.workouts = (ArrayList<DescriptionWorkout>) builder.getObjects();
 
                 buffer.addProgram(dp);
@@ -64,12 +64,10 @@ public class DescriptionProgramBuilder extends DescriptionBuilder {
     }
 
     private String createQueryFor(long id) {
-        StringBuilder sb = getClearStringBuilder();
-        sb.append("SELECT descriptionWorkout._id, descriptionWorkout.name, descriptionWorkout.description " +
+        return query("SELECT descriptionWorkout._id, descriptionWorkout.name, descriptionWorkout.description " +
                 "FROM descriptionWorkout, listDescriptionWorkout " +
                 "WHERE listDescriptionWorkout.idProgram = ").append(id).append(
                 " AND descriptionWorkout._id = listDescriptionWorkout.idWorkout " +
-                        "ORDER BY listDescriptionWorkout.orderInList;");
-        return sb.toString();
+                        "ORDER BY listDescriptionWorkout.orderInList;").toString();
     }
 }

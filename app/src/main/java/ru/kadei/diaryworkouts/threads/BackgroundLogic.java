@@ -42,6 +42,10 @@ public class BackgroundLogic {
         }
     });
 
+    public BackgroundLogic() {
+        this(false);
+    }
+
     public BackgroundLogic(boolean thisThread) {
         this.thisThread = thisThread;
         if(!thisThread)

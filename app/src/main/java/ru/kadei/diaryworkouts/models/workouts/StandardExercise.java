@@ -3,34 +3,27 @@ package ru.kadei.diaryworkouts.models.workouts;
 import java.util.ArrayList;
 
 /**
- * Created by kadei on 15.08.15.
+ * Created by kadei on 12.09.15.
  */
 public class StandardExercise extends Exercise {
-
-    private ArrayList<Set> sets;
-
-    public StandardExercise(DescriptionExercise descriptionExercise) {
-        super(descriptionExercise);
-        sets = new ArrayList<>(8);
+    public StandardExercise(DescriptionExercise info, ArrayList<Set> sets) {
+        super(info, sets);
     }
 
     @Override
-    public Exercise getExercise(int pos) {
-        return this;
+    public ArrayList<Set> getSet(int pos) {
+        ArrayList<Set> wrapper = new ArrayList<>(1);
+        wrapper.add(sets.get(pos));
+        return wrapper;
     }
 
     @Override
-    public Spec getMeasureSpec(int posExercise) {
-        return null;
+    public void setSet(int pos, ArrayList<Set> set) {
+
     }
 
     @Override
-    public int countExercises() {
-        return 1;
-    }
-
-    @Override
-    public int countSet() {
+    public int getCountSet() {
         return sets.size();
     }
 }

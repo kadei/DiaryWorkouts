@@ -17,7 +17,6 @@ public abstract class BridgeLoad implements DatabaseClient {
 
     @Override
     public void saved(Record record) {
-
     }
 
     @Override

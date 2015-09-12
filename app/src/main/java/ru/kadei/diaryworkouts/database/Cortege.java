@@ -14,6 +14,6 @@ public class Cortege {
     public final ArrayList<Relation> relations;
 
     public Cortege() {
-        relations = new ArrayList<>(8);
+        relations = new ArrayList<>();
     }
 }

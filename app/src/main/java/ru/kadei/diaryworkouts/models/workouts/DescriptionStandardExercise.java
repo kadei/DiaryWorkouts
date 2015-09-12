@@ -18,6 +18,11 @@ public class DescriptionStandardExercise extends DescriptionExercise {
         return muscleGroupSpec;
     }
 
+    @Override
+    public int getExerciseCount() {
+        return 1;
+    }
+
     public void setMeasureSpec(int measureSpec) {
         this.measureSpec = measureSpec;
     }

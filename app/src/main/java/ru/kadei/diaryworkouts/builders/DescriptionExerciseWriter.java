@@ -4,7 +4,7 @@ import android.content.ContentValues;
 
 import java.util.ArrayList;
 
-import ru.kadei.diaryworkouts.database.CortegeBuilder;
+import ru.kadei.diaryworkouts.database.DatabaseWriter;
 import ru.kadei.diaryworkouts.database.Cortege;
 import ru.kadei.diaryworkouts.database.Relation;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
@@ -14,16 +14,17 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise;
 /**
  * Created by kadei on 06.09.15.
  */
-public class DescriptionExerciseCortegeBuilder extends CortegeBuilder {
+public class DescriptionExerciseWriter extends DatabaseWriter {
+
     @Override
-    public void buildCortegeFor(Object object) {
+    public void writeObject(Object object) {
         if(object instanceof DescriptionExercise)
-            cortege = buildCortege((DescriptionExercise) object);
+            saveExercise((DescriptionExercise) object);
         else
             oops(object);
     }
 
-    private Cortege buildCortege(DescriptionExercise exercise) {
+    private void saveExercise(DescriptionExercise exercise) {
         final Cortege cortege = new Cortege();
         cortege.nameTable = "descriptionExercise";
 
@@ -36,11 +37,10 @@ public class DescriptionExerciseCortegeBuilder extends CortegeBuilder {
         cortege.values = cv;
 
         if(exercise.isSuperset()) {
-            DescriptionSupersetExercise superset = (DescriptionSupersetExercise) exercise;
-            cortege.relations.add(buildRelationsExercisesAnd(superset));
+            buildRelationsExercisesAnd((DescriptionSupersetExercise) exercise);
         }
 
-        return cortege;
+        save(cortege, exercise);
     }
 
     private Relation buildRelationsExercisesAnd(DescriptionSupersetExercise superset) {

@@ -14,14 +14,14 @@ import static ru.kadei.diaryworkouts.models.workouts.DescriptionExercise.SUPERSE
 /**
  * Created by kadei on 01.09.15.
  */
-public class DescriptionExerciseBuilder extends DescriptionBuilder {
+public class DescriptionExerciseReader extends DescriptionReader {
 
-    public DescriptionExerciseBuilder(BufferDescriptions bufferDescriptions) {
+    public DescriptionExerciseReader(BufferDescriptions bufferDescriptions) {
         super(bufferDescriptions);
     }
 
     @Override
-    public void buildObjects(String query) {
+    public void readObjects(String query) {
         Cursor c = db.rawQuery(query, null);
         if(c.moveToFirst()) {
             objects = buildList(c);
@@ -53,7 +53,7 @@ public class DescriptionExerciseBuilder extends DescriptionBuilder {
                     superExe.description = c.getString(indexDescription);
                     superExe.type = type;
 
-                    this.buildObjects(createQueryFor(superExe.id));
+                    this.readObjects(createQueryFor(superExe.id));
                     superExe.exercises = (ArrayList<DescriptionStandardExercise>) this.getObjects();
                     de = superExe;
                 } else {
@@ -74,13 +74,11 @@ public class DescriptionExerciseBuilder extends DescriptionBuilder {
     }
 
     private String createQueryFor(long id) {
-        StringBuilder sb = getClearStringBuilder();
-        sb.append("SELECT descriptionExercise._id, descriptionExercise.name, descriptionExercise.description, " +
+        return query("SELECT descriptionExercise._id, descriptionExercise.name, descriptionExercise.description, " +
                 "descriptionExercise.type, descriptionExercise.measureSpec, descriptionExercise.muscleGroupSpec " +
                 "FROM descriptionExercise, listContentSuperset " +
                 "WHERE listContentSuperset.idSuperset = ").append(id).append(
                 " AND descriptionExercise._id = listContentSuperset.idExercise " +
-                "ORDER BY listContentSuperset.orderInList;");
-        return sb.toString();
+                "ORDER BY listContentSuperset.orderInList;").toString();
     }
 }

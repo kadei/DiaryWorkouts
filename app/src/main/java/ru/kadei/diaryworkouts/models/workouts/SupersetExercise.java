@@ -3,34 +3,34 @@ package ru.kadei.diaryworkouts.models.workouts;
 import java.util.ArrayList;
 
 /**
- * Created by kadei on 15.08.15.
+ * Created by kadei on 12.09.15.
  */
 public class SupersetExercise extends Exercise {
 
-    ArrayList<StandardExercise> exercises;
-
-    public SupersetExercise(DescriptionExercise descriptionExercise) {
-        super(descriptionExercise);
-        exercises = new ArrayList<>(2);
+    public SupersetExercise(DescriptionExercise info, ArrayList<Set> sets) {
+        super(info, sets);
     }
 
     @Override
-    public Exercise getExercise(int pos) {
-        return exercises.get(pos);
+    public ArrayList<Set> getSet(int pos) {
+        final int exerciseCount = info.getExerciseCount();
+        final ArrayList<Set> src = this.sets;
+        final ArrayList<Set> dest = new ArrayList<>(exerciseCount);
+
+        int count = pos * exerciseCount;
+        for (int i = 0; i < exerciseCount; ++i) {
+            dest.add(src.get(count++));
+        }
+        return dest;
     }
 
     @Override
-    public Spec getMeasureSpec(int posExercise) {
-        return null;
+    public void setSet(int pos, ArrayList<Set> set) {
+
     }
 
     @Override
-    public int countExercises() {
-        return exercises.size();
-    }
-
-    @Override
-    public int countSet() {
-        return exercises.isEmpty() ? 0 : exercises.get(0).countSet();
+    public int getCountSet() {
+        return sets.size() / info.getExerciseCount();
     }
 }

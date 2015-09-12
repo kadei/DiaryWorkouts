@@ -42,6 +42,7 @@ public abstract class DescriptionExercise extends Description {
 
     public abstract int getMeasureSpec();
     public abstract int getMuscleGroupSpec();
+    public abstract int getExerciseCount();
 
     @Override
     public boolean equals(Object o) {

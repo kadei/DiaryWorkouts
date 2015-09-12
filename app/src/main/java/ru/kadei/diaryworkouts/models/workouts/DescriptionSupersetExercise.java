@@ -26,4 +26,9 @@ public class DescriptionSupersetExercise extends DescriptionExercise {
         }
         return muscleGroupSpec;
     }
+
+    @Override
+    public int getExerciseCount() {
+        return exercises.size();
+    }
 }

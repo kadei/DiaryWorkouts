@@ -5,41 +5,37 @@ package ru.kadei.diaryworkouts.models.workouts;
  */
 public class Spec {
 
-    public int spec = 0;
-    private static final int[] extractedValues = new int[32];
+    private int spec = 0;
+    private final int[] extractedValues = new int[32];
+    private int count = 0;
 
-    public Spec(int spec) {
+    public int getSpec() {
+        return spec;
+    }
+
+    public int[] getExtractedValues() {
+        return extractedValues;
+    }
+
+    public int get(int index) {
+        return extractedValues[index];
+    }
+
+    public void extractSpec(int spec) {
         this.spec = spec;
-    }
-
-    public int[] extract() {
-        int count = _extract();
-        int[] values = new int[count];
-        System.arraycopy(extractedValues, 0, values, 0, count);
-        return values;
-    }
-
-    public int extractInto(int[] destination) {
-        int count = _extract();
-        System.arraycopy(extractedValues, 0, destination, 0, count);
-        return count;
-    }
-
-    public int countActiveFlags() {
-        return _extract();
-    }
-
-    private int _extract() {
+        final int[] dest = extractedValues;
         int count = 0;
-        final int spec = this.spec;
-        final int[] values = extractedValues;
-
-        for(int bit = 0; bit < 32; ++bit) {
-            int mask = 1 << bit;
-            if((spec & mask) != 0) {
-                values[count++] = mask;
-            }
+        int mask = 1;
+        for(int i = 0; i < 32; ++i) {
+            int val = spec & mask;
+            if(val != 0)
+                dest[count++] = val;
+            mask <<= 1;
         }
+        this.count = count;
+    }
+
+    public int getCount() {
         return count;
     }
 }

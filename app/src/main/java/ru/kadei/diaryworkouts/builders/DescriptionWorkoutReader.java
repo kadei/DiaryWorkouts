@@ -11,20 +11,20 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 /**
  * Created by kadei on 01.09.15.
  */
-public class DescriptionWorkoutBuilder extends DescriptionBuilder {
+public class DescriptionWorkoutReader extends DescriptionReader {
 
-    private DescriptionBuilder exerciseBuilder;
+    private DescriptionReader exerciseBuilder;
 
-    public DescriptionWorkoutBuilder(BufferDescriptions bufferDescriptions,
-                                     DescriptionBuilder exerciseBuilder) {
+    public DescriptionWorkoutReader(BufferDescriptions bufferDescriptions,
+                                    DescriptionReader exerciseBuilder) {
         super(bufferDescriptions);
         this.exerciseBuilder = exerciseBuilder;
     }
 
     @Override
-    public void buildObjects(String query) {
+    public void readObjects(String query) {
         Cursor c = db.rawQuery(query, null);
-        if(c.moveToFirst()) {
+        if (c.moveToFirst()) {
             objects = buildList(c);
         }
         c.close();
@@ -32,7 +32,7 @@ public class DescriptionWorkoutBuilder extends DescriptionBuilder {
 
     @SuppressWarnings("unchecked")
     private ArrayList<DescriptionWorkout> buildList(Cursor c) {
-        final DescriptionBuilder builder = exerciseBuilder;
+        final DescriptionReader builder = exerciseBuilder;
         final BufferDescriptions buffer = bufferDescriptions;
         final ArrayList<DescriptionWorkout> list = new ArrayList<>(c.getCount());
 
@@ -44,33 +44,31 @@ public class DescriptionWorkoutBuilder extends DescriptionBuilder {
         do {
             long id = c.getLong(indexID);
             DescriptionWorkout dw = buffer.getWorkout(id);
-            if(dw == null) {
+            if (dw == null) {
                 dw = new DescriptionWorkout();
                 dw.id = id;
                 dw.name = c.getString(indexName);
                 dw.description = c.getString(indexDescription);
 
-                builder.buildObjects(createQueryFor(dw.id));
+                builder.readObjects(createQueryFor(dw.id));
                 dw.exercises = (ArrayList<DescriptionExercise>) builder.getObjects();
 
                 buffer.addWorkout(dw);
             }
 
             list.add(dw);
-        } while(c.moveToNext());
+        } while (c.moveToNext());
         builder.forgetReferenceDB();
 
         return list;
     }
 
     private String createQueryFor(long id) {
-        StringBuilder sb = getClearStringBuilder();
-        sb.append("SELECT descriptionExercise._id, descriptionExercise.name, descriptionExercise.description, " +
+        return query("SELECT descriptionExercise._id, descriptionExercise.name, descriptionExercise.description, " +
                 "descriptionExercise.type, descriptionExercise.measureSpec, descriptionExercise.muscleGroupSpec " +
                 "FROM descriptionExercise, listDescriptionExercise " +
                 "WHERE listDescriptionExercise.idWorkout = ").append(id).append(
                 " AND descriptionExercise._id = listDescriptionExercise.idExercise " +
-                "ORDER BY listDescriptionExercise.orderInList;");
-        return sb.toString();
+                        "ORDER BY listDescriptionExercise.orderInList;").toString();
     }
 }

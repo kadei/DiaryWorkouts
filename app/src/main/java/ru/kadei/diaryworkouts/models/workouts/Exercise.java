@@ -1,30 +1,30 @@
 package ru.kadei.diaryworkouts.models.workouts;
 
+import java.util.ArrayList;
+
+import ru.kadei.diaryworkouts.database.Record;
+
 /**
  * Created by kadei on 15.08.15.
  */
-public abstract class Exercise {
+public abstract class Exercise extends Record {
 
-    private final DescriptionExercise descriptionExercise;
+    public String comment;
+    public final DescriptionExercise info;
+    protected final ArrayList<Set> sets;
 
-    public Exercise(DescriptionExercise descriptionExercise) {
-        this.descriptionExercise = descriptionExercise;
+    public Exercise(DescriptionExercise info, ArrayList<Set> sets) {
+        this.info = info;
+        this.sets = sets;
     }
 
-    public long getID() {
-        return descriptionExercise.id;
+    public void addSet(ArrayList<Set> sets) {
+        ArrayList<Set> dest = this.sets;
+        for(Set set : sets)
+            dest.add(set);
     }
 
-    public String getName() {
-        return descriptionExercise.name;
-    }
-
-    public String getDescription() {
-        return descriptionExercise.description;
-    }
-
-    public abstract Exercise getExercise(int posExercise);
-    public abstract Spec getMeasureSpec(int posExercise);
-    public abstract int countExercises();
-    public abstract int countSet();
+    public abstract ArrayList<Set> getSet(int pos);
+    public abstract void setSet(int pos, ArrayList<Set> set);
+    public abstract int getCountSet();
 }

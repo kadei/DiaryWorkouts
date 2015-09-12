@@ -4,7 +4,7 @@ import android.content.ContentValues;
 
 import java.util.ArrayList;
 
-import ru.kadei.diaryworkouts.database.CortegeBuilder;
+import ru.kadei.diaryworkouts.database.DatabaseWriter;
 import ru.kadei.diaryworkouts.database.Cortege;
 import ru.kadei.diaryworkouts.database.Relation;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
@@ -13,16 +13,16 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 /**
  * Created by kadei on 04.09.15.
  */
-public class DescriptionWorkoutCortegeBuilder extends CortegeBuilder {
+public class DescriptionWorkoutWriter extends DatabaseWriter {
     @Override
-    public void buildCortegeFor(Object object) {
+    public void writeObject(Object object) {
         if(object instanceof DescriptionWorkout)
-            cortege = buildCortege((DescriptionWorkout)object);
+            saveWokout((DescriptionWorkout) object);
         else
             oops(object);
     }
 
-    private Cortege buildCortege(DescriptionWorkout workout) {
+    private void saveWokout(DescriptionWorkout workout) {
         final Cortege cortege = new Cortege();
         cortege.nameTable = "descriptionWorkout";
 
@@ -33,7 +33,7 @@ public class DescriptionWorkoutCortegeBuilder extends CortegeBuilder {
 
         cortege.relations.add(buildRelationExercisesAnd(workout));
 
-        return cortege;
+        save(cortege, workout);
     }
 
     private Relation buildRelationExercisesAnd(DescriptionWorkout workout) {
