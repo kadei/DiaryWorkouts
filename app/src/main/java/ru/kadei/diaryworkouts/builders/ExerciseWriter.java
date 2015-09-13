@@ -2,11 +2,8 @@ package ru.kadei.diaryworkouts.builders;
 
 import android.content.ContentValues;
 
-import java.util.ArrayList;
-
-import ru.kadei.diaryworkouts.database.DatabaseWriter;
 import ru.kadei.diaryworkouts.database.Cortege;
-import ru.kadei.diaryworkouts.database.Relation;
+import ru.kadei.diaryworkouts.database.DatabaseWriter;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionStandardExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise;
@@ -14,11 +11,11 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise;
 /**
  * Created by kadei on 06.09.15.
  */
-public class ExerciseWriter extends DatabaseWriter {
+public class ExerciseWriter extends DescriptionWriter {
 
     @Override
     public void writeObject(Object object) {
-        if(object instanceof DescriptionExercise)
+        if (object instanceof DescriptionExercise)
             saveExercise((DescriptionExercise) object);
         else
             oops(object);
@@ -36,35 +33,14 @@ public class ExerciseWriter extends DatabaseWriter {
         cv.put("muscleGroupSpec", exercise.getMuscleGroupSpec());
         cortege.values = cv;
 
-        if(exercise.isSuperset()) {
-            buildRelationsExercisesAnd((DescriptionSupersetExercise) exercise);
-        }
-
         save(cortege, exercise);
-    }
-
-    private Relation buildRelationsExercisesAnd(DescriptionSupersetExercise superset) {
-        final ArrayList<DescriptionStandardExercise> exercises = superset.exercises;
-        final int size = exercises.size();
-        final ArrayList<ContentValues> values = new ArrayList<>(size);
-
-        final long idSuperset = superset.id;
-        for(int pos = 0; pos < size; ++pos) {
-            long idExercise = exercises.get(pos).id;
-
-            ContentValues cv = new ContentValues(3);
-            cv.put("idSuperset", idSuperset);
-            cv.put("idExercise", idExercise);
-            cv.put("orderInList", pos);
-
-            values.add(cv);
+        if (exercise.isSuperset()) {
+            DescriptionSupersetExercise superset = (DescriptionSupersetExercise) exercise;
+            saveRelations(superset.id, superset.exercises, TABLE_INFO);
         }
-
-        Relation relation = new Relation();
-        relation.nameTable = "listContentSuperset";
-        relation.idTarget = idSuperset;
-        relation.columnIdTarget = "idSuperset";
-        relation.values = values;
-        return relation;
     }
+
+    private static final String[] TABLE_INFO = new String[] {
+            "listContentSuperset", "idSuperset", "idExercise", "orderInList"
+    };
 }

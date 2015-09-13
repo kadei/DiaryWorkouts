@@ -2,18 +2,13 @@ package ru.kadei.diaryworkouts.builders;
 
 import android.content.ContentValues;
 
-import java.util.ArrayList;
-
-import ru.kadei.diaryworkouts.database.DatabaseWriter;
 import ru.kadei.diaryworkouts.database.Cortege;
-import ru.kadei.diaryworkouts.database.Relation;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
-import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 
 /**
  * Created by kadei on 03.09.15.
  */
-public class ProgramWriter extends DatabaseWriter {
+public class ProgramWriter extends DescriptionWriter {
 
     @Override
     public void writeObject(Object object) {
@@ -32,33 +27,11 @@ public class ProgramWriter extends DatabaseWriter {
         cv.put("description", program.description);
         cortege.values = cv;
 
-        cortege.relations.add(buildRelationWorkoutsAnd(program));
-
         save(cortege, program);
+        saveRelations(program.id, program.workouts, TABLE_INFO);
     }
 
-    private Relation buildRelationWorkoutsAnd(DescriptionProgram program) {
-        final ArrayList<DescriptionWorkout> workouts = program.workouts;
-        final int size = workouts.size();
-        final ArrayList<ContentValues> values = new ArrayList<>(size);
-
-        final long idPrg = program.id;
-        for(int pos = 0; pos < size; ++pos) {
-            long idWorkout = workouts.get(pos).id;
-
-            ContentValues cv = new ContentValues(3);
-            cv.put("idProgram", idPrg);
-            cv.put("idWorkout", idWorkout);
-            cv.put("orderInList", pos);
-
-            values.add(cv);
-        }
-
-        final Relation relation = new Relation();
-        relation.nameTable = "listDescriptionWorkout";
-        relation.idTarget = idPrg;
-        relation.columnIdTarget = "idProgram";
-        relation.values = values;
-        return relation;
-    }
+    private static final String[] TABLE_INFO = new String[] {
+            "listDescriptionWorkout", "idProgram", "idWorkout", "orderInList"
+    };
 }

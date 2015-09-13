@@ -7,11 +7,10 @@ import java.util.ArrayList;
 /**
  * Created by kadei on 01.09.15.
  */
-public abstract class DatabaseReader {
+public abstract class DatabaseReader extends SQLCreator {
 
     protected SQLiteDatabase db;
     protected ArrayList<?> objects;
-    private final StringBuilder sb = new StringBuilder(512);
 
     public abstract void readObjects(String query);
 
@@ -27,16 +26,5 @@ public abstract class DatabaseReader {
 
     public final void forgetReferenceDB() {
         db = null;
-    }
-
-    protected final StringBuilder query(String s) {
-        sb.delete(0, sb.length());
-        sb.append(s);
-        return sb;
-    }
-
-    protected final StringBuilder getClearStringBuilder() {
-        sb.delete(0, sb.length());
-        return sb;
     }
 }

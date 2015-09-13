@@ -11,9 +11,4 @@ public class Cortege {
 
     public String nameTable;
     public ContentValues values;
-    public final ArrayList<Relation> relations;
-
-    public Cortege() {
-        relations = new ArrayList<>();
-    }
 }

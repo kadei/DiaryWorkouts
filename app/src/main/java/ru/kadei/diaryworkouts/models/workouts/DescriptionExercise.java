@@ -7,10 +7,10 @@ import java.util.ArrayList;
  */
 public abstract class DescriptionExercise extends Description {
 
-    public static final int BASE =      0xf;
-    public static final int ISOLATED =  0xf0;
-    public static final int SUPERSET =  0xf00;
-    public static final int CARDIO =    0xf000;
+    public static final int BASE =      1;
+    public static final int ISOLATED =  2;
+    public static final int CARDIO =    4;
+    public static final int SUPERSET =  8;
 
     public int type;
 
