@@ -77,16 +77,23 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE `listDescriptionWorkout` (" +
                 "`idProgram` INTEGER," +
                 "`idWorkout` INTEGER," +
-                "`orderInList` INTEGER)");
+                "`orderInList` INTEGER);");
 
         db.execSQL("CREATE TABLE `listDescriptionExercise` (" +
                 "`idWorkout` INTEGER," +
                 "`idExercise` INTEGER," +
-                "`orderInList` INTEGER)");
+                "`orderInList` INTEGER);");
 
         db.execSQL("CREATE TABLE `listContentSuperset` (" +
                 "`idSuperset` INTEGER," +
                 "`idExercise` INTEGER," +
-                "`orderInList` INTEGER)");
+                "`orderInList` INTEGER);");
+
+        db.execSQL("CREATE TABLE `dateWorkout` (" +
+                "`idHistoryWorkout` INTEGER, " +
+                "`year` INTEGER, " +
+                "`month` INTEGER, " +
+                "`day` INTEGER, " +
+                "`hour` INTEGER);");
     }
 }

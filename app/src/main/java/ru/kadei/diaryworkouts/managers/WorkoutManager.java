@@ -13,6 +13,7 @@ import ru.kadei.diaryworkouts.builders.HistoryWorkoutWriter;
 import ru.kadei.diaryworkouts.database.Database;
 import ru.kadei.diaryworkouts.database.DatabaseReader;
 import ru.kadei.diaryworkouts.database.Record;
+import ru.kadei.diaryworkouts.database.SQLCreator;
 import ru.kadei.diaryworkouts.managers.bridges.BridgeLoad;
 import ru.kadei.diaryworkouts.managers.bridges.BridgeSave;
 import ru.kadei.diaryworkouts.managers.bridges.BridgeSaveDescription;
@@ -24,7 +25,7 @@ import ru.kadei.diaryworkouts.models.workouts.Workout;
 /**
  * Created by kadei on 02.09.15.
  */
-public class WorkoutManager {
+public class WorkoutManager extends SQLCreator {
 
     private final Database database;
 
@@ -103,8 +104,8 @@ public class WorkoutManager {
     }
 
     public void loadHistoryFor(final Workout workout, WorkoutManagerClient client) {
-        String query = "SELECT * FROM historyWorkout WHERE idProgram = " + workout.getIdProgram() +
-                " AND posWorkout = " + workout.getPosCurrentWorkout();
+        String query = query("SELECT * FROM historyWorkout WHERE idProgram = ").append(workout.getIdProgram())
+                .append(" AND posWorkout = ").append(workout.getPosCurrentWorkout()).toString();
 
         database.load(query, historyReader, new BridgeLoad(client) {
             @SuppressWarnings("unchecked")

@@ -31,4 +31,9 @@ public class DescriptionSupersetExercise extends DescriptionExercise {
     public int getExerciseCount() {
         return exercises.size();
     }
+
+    @Override
+    public DescriptionExercise getExercise(int pos) {
+        return exercises.get(pos);
+    }
 }

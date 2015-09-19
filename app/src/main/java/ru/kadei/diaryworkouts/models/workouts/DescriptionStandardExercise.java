@@ -23,6 +23,11 @@ public class DescriptionStandardExercise extends DescriptionExercise {
         return 1;
     }
 
+    @Override
+    public DescriptionExercise getExercise(int pos) {
+        return this;
+    }
+
     public void setMeasureSpec(int measureSpec) {
         this.measureSpec = measureSpec;
     }

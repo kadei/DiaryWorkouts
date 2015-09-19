@@ -28,7 +28,6 @@ public class HistoryWorkoutReader extends DatabaseReader {
     private final DescriptionReader programReader;
 
     private final Measure measure = new Measure();
-    private String[] nameColumns;
     private SparseArray<String[]> bufferNameColumns = new SparseArray<>(4);
 
     public HistoryWorkoutReader(ProgramReader programReader) {
@@ -64,7 +63,7 @@ public class HistoryWorkoutReader extends DatabaseReader {
             ArrayList<Exercise> exercises = getHistoryExercise(idHistory);
 
             Workout workout = new Workout(descriptionProgram, posWorkout, exercises);
-            workout.id = c.getLong(indexId);
+            workout.id = idHistory;
             workout.date = c.getLong(indexStartDate);
             workout.duration = c.getLong(indexDuration);
             workout.comment = c.getString(indexComment);
@@ -108,6 +107,7 @@ public class HistoryWorkoutReader extends DatabaseReader {
         final int indexIdExercise = c.getColumnIndex("idExercise");
         final int indexComment = c.getColumnIndex("comment");
 
+        final Measure measure = this.measure;
         final BufferDescriptions buffer = programReader.getBufferDescriptions();
         do {
             long idExercise = c.getLong(indexIdExercise);
@@ -142,12 +142,9 @@ public class HistoryWorkoutReader extends DatabaseReader {
     }
 
     private String createQueryFor(long idHistoryExercise) {
-        nameColumns = getNameColumnsForCurrentMeasure();
-        StringBuilder sb = getClearStringBuilder();
-        for (String column : nameColumns)
-            sb.append(column).append(", ");
+        final String[] nameColumns = getNameColumnsForCurrentMeasure();
+        final String columnsSeparatedComma = separate(nameColumns);
 
-        String columnsSeparatedComma = sb.toString();
         return query("SELECT _id, ").append(columnsSeparatedComma).append("cheat, comment ")
                 .append("FROM historySet WHERE idHistoryExercise = ").append(idHistoryExercise)
                 .append(" ORDER BY orderInList").toString();
@@ -171,9 +168,16 @@ public class HistoryWorkoutReader extends DatabaseReader {
             "weight", "repeat", "speed", "distance", "duration"
     };
 
+    private String separate(String[] strings) {
+        StringBuilder sb = getClearStringBuilder();
+        for (String column : strings)
+            sb.append(column).append(", ");
+        return sb.toString();
+    }
+
     private ArrayList<Set> buildHistorySet(Cursor c) {
         final Measure measure = this.measure;
-        final String[] nameColumns = this.nameColumns;
+        final String[] nameColumns = bufferNameColumns.get(measure.getSpec());
         final ArrayList<Set> sets = new ArrayList<>(c.getCount());
 
         final int[] indexes = new int[MEASURE_AMOUNT];

@@ -37,10 +37,10 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
     ArrayList<Description> programs;
     ArrayList<Workout> history;
 
-    private int savedExercise = 0;
-    private int savedWorkout = 0;
-    private int savedPrograms = 0;
-    private int savedHistory = 0;
+    private int countSavedExercise = 0;
+    private int countSavedWorkout = 0;
+    private int countSavedProgram = 0;
+    private int countSavedHistory = 0;
 
     @Override
     public void setUp() throws Exception {
@@ -61,14 +61,17 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
         ArrayList<Description> superExe = convertSuperExercise(templates);
         saveExercises(superExe);
         exercises.addAll(superExe);
+        loadAndCompareExercises();
 
         templates = tm.getTrainingTemplates(null);
         workouts = convertWorkouts(templates);
         saveWorkouts(workouts);
+        loadAndCompareWorkouts();
 
         templates = tm.getProgramTemplates(null);
         programs = convertProgram(templates);
         savePrograms(programs);
+        loadAndComparePrograms();
 
         ArrayList<Training> trainings = tm.getHistory(0);
         history = convertHistory(trainings);
@@ -169,8 +172,12 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
         for (Description d : list) {
             manager.saveDescriptionExercise((DescriptionExercise) d, this);
         }
-        Assert.assertEquals(savedExercise, list.size());
-        savedExercise = 0;
+        Assert.assertEquals(countSavedExercise, list.size());
+        countSavedExercise = 0;
+    }
+
+    private void loadAndCompareExercises() {
+        manager.loadAllDescriptionExercise(this);
     }
 
     ArrayList<Description> convertWorkouts(ArrayList<Template> list) {
@@ -195,8 +202,12 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
         for (Description d : workouts) {
             manager.saveDescriptionWorkout((DescriptionWorkout) d, this);
         }
-        Assert.assertEquals(savedWorkout, workouts.size());
-        savedWorkout = 0;
+        Assert.assertEquals(countSavedWorkout, workouts.size());
+        countSavedWorkout = 0;
+    }
+
+    private void loadAndCompareWorkouts() {
+        manager.loadAllDescriptionWorkout(this);
     }
 
     ArrayList<Description> convertProgram(ArrayList<Template> list) {
@@ -221,8 +232,12 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
         for (Description d: programs) {
             manager.saveDescriptionProgram((DescriptionProgram) d, this);
         }
-        Assert.assertEquals(savedPrograms, programs.size());
-        savedPrograms = 0;
+        Assert.assertEquals(countSavedProgram, programs.size());
+        countSavedProgram = 0;
+    }
+
+    private void loadAndComparePrograms() {
+        manager.loadAllDescriptionPrograms(this);
     }
 
     ArrayList<Workout> convertHistory(ArrayList<Training> list) {
@@ -281,23 +296,69 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
         for (Workout w : hist) {
             manager.saveWorkout(w, this);
         }
-        Assert.assertEquals(savedHistory, hist.size());
-        savedHistory = 0;
+        Assert.assertEquals(countSavedHistory, hist.size());
+        countSavedHistory = 0;
     }
 
     @Override
     public void allProgramsLoaded(ArrayList<DescriptionProgram> programs) {
+        Assert.assertEquals(programs.size(), this.programs.size());
+        for (int i = 0, end = programs.size(); i < end; ++i) {
+            compareProgram(programs.get(i), (DescriptionProgram) this.programs.get(i));
+        }
+    }
 
+    private void compareProgram(DescriptionProgram first, DescriptionProgram second) {
+        compareDescriptions(first, second);
+        Assert.assertEquals(first.workouts.size(), second.workouts.size());
+        for (int i = 0, end = first.workouts.size(); i < end; ++i) {
+            compareWorkouts(first.workouts.get(i), second.workouts.get(i));
+        }
     }
 
     @Override
     public void allWorkoutsLoaded(ArrayList<DescriptionWorkout> workouts) {
+        Assert.assertEquals(workouts.size(), this.workouts.size());
+        for (int i = 0, end = workouts.size(); i < end; ++i) {
+            compareWorkouts(workouts.get(i), (DescriptionWorkout) this.workouts.get(i));
+        }
+    }
 
+    private void compareWorkouts(DescriptionWorkout first, DescriptionWorkout second) {
+        compareDescriptions(first, second);
+        Assert.assertEquals(first.exercises.size(), second.exercises.size());
+        for (int i = 0, end = first.exercises.size(); i < end; ++i) {
+            compareExercises(first.exercises.get(i), second.exercises.get(i));
+        }
     }
 
     @Override
     public void allExercisesLoaded(ArrayList<DescriptionExercise> exercises) {
+        Assert.assertEquals(exercises.size(), this.exercises.size());
+//        exercises.get(55).name = "55";
+        for (int i = 0, end = exercises.size(); i < end; ++i) {
+            compareExercises(exercises.get(i), (DescriptionExercise) this.exercises.get(i));
+        }
+    }
 
+    void compareExercises(DescriptionExercise first, DescriptionExercise second) {
+        compareDescriptions(first, second);
+        Assert.assertEquals(first.type,         second.type);
+        Assert.assertEquals(first.getMeasureSpec(),     second.getMeasureSpec());
+        Assert.assertEquals(first.getMuscleGroupSpec(), second.getMuscleGroupSpec());
+        Assert.assertEquals(first.getExerciseCount(),   second.getExerciseCount());
+
+        if (first.isSuperset()) {
+            for (int i = 0, end = first.getExerciseCount(); i < end; ++i) {
+                compareExercises(first.getExercise(i), second.getExercise(i));
+            }
+        }
+    }
+
+    void compareDescriptions(Description first, Description second) {
+        Assert.assertEquals(first.id,           second.id);
+        Assert.assertEquals(first.name,         second.name);
+        Assert.assertEquals(first.description,  second.description);
     }
 
     @Override
@@ -318,16 +379,16 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
     @Override
     public void descriptionSaved(Description description) {
         if(description instanceof DescriptionExercise)
-            ++savedExercise;
+            ++countSavedExercise;
         else if(description instanceof DescriptionWorkout)
-            ++savedWorkout;
+            ++countSavedWorkout;
         else if(description instanceof DescriptionProgram)
-            ++savedPrograms;
+            ++countSavedProgram;
     }
 
     @Override
     public void workoutSaved(Workout workout) {
-        ++savedHistory;
+        ++countSavedHistory;
     }
 
     @Override
