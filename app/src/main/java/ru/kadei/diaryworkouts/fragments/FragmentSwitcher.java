@@ -22,6 +22,7 @@ public class FragmentSwitcher {
 
     private final int idContainer;
     private final SparseArray<Class<? extends CustomFragment>> fragments;
+    private CustomFragment activeFragment;
 
     public FragmentSwitcher(Activity activity, int idContainer) {
         fragmentManager = activity.getFragmentManager();
@@ -55,8 +56,8 @@ public class FragmentSwitcher {
     }
 
     private void replaceFragment(int idFragment) {
-        CustomFragment newFragment = getFragmentById(idFragment);
-        fragmentManager.beginTransaction().replace(idContainer, newFragment).commit();
+        activeFragment = getFragmentById(idFragment);
+        fragmentManager.beginTransaction().replace(idContainer, activeFragment).commit();
     }
 
     @SuppressWarnings("TryWithIdenticalCatches")
@@ -68,5 +69,9 @@ public class FragmentSwitcher {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public CustomFragment getActiveFragment() {
+        return activeFragment;
     }
 }

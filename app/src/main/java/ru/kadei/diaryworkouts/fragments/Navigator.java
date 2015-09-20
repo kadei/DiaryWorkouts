@@ -111,6 +111,10 @@ public class Navigator {
         fragmentSwitcher.openFragment(MAIN_FRAGMENT);
     }
 
+    public CustomFragment getActiveFragment() {
+        return fragmentSwitcher.getActiveFragment();
+    }
+
     public void syncState() {
         toggle.syncState();
     }
