@@ -48,6 +48,13 @@ public class Database {
                 .setFailMethod("fail");
     }
 
+    public void stop() {
+        if (!bgLogic.isThisThread())
+            bgLogic.stop();
+
+        clients.clear();
+    }
+
     public void load(String query, DatabaseReader reader, DatabaseClient client) {
         clients.offer(client);
         taskLoadFromDatabase.setParameters(query, reader);
@@ -68,11 +75,13 @@ public class Database {
     }
 
     private void completeLoad(DatabaseReader reader) {
-        clients.poll().loaded(reader);
+        if (!clients.isEmpty())
+            clients.poll().loaded(reader);
     }
 
     private void fail(Throwable throwable) {
-        clients.poll().fail(throwable);
+        if (!clients.isEmpty())
+            clients.poll().fail(throwable);
     }
 
     public void save(Record record, DatabaseWriter writer, DatabaseClient client) {
@@ -104,7 +113,7 @@ public class Database {
 
     private SQLiteDatabase getDB() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        if(db == null)
+        if (db == null)
             throw new RuntimeException("Error connection database");
         return db;
     }

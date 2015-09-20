@@ -1,6 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Diary Workouts</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Тренировочный дневник</string>
+    <string name="action_settings">Настройки</string>
+
+    <!-- menu -->
+    <string name="complete_training">Закончить тренировку</string>
+    <string name="settings">Настройки</string>
+
+    <!-- activity__main fragment -->
+    <string name="current_training">Программа</string>
+    <string name="last_training">Последняя тр.</string>
+    <string name="upcoming_training">Предстоящая тр.</string>
+    <string name="begin_program">Начало программы</string>
+    <string name="duration_program">Продолжительность</string>
+    <string name="amount_training">Кол-во тренировок</string>
+    <string name="time_elapsed">Время прошло</string>
+    <string name="less_hour">Меньше часа</string>
+
+    <string name="program_no_select">программа не выбрана</string>
+    <string name="training_was_not">тренировок не было </string>
+    <string name="not_determined">не определена</string>
+
+    <string name="drawer_open">Открыто</string>
+    <string name="drawer_close">Закрыто</string>
+
+    <!-- measurements fragment -->
+    <string name="measurements">Замеры</string>
+
+    <!-- statistic fragment -->
+    <string name="statistic">Статистика</string>
+
+    <!-- select program fragment -->
+    <string name="select_program">Выбрать программу</string>
+
+    <!-- select training dialog -->
+    <string name="select_start_training">Выберите начальную тренировку</string>
+
+    <!-- set timer dialog -->
+    <string name="timer_value">Значение таймера</string>
+    <string name="error">ОШИБКА</string>
+    <string name="description_set_timer">Максимальное значение таймера 600 секунд, минимальное 1 секунда.</string>
+
+    <!-- history filter dialog -->
+    <string name="history_filter">Фильр истории тренировок</string>
+
+    <!-- create program fragment -->
+    <string name="name">Название</string>
+    <string name="new_program">Новая программа</string>
+    <string name="my_new_program">Моя новая программа</string>
+    <string name="no_description_available">Описание отсутствует</string>
+    <string name="list_of_training">Список тренировок</string>
+    <string name="create_program">Создать программу</string>
+    <string name="name_of_program">Название программы</string>
+    <string name="enter_program_name">Введите название программы</string>
+    <string name="program_name_already_exists">Программа с таким именем уже существует</string>
+    <string name="empty_list">Список пуст</string>
+    <string name="filter">Фильтр</string>
+    <string name="list">Список</string>
+
+    <!-- create training fragment -->
+    <string name="new_training">Новая тренировка</string>
+    <string name="my_new_training">Моя новая тренировка</string>
+    <string name="list_of_exercises">Список упражнений</string>
+    <string name="select">Выбрать</string>
+    <string name="type">Тип:</string>
+    <string name="group">Группа:</string>
+    <string name="groups">Группы:</string>
+    <string name="create_training">Создать тренировку</string>
+    <string name="name_of_training">Название тренировки</string>
+    <string name="enter_training_name">Введите название тренировки</string>
+    <string name="training_name_already_exists">Тренировка с таким именем уже существует</string>
+
+    <!-- create exercise fragment -->
+    <string name="new_exercise">Новое упражнение</string>
+    <string name="my_new_exercise">Моё новое упражнение</string>
+    <string name="create_exercise">Создать упражнение</string>
+    <string name="name_of_exercise">Название упражнения</string>
+    <string name="enter_exercise_name">Введите название упражнения</string>
+    <string name="exercise_name_already_exists">Упражнение с таким именем уже существует</string>
+
+    <!-- current training fragment -->
+    <string name="refresh_timer">Обновить</string>
+    <string name="start_timer">Старт</string>
+    <string name="pause_timer">Пауза</string>
+    <string name="training_upper">ТРЕНИРОВКА</string>
+    <string name="history_upper">ИСТОРИЯ</string>
+    <string name="set_was_not">Подходов не было</string>
+    <string name="set_number">Подход #</string>
+    <string name="set_">Подход</string>
+    <string name="edit">Редактировать</string>
+    <string name="remove">Удалить</string>
+    <string name="data_removed">Данные удалены</string>
+    <string name="comment_from_prev_training">Комментарий с прошлой тренировки:</string>
+    <string name="program">Программа</string>
+    <string name="training">Тренировка</string>
+    <string name="exercise">Упражнение</string>
+    <string name="all_programs">Все программы</string>
+    <string name="all_trainings">Все тренировки</string>
+    <string name="all_exercises">Все упражнения</string>
+
+    <string name="end_training">Закончить тренировку?</string>
+    <string name="do_not_save">Не сохранять тренировку?</string>
+    <string name="do_you_save_training">Сохранить тренировку?</string>
+    <string name="msg_for_end">Вы хотите закончить тренировку, выберите что хотите сделать с данными.</string>
+    <string name="msg_for_save_with_empty">Вы не сделали ни одного подхода в некоторых упражнениях.</string>
+    <string name="msg_for_finish_without_saving">Данные будут удалены без возможности восстановления.</string>
+
+    <!-- MyTimer -->
+    <string name="timer_already_running">Таймер уже запущен</string>
+    <string name="for_start_hold">Для старта, удерживайте</string>
+    <string name="for_reset_hold">Для сброса, удерживайте</string>
+    <string name="for_change_hold">Для изменения, удерживайте</string>
+
+    <!-- confirmation dialog (attention) -->
+    <string name="attention">Внимание</string>
+    <string name="training_list_is_empty">Невозможно создать программу, т.к. список тренировок пуст</string>
+    <string name="exercise_list_is_empty">Невозможно создать тренировку, т. к. список упражнений пуст</string>
+    <string name="exercise_list_for_superset_is_empty">Невозможно создать упражнение "Суперсет", т. к. список упражнений пуст</string>
+    <string name="muscle_groups_is_empty">Невозможно создать упражнение, т. к. не выбрана не одна мышечная группа</string>
+
+    <!-- sort list dialog -->
+    <string name="training_list">Список тренировок</string>
+    <string name="exercise_list">Список упражнений</string>
+
+    <!-- add set dialog -->
+    <string name="edit_set">Редактировать подход</string>
+    <string name="add_set">Добавить подход</string>
+    <string name="add_upper">ДОБАВИТЬ</string>
+    <string name="enter_value">Введите значение</string>
+    <string name="rounded_to_one_decimal">Округлите до одного знака</string>
+    <string name="illegal_value">Недопустимое значение</string>
+    <string name="too_large">Значение слишком большое</string>
+    <string name="cheats">Чит!</string>
+
+    <!-- comment dialog -->
+    <string name="comment_to_exercise">Комментарий к упражнению</string>
+    <string name="comment">Комментарий</string>
+
+    <!-- description dialog -->
+    <string name="description">Описание</string>
+    <string name="program_description">Описание программы</string>
+    <string name="training_description">Описание тренировки</string>
+    <string name="exercise_description">Описание упражнения</string>
+
+    <!-- filter dialog -->
+    <string name="training_filter">Фильтр тренировок</string>
+    <string name="trainings">Тренировки</string>
+    <string name="exercises">Упражнения</string>
+    <string name="exercises_filter">Фильтр упражнений</string>
+    <string name="standard">Стандартные</string>
+    <string name="my">Мои</string>
+    <string name="sort_by">Сортировать по</string>
+    <string name="by_name">Названию</string>
+    <string name="by_type">Типу</string>
+    <string name="by_groups">Группам</string>
+    <string name="select_all">Выбрать всё</string>
+    <string name="clear_all">Снять выделиние</string>
+
+    <string name="exercise_type">Тип упражнения</string>
+    <!-- SEE ORDER FIELD IN Exercise.class with T_... prefix -->
+    <string-array name="type_exercise">
+        <item>Базовое</item>
+        <item>Изолированное</item>
+        <item>Кардио</item>
+        <item>Суперсет</item>
+    </string-array>
+
+    <string name="based">Базовое</string>
+    <string name="isolated">Изолированное</string>
+    <string name="cardio">Кардио</string>
+    <string name="super_set">Суперсет</string>
+
+    <string name="muscle_groups">Мышечные группы</string>
+    <!-- SEE ORDER FIELD IN Exercise.class with G_... prefix -->
+    <string-array name="muscle_groups">
+        <item>Шея</item>
+        <item>Дельты</item>
+        <item>Бицепс</item>
+        <item>Трицепс</item>
+        <item>Предплечья</item>
+        <item>Грудь</item>
+        <item>Спина</item>
+        <item>Пресс</item>
+        <item>Бедра</item>
+        <item>Голень</item>
+    </string-array>
+
+    <string name="neck">Шея</string>
+    <string name="shoulder">Дельты</string>
+    <string name="biceps">Бицепс</string>
+    <string name="triceps">Трицепс</string>
+    <string name="forearm">Предплечья</string>
+    <string name="pectoralis">Грудь</string>
+    <string name="dorsi">Спина</string>
+    <string name="abdominal">Пресс</string>
+    <string name="hips">Бедра</string>
+    <string name="shin">Голень</string>
+
+    <!-- measure name, SEE ORDER FIELD IN Exercise.class with M_... prefix -->
+    <string-array name="measure">
+        <item>Время</item>
+        <item>Дистанция</item>
+        <item>Скорость</item>
+        <item>Повторения</item>
+        <item>Вес</item>
+    </string-array>
+
+    <string name="exercise_measure">Меры упражнения</string>
+    <!-- measure combine -->
+    <string-array name="measure_combine">
+        <item>Повторения</item>
+        <item>Вес, Повторения</item>
+        <item>Повторения, Время</item>
+        <item>Вес, Повторения, Время</item>
+        <item>Дистанция, Время</item>
+    </string-array>
+
+    <!-- buttons text -->
+    <string name="ok">OK</string>
+    <string name="save_upper">СОХРАНИТЬ</string>
+    <string name="do_not_save_upper">НЕ СОХРАНЯТЬ</string>
+    <string name="select_upper">ВЫБРАТЬ</string>
+    <string name="cancel_upper">ОТМЕНА</string>
+    <string name="description_upper">ОПИСАНИЕ</string>
+    <string name="list_upper">СПИСОК</string>
+    <string name="continue_upper">ПРОДОЛЖИТЬ</string>
+    <string name="filter_upper">ФИЛЬТРОВАТЬ</string>
+    <string name="the_filter">ФИЛЬТР</string>
+
+    <!-- common strings -->
+    <string name="description_saved">Описание сохранено</string>
+    <string name="saved">Сохранено</string>
+    <string name="press_again">Нажмите еще раз для выхода</string>
+    <string name="no_description">Нет описания</string>
+    <string name="empty"></string>
+    <string name="symbol">---</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="slash">/</string>
+    <string name="three_dots">&#8230;</string>
 </resources>

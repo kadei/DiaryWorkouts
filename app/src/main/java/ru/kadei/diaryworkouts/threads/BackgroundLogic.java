@@ -24,6 +24,7 @@ public class BackgroundLogic {
         @Override
         public boolean handleMessage(Message msg) {
             Task task = (Task) msg.obj;
+            msg.obj = null;
             task.forgetParameters();
 
             if (task.isSuccessful())
@@ -119,7 +120,13 @@ public class BackgroundLogic {
         }
     }
 
-    private synchronized void stop() {
+    public synchronized void stop() {
         stop = true;
+        if(pause)
+            thread.interrupt();
+    }
+
+    public boolean isThisThread() {
+        return thisThread;
     }
 }

@@ -2,14 +2,15 @@ package ru.kadei.diaryworkouts.managers;
 
 import java.util.ArrayList;
 
+import ru.kadei.diaryworkouts.builders.BufferDescriptions;
 import ru.kadei.diaryworkouts.builders.ExerciseReader;
 import ru.kadei.diaryworkouts.builders.ExerciseWriter;
 import ru.kadei.diaryworkouts.builders.ProgramReader;
 import ru.kadei.diaryworkouts.builders.ProgramWriter;
 import ru.kadei.diaryworkouts.builders.WorkoutReader;
 import ru.kadei.diaryworkouts.builders.WorkoutWriter;
-import ru.kadei.diaryworkouts.builders.HistoryWorkoutReader;
-import ru.kadei.diaryworkouts.builders.HistoryWorkoutWriter;
+import ru.kadei.diaryworkouts.builders.HistoryReader;
+import ru.kadei.diaryworkouts.builders.HistoryWriter;
 import ru.kadei.diaryworkouts.database.Database;
 import ru.kadei.diaryworkouts.database.DatabaseReader;
 import ru.kadei.diaryworkouts.database.Record;
@@ -32,7 +33,7 @@ public class WorkoutManager extends SQLCreator {
     private ExerciseReader exerciseReader;
     private WorkoutReader workoutReader;
     private ProgramReader programReader;
-    private HistoryWorkoutReader historyReader;
+    private HistoryReader historyReader;
 
     public WorkoutManager(Database database) {
         this.database = database;
@@ -41,7 +42,7 @@ public class WorkoutManager extends SQLCreator {
         exerciseReader = new ExerciseReader(buffer);
         workoutReader = new WorkoutReader(buffer, exerciseReader);
         programReader = new ProgramReader(buffer, workoutReader);
-        historyReader = new HistoryWorkoutReader(programReader);
+        historyReader = new HistoryReader(programReader);
     }
 
     public void loadAllDescriptionPrograms(WorkoutManagerClient client) {
@@ -130,7 +131,7 @@ public class WorkoutManager extends SQLCreator {
     }
 
     public void saveWorkout(Workout workout, WorkoutManagerClient client) {
-        database.save(workout, new HistoryWorkoutWriter(), new BridgeSave(client) {
+        database.save(workout, new HistoryWriter(), new BridgeSave(client) {
             @Override
             public void saved(Record record) {
                 client.workoutSaved((Workout) record);

@@ -4,7 +4,6 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 
-import ru.kadei.diaryworkouts.managers.BufferDescriptions;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 

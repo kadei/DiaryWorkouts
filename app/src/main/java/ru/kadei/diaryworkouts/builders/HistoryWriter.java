@@ -4,7 +4,6 @@ import android.content.ContentValues;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import ru.kadei.diaryworkouts.database.Cortege;
 import ru.kadei.diaryworkouts.database.DatabaseWriter;
@@ -17,6 +16,7 @@ import static java.util.Calendar.DATE;
 import static java.util.Calendar.HOUR_OF_DAY;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.YEAR;
+import static java.util.TimeZone.getTimeZone;
 import static ru.kadei.diaryworkouts.database.Database.FALSE;
 import static ru.kadei.diaryworkouts.database.Database.TRUE;
 import static ru.kadei.diaryworkouts.models.workouts.Measure.DISTANCE;
@@ -28,7 +28,7 @@ import static ru.kadei.diaryworkouts.models.workouts.Measure.WEIGHT;
 /**
  * Created by kadei on 12.09.15.
  */
-public class HistoryWorkoutWriter extends DatabaseWriter {
+public class HistoryWriter extends DatabaseWriter {
 
     private Cortege cortegeWorkout;
     private Cortege cortegeExercise;
@@ -65,7 +65,7 @@ public class HistoryWorkoutWriter extends DatabaseWriter {
         if (existsDateFor(idHistory))
             deleteDateFor(idHistory);
 
-        Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+3"));
+        Calendar calendar = new GregorianCalendar(getTimeZone("GMT+3"));
         calendar.setTimeInMillis(millisecond);
 
         ContentValues cv = new ContentValues(5);

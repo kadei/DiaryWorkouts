@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- navigation list -->
+    <string-array name="navigation_names">
+        <item>Главная</item>
+        <item>Замеры</item>
+        <item>Статистика</item>
+        <item>Выбрать программу</item>
+        <item>Создать программу</item>
+        <item>Создать тренировку</item>
+        <item>Создать упражнение</item>
+        <item>Выход</item>
+    </string-array>
+
+    <array name="navigation_icons">
+        <item>@drawable/ic_done_all_black_18dp</item>
+        <item>@drawable/ic_history_black_18dp</item>
+        <item>@drawable/ic_trending_up_black_18dp</item>
+        <item>@drawable/ic_list_black_18dp</item>
+        <item>@drawable/ic_playlist_add_black_18dp</item>
+        <item>@drawable/ic_playlist_add_black_18dp</item>
+        <item>@drawable/ic_playlist_add_black_18dp</item>
+        <item>@drawable/ic_close_black_18dp</item>
+    </array>
+</resources>

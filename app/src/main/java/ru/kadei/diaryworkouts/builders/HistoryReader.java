@@ -6,7 +6,6 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 
 import ru.kadei.diaryworkouts.database.DatabaseReader;
-import ru.kadei.diaryworkouts.managers.BufferDescriptions;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.Exercise;
@@ -23,14 +22,14 @@ import static ru.kadei.diaryworkouts.models.workouts.Set.computeIndex;
 /**
  * Created by kadei on 08.09.15.
  */
-public class HistoryWorkoutReader extends DatabaseReader {
+public class HistoryReader extends DatabaseReader {
 
     private final DescriptionReader programReader;
 
     private final Measure measure = new Measure();
     private SparseArray<String[]> bufferNameColumns = new SparseArray<>(4);
 
-    public HistoryWorkoutReader(ProgramReader programReader) {
+    public HistoryReader(ProgramReader programReader) {
         this.programReader = programReader;
     }
 

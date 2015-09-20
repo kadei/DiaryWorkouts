@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- CustomView -->
+    <declare-styleable name="CustomView">
+        <attr name="font" format="string"/>
+    </declare-styleable>
+
+    <!-- MyTimer -->
+    <declare-styleable name="MyTimer">
+        <attr name="fontSize" format="dimension"/>
+        <attr name="fontColor" format="color"/>
+        <attr name="period" format="integer"/>
+        <attr name="tick" format="integer"/>
+        <attr name="range" format="enum">
+            <enum name="hour" value="1"/>
+            <enum name="minute" value="2"/>
+            <enum name="second" value="3"/>
+        </attr>
+        <attr name="type" format="enum">
+            <enum name="timer" value="0"/>
+            <enum name="stopwatch" value="1"/>
+        </attr>
+    </declare-styleable>
+</resources>

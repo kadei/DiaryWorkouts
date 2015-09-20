@@ -1,7 +1,6 @@
 package ru.kadei.diaryworkouts.builders;
 
 import ru.kadei.diaryworkouts.database.DatabaseReader;
-import ru.kadei.diaryworkouts.managers.BufferDescriptions;
 
 /**
  * Created by kadei on 30.08.15.
