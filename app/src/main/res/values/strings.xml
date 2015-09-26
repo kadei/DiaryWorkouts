@@ -8,6 +8,16 @@
     <string name="complete_training">Закончить тренировку</string>
     <string name="settings">Настройки</string>
 
+    <!-- navigation items -->
+    <string name="main_fragment">Главная</string>
+    <string name="measurement_fragment">Замеры</string>
+    <string name="statistic_fragment">Статистика</string>
+    <string name="select_program_fragment">Выбрать программу</string>
+    <string name="create_program_fragment">Создать программу</string>
+    <string name="create_workout_fragment">Создать тренировку</string>
+    <string name="create_exercise_fragment">Создать упражнение</string>
+    <string name="exit">Выход</string>
+
     <!-- activity__main fragment -->
     <string name="current_training">Программа</string>
     <string name="last_training">Последняя тр.</string>

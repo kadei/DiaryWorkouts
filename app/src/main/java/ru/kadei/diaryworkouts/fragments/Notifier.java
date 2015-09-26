@@ -1,20 +1,18 @@
 package ru.kadei.diaryworkouts.fragments;
 
-import static ru.kadei.diaryworkouts.fragments.FragmentSwitcher.NO_FRAGMENT;
-
 /**
  * Created by kadei on 20.09.15.
  */
 public abstract class Notifier {
 
-    private final int idNextFragment;
+    private final Class<? extends CustomFragment> nextFragment;
 
-    protected Notifier(int idNextFragment) {
-        this.idNextFragment = idNextFragment;
+    protected Notifier(Class<? extends CustomFragment> nextFragment) {
+        this.nextFragment = nextFragment;
     }
 
-    public int getIdNextFragment() {
-        return idNextFragment;
+    public Class<? extends CustomFragment> getNextFragment() {
+        return nextFragment;
     }
 
     public abstract void iReadyToClose();

@@ -108,7 +108,8 @@ public class Database {
     }
 
     private void completeSave(Record record) {
-        clients.poll().saved(record);
+        if (!clients.isEmpty())
+            clients.poll().saved(record);
     }
 
     private SQLiteDatabase getDB() {

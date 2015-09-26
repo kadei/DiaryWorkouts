@@ -11,6 +11,7 @@ import android.support.annotation.ArrayRes;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,7 +43,8 @@ public class ResourceManager {
         try {
             String[] fileNames = am.list("");
             for (String s : fileNames)
-                if (s.endsWith(".ttf")) fonts.put(s, createFromAsset(am, s));
+                if (s.endsWith(".ttf"))
+                    fonts.put(s, createFromAsset(am, s));
 
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
@@ -63,6 +65,10 @@ public class ResourceManager {
             return resources.getDrawable(id, context.getTheme());
         else
             return resources.getDrawable(id);
+    }
+
+    public String getString(@StringRes int id) {
+        return resources.getString(id);
     }
 
     public String[] getStringArray(@ArrayRes int id) {
