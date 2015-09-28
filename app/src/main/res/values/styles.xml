@@ -6,9 +6,15 @@
     </style>
 
     <style name="toolbar_title" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textStyle">normal</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/toolbar_title_size</item>
         <item name="android:textColor">@color/icons</item>
+    </style>
+
+    <style name="navigation_items" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textSize">@dimen/navigation_text_size</item>
     </style>
 
 </resources>

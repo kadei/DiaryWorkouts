@@ -6,7 +6,12 @@
     <dimen name="shadow_height">5dp</dimen>
 
     <dimen name="min_touchable_height">48dp</dimen>
-    
+
+    <dimen name="toolbar_title_size">20sp</dimen>
+
+    <dimen name="navigation_icon_size">24dp</dimen>
+    <dimen name="navigation_text_size">16sp</dimen>
+
     <dimen name="list_icon_left_padding">16dp</dimen>
     <dimen name="list_item_left_padding">72dp</dimen>
     <dimen name="list_item_right_padding">16dp</dimen>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,24 +12,44 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
                 android:background="@color/primary"
-                android:minHeight="?attr/actionBarSize" />
+                />
 
             <FrameLayout
                 android:id="@+id/container_fragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:layout_below="@+id/toolbar"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                />
 
-        </LinearLayout>
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/primary_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                fab:fab_size="normal"
+                fab:fab_colorNormal="@color/accent"
+                fab:fab_showShadow="true"
+                />
+
+        </RelativeLayout>
 
         <ListView
             android:id="@+id/navigation_list"
