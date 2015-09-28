@@ -5,4 +5,10 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="toolbar_title" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/icons</item>
+    </style>
+
 </resources>

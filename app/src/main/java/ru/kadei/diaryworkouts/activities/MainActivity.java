@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 .setDrawerId(R.id.drawer)
                 .setListId(R.id.navigation_list)
                 .setToolbarId(R.id.toolbar)
+                .addHeader(R.layout.navigation_header, false)
                 .addFragment(MainFragment.class, R.drawable.ic_done_all_black_18dp, R.string.main_fragment)
                 .addFragment(MeasurementsFragment.class, R.drawable.ic_history_black_18dp, R.string.measurement_fragment)
                 .addFragment(StatisticFragment.class, R.drawable.ic_trending_up_black_18dp, R.string.statistic_fragment)

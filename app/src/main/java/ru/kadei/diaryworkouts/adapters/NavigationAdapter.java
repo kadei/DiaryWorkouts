@@ -2,6 +2,10 @@ package ru.kadei.diaryworkouts.adapters;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.SpannedString;
+import android.text.style.UnderlineSpan;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,8 @@ import ru.kadei.diaryworkouts.activities.MainActivity;
 import ru.kadei.diaryworkouts.managers.ResourceManager;
 import ru.kadei.diaryworkouts.util.PrimitiveCollection.IntegerArray;
 
+import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
+
 
 public class NavigationAdapter extends ExtendedBaseAdapter {
 
@@ -25,6 +31,9 @@ public class NavigationAdapter extends ExtendedBaseAdapter {
     private ColorStateList originalTextColor;
     private ColorStateList disabledTextColor;
 
+    private int selectedBackground;
+    private int originalBackground;
+
     public NavigationAdapter(MainActivity activity, ArrayList<Pair<Drawable, String>> items) {
         super(activity);
         disabledItem = new IntegerArray(4);
@@ -33,6 +42,14 @@ public class NavigationAdapter extends ExtendedBaseAdapter {
         ResourceManager res = activity.getResourceManager();
         originalTextColor = res.getColorStateList(R.color.primary_text);
         disabledTextColor = res.getColorStateList(R.color.disabled_text);
+
+        selectedBackground = res.getColor(R.color.primary_light);
+        originalBackground = res.getColor(R.color.icons);
+    }
+
+    public void setSelectedPos(int selectedPos) {
+        this.selectedPos = selectedPos;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -52,8 +69,9 @@ public class NavigationAdapter extends ExtendedBaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if(convertView == null)
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.navigation_item, parent, false);
+        }
 
         Pair<Drawable, String> pair = items.get(position);
 
@@ -61,9 +79,12 @@ public class NavigationAdapter extends ExtendedBaseAdapter {
         v.setBackground(pair.first);
 
         TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
-        tv.setText(pair.second);
+        SpannableString string = new SpannableString(pair.second);
+        if (position == selectedPos)
+            string.setSpan(new UnderlineSpan(), 0, string.length(), SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv.setText(string);
 
-        if(disabledItem.contains(position))
+        if (disabledItem.contains(position))
             setTextColor(tv, disabledTextColor);
         else
             setTextColor(tv, originalTextColor);
@@ -72,7 +93,7 @@ public class NavigationAdapter extends ExtendedBaseAdapter {
     }
 
     private static void setTextColor(TextView tv, ColorStateList color) {
-        if(tv.getTextColors() != color) {
+        if (tv.getTextColors() != color) {
             tv.setTextColor(color);
         }
     }

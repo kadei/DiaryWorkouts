@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import ru.kadei.diaryworkouts.activities.MainActivity;
 import ru.kadei.diaryworkouts.managers.ResourceManager;
 
+import static ru.kadei.diaryworkouts.fragments.Navigator.UNDEFINED;
 import static ru.kadei.diaryworkouts.util.PrimitiveCollection.ArrayUtil.exists;
 
 /**
@@ -24,9 +25,10 @@ public class NavigatorBuilder {
     private MainActivity activity = null;
     private final int[] ids = new int[5];
 
+    private final ArrayList<Pair<Integer, Boolean>> headers;
     private final ArrayList<Pair<Drawable, String>> items;
     private final ArrayList<Class<? extends CustomFragment>> fragments;
-    private int exitPos = -1;
+    private int exitPos = UNDEFINED;
 
     private static final int LAYOUT_ID = 0;
     private static final int CONTAINER_ID = 1;
@@ -41,8 +43,8 @@ public class NavigatorBuilder {
         for (int i = 0; i < ids.length; ++i)
             ids[i] = -1;
 
+        headers = new ArrayList<>(4);
         items = new ArrayList<>(4);
-        ;
         fragments = new ArrayList<>(4);
     }
 
@@ -76,6 +78,11 @@ public class NavigatorBuilder {
         return this;
     }
 
+    public NavigatorBuilder addHeader(@LayoutRes int layoutId, boolean selectable) {
+        headers.add(new Pair<>(layoutId, selectable));
+        return this;
+    }
+
     public NavigatorBuilder addFragment(Class<? extends CustomFragment> fragment,
                                         @DrawableRes int drawable, @StringRes int name) {
         final ResourceManager rm = resourceManager;
@@ -104,7 +111,9 @@ public class NavigatorBuilder {
                 ids[DRAWER_ID],
                 ids[LIST_ID],
                 fragments,
-                items, exitPos);
+                headers,
+                items,
+                exitPos);
     }
 
     private void validate() {

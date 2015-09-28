@@ -3,11 +3,11 @@ package ru.kadei.diaryworkouts.fragments;
 /**
  * Created by kadei on 20.09.15.
  */
-public abstract class Notifier {
+public abstract class Preparer {
 
     private final Class<? extends CustomFragment> nextFragment;
 
-    protected Notifier(Class<? extends CustomFragment> nextFragment) {
+    protected Preparer(Class<? extends CustomFragment> nextFragment) {
         this.nextFragment = nextFragment;
     }
 
@@ -15,5 +15,5 @@ public abstract class Notifier {
         return nextFragment;
     }
 
-    public abstract void iReadyToClose();
+    public abstract void iReady();
 }
