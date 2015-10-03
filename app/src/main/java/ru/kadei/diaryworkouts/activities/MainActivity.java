@@ -1,11 +1,12 @@
 package ru.kadei.diaryworkouts.activities;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import ru.kadei.diaryworkouts.R;
 import ru.kadei.diaryworkouts.database.DBHelper;
@@ -61,37 +62,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createNavigator() {
-        navigator = new NavigatorBuilder(resourceManager)
+        navigator = new NavigatorBuilder()
                 .setActivity(this)
-                .setLayoutId(R.layout.activity_main)
+                .setLayoutId(R.layout.new_activity_main)
                 .setContainerId(R.id.container_fragment)
-                .setDrawerId(R.id.drawer)
+                .setDrawerId(R.id.drawer_layout)
                 .setListId(R.id.navigation_list)
                 .setToolbarId(R.id.toolbar)
-                .addHeader(R.layout.navigation_header, false)
-                .addFragment(MainFragment.class, R.drawable.ic_done_all_black_18dp, R.string.main_fragment)
-                .addFragment(MeasurementsFragment.class, R.drawable.ic_history_black_18dp, R.string.measurement_fragment)
-                .addFragment(StatisticFragment.class, R.drawable.ic_trending_up_black_18dp, R.string.statistic_fragment)
-                .addFragment(SelectProgramFragment.class, R.drawable.ic_list_black_18dp, R.string.select_program_fragment)
-                .addFragment(CreateProgramFragment.class, R.drawable.ic_playlist_add_black_18dp, R.string.create_program_fragment)
-                .addFragment(CreateWorkoutFragment.class, R.drawable.ic_playlist_add_black_18dp, R.string.create_workout_fragment)
-                .addFragment(CreateExerciseFragment.class, R.drawable.ic_playlist_add_black_18dp, R.string.create_exercise_fragment)
-                .addExit(R.drawable.ic_close_black_18dp, R.string.exit)
+                .setFloatingButtonId(R.id.primary_fab)
+                .bind(R.id.main, MainFragment.class)
+                .bind(R.id.measurement, MeasurementsFragment.class)
+                .bind(R.id.statistic, StatisticFragment.class)
+                .bind(R.id.select_program, SelectProgramFragment.class)
+                .bind(R.id.create_program, CreateProgramFragment.class)
+                .bind(R.id.create_workout, CreateWorkoutFragment.class)
+                .bind(R.id.create_exercise, CreateExerciseFragment.class)
+                .setListenerUnbound(listenerUnbound)
                 .build();
-        navigator.openFragment(0); // MainFragment
+        navigator.openFragment(MainFragment.class);
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        navigator.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        navigator.configurationChange(newConfig);
-    }
+    private final NavigationView.OnNavigationItemSelectedListener listenerUnbound = new NavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(MenuItem menuItem) {
+            final int id = menuItem.getItemId();
+            if (id == R.id.import_data) {
+                Log.d("TEST", "IMPORT");
+            }
+            return true;
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -5,13 +5,13 @@ package ru.kadei.diaryworkouts.fragments;
  */
 public abstract class Preparer {
 
-    private final Class<? extends CustomFragment> nextFragment;
+    private final int nextFragment;
 
-    protected Preparer(Class<? extends CustomFragment> nextFragment) {
+    protected Preparer(int nextFragment) {
         this.nextFragment = nextFragment;
     }
 
-    public Class<? extends CustomFragment> getNextFragment() {
+    public int getNextFragment() {
         return nextFragment;
     }
 

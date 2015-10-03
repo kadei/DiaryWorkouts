@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/main" android:icon="@drawable/ic_done_all_black_18dp"
+            android:title="@string/main_fragment" />
+        <item android:id="@+id/measurement" android:icon="@drawable/ic_history_black_18dp"
+            android:title="@string/measurement_fragment" />
+        <item android:id="@+id/statistic" android:icon="@drawable/ic_trending_up_black_18dp"
+            android:title="@string/statistic_fragment" />
+        <item android:id="@+id/select_program" android:icon="@drawable/ic_list_black_18dp"
+            android:title="@string/select_program_fragment" />
+        <item android:id="@+id/create_program" android:icon="@drawable/ic_playlist_add_black_18dp"
+            android:title="@string/create_program_fragment" />
+        <item android:id="@+id/create_workout" android:icon="@drawable/ic_playlist_add_black_18dp"
+            android:title="@string/create_workout_fragment" />
+        <item android:id="@+id/create_exercise" android:icon="@drawable/ic_playlist_add_black_18dp"
+            android:title="@string/create_exercise_fragment" />
+        <item android:id="@+id/exit" android:icon="@drawable/ic_close_black_18dp"
+            android:title="@string/exit" />
+    </group>
+
+    <item android:title="Backup">
+        <menu>
+            <item android:id="@+id/import_data" android:icon="@drawable/ic_import_export_black_18dp"
+                android:title="import" />
+        </menu>
+    </item>
+
+</menu>

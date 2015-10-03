@@ -1,18 +1,12 @@
 package ru.kadei.diaryworkouts.fragments;
 
-import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.StringRes;
-import android.util.Pair;
-
-import java.util.ArrayList;
+import android.support.design.widget.NavigationView;
+import android.util.SparseArray;
 
 import ru.kadei.diaryworkouts.activities.MainActivity;
-import ru.kadei.diaryworkouts.managers.ResourceManager;
 
-import static ru.kadei.diaryworkouts.fragments.Navigator.UNDEFINED;
 import static ru.kadei.diaryworkouts.util.PrimitiveCollection.ArrayUtil.exists;
 
 /**
@@ -20,15 +14,14 @@ import static ru.kadei.diaryworkouts.util.PrimitiveCollection.ArrayUtil.exists;
  */
 public class NavigatorBuilder {
 
-    private final ResourceManager resourceManager;
-
     private MainActivity activity = null;
     private final int[] ids = new int[5];
 
-    private final ArrayList<Pair<Integer, Boolean>> headers;
-    private final ArrayList<Pair<Drawable, String>> items;
-    private final ArrayList<Class<? extends CustomFragment>> fragments;
-    private int exitPos = UNDEFINED;
+    private static final int UNDEFINED = -1;
+    private int floatingButton = UNDEFINED;
+    private SparseArray<Class<? extends CustomFragment>> fragments;
+
+    private NavigationView.OnNavigationItemSelectedListener listener;
 
     private static final int LAYOUT_ID = 0;
     private static final int CONTAINER_ID = 1;
@@ -36,16 +29,14 @@ public class NavigatorBuilder {
     private static final int DRAWER_ID = 3;
     private static final int LIST_ID = 4;
 
-    public NavigatorBuilder(ResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
-
+    public NavigatorBuilder() {
         activity = null;
+
         for (int i = 0; i < ids.length; ++i)
             ids[i] = -1;
 
-        headers = new ArrayList<>(4);
-        items = new ArrayList<>(4);
-        fragments = new ArrayList<>(4);
+        fragments = new SparseArray<>(8);
+        listener = null;
     }
 
     public NavigatorBuilder setActivity(MainActivity activity) {
@@ -78,27 +69,18 @@ public class NavigatorBuilder {
         return this;
     }
 
-    public NavigatorBuilder addHeader(@LayoutRes int layoutId, boolean selectable) {
-        headers.add(new Pair<>(layoutId, selectable));
+    public NavigatorBuilder setFloatingButtonId(@IdRes int id) {
+        floatingButton = id;
         return this;
     }
 
-    public NavigatorBuilder addFragment(Class<? extends CustomFragment> fragment,
-                                        @DrawableRes int drawable, @StringRes int name) {
-        final ResourceManager rm = resourceManager;
-        items.add(new Pair<>(rm.getDrawable(drawable), rm.getString(name)));
-        fragments.add(fragment);
+    public NavigatorBuilder setListenerUnbound(NavigationView.OnNavigationItemSelectedListener listener) {
+        this.listener = listener;
         return this;
     }
 
-    public NavigatorBuilder addExit(@DrawableRes int drawable, @StringRes int name) {
-        if (exitPos != -1)
-            throw new RuntimeException("Exit already added");
-
-        final ResourceManager rm = resourceManager;
-        items.add(new Pair<>(rm.getDrawable(drawable), rm.getString(name)));
-        exitPos = items.size() - 1;
-
+    public NavigatorBuilder bind(@IdRes int id, Class<? extends CustomFragment> c) {
+        fragments.put(id, c);
         return this;
     }
 
@@ -110,10 +92,9 @@ public class NavigatorBuilder {
                 ids[TOOLBAR_ID],
                 ids[DRAWER_ID],
                 ids[LIST_ID],
+                floatingButton,
                 fragments,
-                headers,
-                items,
-                exitPos);
+                listener);
     }
 
     private void validate() {
