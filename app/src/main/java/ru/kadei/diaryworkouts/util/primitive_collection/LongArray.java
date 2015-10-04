@@ -1,67 +1,68 @@
-package ru.kadei.diaryworkouts.util.PrimitiveCollection;
+package ru.kadei.diaryworkouts.util.primitive_collection;
 
 import static java.lang.System.*;
-import static ru.kadei.diaryworkouts.util.PrimitiveCollection.ArrayUtil.exists;
-import static ru.kadei.diaryworkouts.util.PrimitiveCollection.ArrayUtil.expand;
+import static ru.kadei.diaryworkouts.util.primitive_collection.ArrayUtil.exists;
+import static ru.kadei.diaryworkouts.util.primitive_collection.ArrayUtil.expand;
 
 /**
- * Created by kadei on 06.06.2015.
+ * Simple array dynamic size.
  */
-public class IntegerArray {
+public class LongArray {
 
     private int mSize;
-    private int[] mValues;
-    private static final int[] EMPTY = new int[]{};
+    private long[] mValues;
+    private static final long[] EMPTY = new long[]{};
 
-    public IntegerArray() {
+    public LongArray() {
         mValues = EMPTY;
         mSize = 0;
     }
 
-    public IntegerArray(int capacity) {
-        mValues = new int[capacity];
+    public LongArray(int capacity) {
+        mValues = new long[capacity];
         mSize = 0;
     }
 
-    public IntegerArray(int[] array) {
+    public LongArray(long[] array) {
         wrap(array);
     }
 
-    public IntegerArray(IntegerArray list) {
+    public LongArray(LongArray list) {
         mValues = list.getArray();
         mSize = list.size();
     }
 
-    public void add(int value) {
+    public void add(long value) {
         if(mSize >= mValues.length) mValues = expand(mValues, 1);
         mValues[mSize++] = value;
     }
 
-    public void add(int[] values) {
+    public void add(long[] values) {
         int newSize = mSize + values.length;
         if(newSize >= mValues.length)
             mValues = expand(mValues, newSize - mValues.length);
 
-        for (int value : values) mValues[mSize++] = value;
+        for(int i = 0; i < values.length; ++i)
+            mValues[mSize++] = values[i];
     }
 
-    public void add(IntegerArray list) {
+    public void add(LongArray list) {
         add(list.getArray());
     }
 
-    public void addIfNotHas(int value) {
+    public void addIfNotHas(long value) {
         if(exists(mValues, 0, mSize, value) == -1) add(value);
     }
 
-    public void addIfNotHas(int[] values) {
-        for (int value : values) addIfNotHas(value);
+    public void addIfNotHas(long[] values) {
+        for(int i = 0; i < values.length; ++i) addIfNotHas(values[i]);
     }
 
-    public void addIfNotHas(IntegerArray values) {
+    public void addIfNotHas(LongArray values) {
         addIfNotHas(values.getArray());
     }
 
-    public void insert(int position, int value) {
+    public void insert(int position, long value) {
         if(mSize >= mValues.length) mValues = expand(mValues, 1);
 
         arraycopy(mValues, position, mValues, position + 1, mSize - position);
@@ -69,7 +70,7 @@ public class IntegerArray {
         ++mSize;
     }
 
-    public void insert(int position, int[] values) {
+    public void insert(int position, long[] values) {
         int newSize = mSize + values.length;
         if(newSize >= mValues.length)
             mValues = expand(mValues, newSize - mValues.length);
@@ -79,7 +80,7 @@ public class IntegerArray {
         mSize += values.length;
     }
 
-    public void insert(int position, IntegerArray list) {
+    public void insert(int position, LongArray list) {
         insert(position, list.getArray());
     }
 
@@ -87,33 +88,33 @@ public class IntegerArray {
         arraycopy(mValues, position + 1, mValues, position, --mSize - position);
     }
 
-    public void remove(int value) {
+    public void remove(long value) {
         for(int i = 0; i < mSize;) {
             if(mValues[i] == value) removeAt(i);
             else ++i;
         }
     }
 
-    public void remove(int[] values) {
+    public void remove(long[] values) {
         for(int i = 0; i < values.length; ++i) remove(values[i]);
     }
 
-    public void remove(IntegerArray values) {
+    public void remove(LongArray values) {
         remove(values.getArray());
     }
 
     public void swap(int indexOne, int indexTwo) {
-        int tmp = mValues[indexOne];
+        long tmp = mValues[indexOne];
         mValues[indexOne] = mValues[indexTwo];
         mValues[indexTwo] = tmp;
     }
 
-    public void wrap(int value) {
-        mValues = new int[]{value};
+    public void wrap(long value) {
+        mValues = new long[]{value};
         mSize = 1;
     }
 
-    public void wrap(int[] values) {
+    public void wrap(long[] values) {
         if(values == null) {
             mValues = EMPTY;
             mSize = 0;
@@ -124,20 +125,20 @@ public class IntegerArray {
         }
     }
 
-    public int get(int position) {
+    public long get(int position) {
         return mValues[position];
     }
 
-    public int getFirst() {
+    public long getFirst() {
         return mValues[0];
     }
 
-    public int getLast() {
+    public long getLast() {
         return mValues[mSize-1];
     }
 
-    public int[] getArray() {
-        int[] result = new int[mSize];
+    public long[] getArray() {
+        long[] result = new long[mSize];
         arraycopy(mValues, 0, result, 0, mSize);
         return result;
     }
@@ -146,15 +147,11 @@ public class IntegerArray {
         return mSize;
     }
 
-    public int capacity() {
-        return mValues.length;
-    }
-
     public boolean isEmpty() {
         return mSize <= 0;
     }
 
-    public boolean contains(int value) {
+    public boolean contains(long value) {
         return exists(mValues, 0, mSize, value) >= 0;
     }
 

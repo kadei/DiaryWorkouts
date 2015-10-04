@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.util.PrimitiveCollection;
+package ru.kadei.diaryworkouts.util.primitive_collection;
 
 import static java.lang.System.arraycopy;
 

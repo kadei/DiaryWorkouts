@@ -2,21 +2,14 @@ package ru.kadei.diaryworkouts.builders;
 
 import android.content.ContentValues;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import ru.kadei.diaryworkouts.database.Cortege;
 import ru.kadei.diaryworkouts.database.DatabaseWriter;
+import ru.kadei.diaryworkouts.database.Record;
+import ru.kadei.diaryworkouts.models.workouts.DateEvent;
 import ru.kadei.diaryworkouts.models.workouts.Exercise;
 import ru.kadei.diaryworkouts.models.workouts.Set;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
 
-import static java.lang.String.valueOf;
-import static java.util.Calendar.DATE;
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.YEAR;
-import static java.util.TimeZone.getTimeZone;
 import static ru.kadei.diaryworkouts.database.Database.FALSE;
 import static ru.kadei.diaryworkouts.database.Database.TRUE;
 import static ru.kadei.diaryworkouts.models.workouts.Measure.DISTANCE;
@@ -35,7 +28,7 @@ public class HistoryWriter extends DatabaseWriter {
     private Cortege cortegeSet;
 
     @Override
-    public void writeObject(Object object) {
+    public void writeObject(Record object) {
         if (object instanceof Workout)
             saveWorkout((Workout) object);
         else
@@ -45,46 +38,30 @@ public class HistoryWriter extends DatabaseWriter {
     private void saveWorkout(Workout workout) {
         initCorteges();
 
+        final long idDateEvent = saveDateEvent(workout.date);
+
         final ContentValues cv = cortegeWorkout.values;
         cv.put("idProgram", workout.getDescriptionProgram().id);
         cv.put("idWorkout", workout.getDescriptionWorkout().id);
         cv.put("posWorkout", workout.getPosCurrentWorkout());
-        cv.put("startDate", workout.date);
+        cv.put("idDateEvent", idDateEvent);
         cv.put("duration", workout.duration);
         cv.put("comment", workout.comment);
 
 
         final long idHistory = save(cortegeWorkout, workout);
-        saveDate(workout.date, idHistory);
         saveHistoryExercise(workout, idHistory);
 
         releaseCorteges();
     }
 
-    private void saveDate(long millisecond, long idHistory) {
-        if (existsDateFor(idHistory))
-            deleteDateFor(idHistory);
-
-        Calendar calendar = new GregorianCalendar(getTimeZone("GMT+3"));
-        calendar.setTimeInMillis(millisecond);
-
-        ContentValues cv = new ContentValues(5);
-        cv.put("idHistoryWorkout", idHistory);
-        cv.put("year", calendar.get(YEAR));
-        cv.put("month", calendar.get(MONTH));
-        cv.put("day", calendar.get(DATE));
-        cv.put("hour", calendar.get(HOUR_OF_DAY));
-
-        insertInto("dateWorkout", cv);
-        cv.clear();
-    }
-
-    private boolean existsDateFor(long idHistory) {
-        return existsColumnIn("dateWorkout", "idHistoryWorkout", valueOf(idHistory));
-    }
-
-    private void deleteDateFor(long idHistory) {
-        db.delete("dateWorkout", query("idHistoryWorkout = ").append(idHistory).toString(), null);
+    private long saveDateEvent(long date) {
+        DateEvent dateEvent = new DateEvent(date);
+        DateEventWriter dateEventWriter = new DateEventWriter();
+        dateEventWriter.setDB(db);
+        dateEventWriter.writeObject(dateEvent);
+        dateEventWriter.forgetReferenceDB();
+        return dateEvent.id;
     }
 
     private void saveHistoryExercise(Workout workout, long idHistory) {

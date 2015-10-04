@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import ru.kadei.diaryworkouts.R;
 import ru.kadei.diaryworkouts.models.workouts.Description;
-import ru.kadei.diaryworkouts.util.PrimitiveCollection.IntegerArray;
+import ru.kadei.diaryworkouts.util.primitive_collection.IntegerArray;
 import ru.kadei.diaryworkouts.view.DynamicListView;
 
 /**

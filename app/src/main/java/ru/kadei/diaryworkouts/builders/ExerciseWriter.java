@@ -4,6 +4,7 @@ import android.content.ContentValues;
 
 import ru.kadei.diaryworkouts.database.Cortege;
 import ru.kadei.diaryworkouts.database.DatabaseWriter;
+import ru.kadei.diaryworkouts.database.Record;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionStandardExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise;
@@ -14,7 +15,7 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise;
 public class ExerciseWriter extends DescriptionWriter {
 
     @Override
-    public void writeObject(Object object) {
+    public void writeObject(Record object) {
         if (object instanceof DescriptionExercise)
             saveExercise((DescriptionExercise) object);
         else

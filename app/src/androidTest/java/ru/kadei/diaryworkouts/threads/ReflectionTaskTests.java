@@ -14,10 +14,9 @@ public class ReflectionTaskTests extends ApplicationTest implements TaskInterfac
         task
                 .setClient(this)
                 .setExecutedMethod("one", String.class)
-                .setParameters("test string")
                 .setCompleteMethod("resultOne");
 
-        task.execute();
+        task.execute("test string");
         task.noticeCompletion();
     }
 

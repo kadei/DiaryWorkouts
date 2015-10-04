@@ -2,7 +2,7 @@ package ru.kadei.diaryworkouts.util;
 
 import static java.lang.Math.max;
 import static java.util.Arrays.binarySearch;
-import static ru.kadei.diaryworkouts.util.PrimitiveCollection.ArrayUtil.expand;
+import static ru.kadei.diaryworkouts.util.primitive_collection.ArrayUtil.expand;
 
 /**
  * Created by kadei on 23.06.2015.

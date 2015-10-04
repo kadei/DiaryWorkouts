@@ -14,6 +14,8 @@
     <dimen name="navigation_icon_size">24dp</dimen>
     <dimen name="navigation_text_size">16sp</dimen>
 
+    <dimen name="label_size">14sp</dimen>
+
     <dimen name="list_icon_left_padding">16dp</dimen>
     <dimen name="list_item_left_padding">72dp</dimen>
     <dimen name="list_item_right_padding">16dp</dimen>

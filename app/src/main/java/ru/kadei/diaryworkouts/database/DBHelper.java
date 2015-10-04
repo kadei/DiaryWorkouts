@@ -31,7 +31,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "`idProgram` INTEGER," +
                 "`idWorkout` INTEGER," +
                 "`posWorkout` INTEGER," +
-                "`startDate` INTEGER," +
+                "`idDateEvent` INTEGER," +
                 "`duration` INTEGER," +
                 "`comment` TEXT);");
 
@@ -89,11 +89,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 "`idExercise` INTEGER," +
                 "`orderInList` INTEGER);");
 
-        db.execSQL("CREATE TABLE `dateWorkout` (" +
-                "`idHistoryWorkout` INTEGER, " +
+        db.execSQL("CREATE TABLE `dateEvent` (" +
+                "`_id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "`year` INTEGER, " +
                 "`month` INTEGER, " +
                 "`day` INTEGER, " +
-                "`hour` INTEGER);");
+                "`hour` INTEGER, " +
+                "`milliseconds` INTEGER);");
     }
 }

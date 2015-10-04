@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,11 +28,18 @@ import ru.kadei.diaryworkouts.threads.BackgroundLogic;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final int GENERAL_ID_SELECTED_WORKOUT = 1;
+
+    private final SparseArray<Object> generalStorage = new SparseArray<>(8);
     private ResourceManager resourceManager;
     private WorkoutManager workoutManager;
     private PreferenceManager preferenceManager;
 
     private Navigator navigator;
+
+    public SparseArray<Object> getGeneralStorage() {
+        return generalStorage;
+    }
 
     public ResourceManager getResourceManager() {
         return resourceManager;

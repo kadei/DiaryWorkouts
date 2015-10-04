@@ -14,6 +14,7 @@ import ru.kadei.diaryworkouts.models.workouts.Set;
 import ru.kadei.diaryworkouts.models.workouts.StandardExercise;
 import ru.kadei.diaryworkouts.models.workouts.SupersetExercise;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
+import ru.kadei.diaryworkouts.util.primitive_collection.SimpleSparseLongArray;
 
 import static ru.kadei.diaryworkouts.database.Database.TRUE;
 import static ru.kadei.diaryworkouts.models.workouts.Measure.MEASURE_AMOUNT;
@@ -34,23 +35,17 @@ public class HistoryReader extends DatabaseReader {
     }
 
     @Override
-    public void readObjects(String query) {
-        Cursor c = db.rawQuery(query, null);
-        if (c.moveToFirst()) {
-            objects = buildFrom(c);
-        }
-        c.close();
-    }
-
-    private ArrayList<Workout> buildFrom(Cursor c) {
+    public ArrayList<Workout> buildFromCursor(Cursor c) {
         final ArrayList<Workout> list = new ArrayList<>(c.getCount());
 
         final int indexId = c.getColumnIndex("_id");
         final int indexIdProgram = c.getColumnIndex("idProgram");
         final int indexPosWorkout = c.getColumnIndex("posWorkout");
-        final int indexStartDate = c.getColumnIndex("startDate");
+        final int indexIdDateEvent = c.getColumnIndex("idDateEvent");
         final int indexDuration = c.getColumnIndex("duration");
         final int indexComment = c.getColumnIndex("comment");
+
+        final SimpleSparseLongArray dates = getAllDates(c, indexIdDateEvent);
 
         do {
             long idPrg = c.getLong(indexIdProgram);
@@ -63,7 +58,7 @@ public class HistoryReader extends DatabaseReader {
 
             Workout workout = new Workout(descriptionProgram, posWorkout, exercises);
             workout.id = idHistory;
-            workout.date = c.getLong(indexStartDate);
+            workout.date = dates.get(c.getLong(indexIdDateEvent), 0L);
             workout.duration = c.getLong(indexDuration);
             workout.comment = c.getString(indexComment);
 
@@ -71,6 +66,46 @@ public class HistoryReader extends DatabaseReader {
         } while (c.moveToNext());
 
         return list;
+    }
+
+    private SimpleSparseLongArray getAllDates(Cursor c, int indexIdDateEvent) {
+        final String idsSeparatedByComma = getIdsSeparatedByComma(c, indexIdDateEvent);
+        final String query = query("SELECT _id, milliseconds FROM dateEvent WHERE _id IN (")
+                .append(idsSeparatedByComma).append(") ORDER BY _id").toString();
+
+        final SimpleSparseLongArray dates = new SimpleSparseLongArray(c.getCount());
+        final Cursor curDates = db.rawQuery(query, null);
+
+        if(curDates.getCount() != c.getCount())
+            throw new RuntimeException("Unexpected case");
+
+        if(curDates.moveToFirst()) {
+            final int indexId = curDates.getColumnIndex("_id");
+            final int indexMilliseconds = curDates.getColumnIndex("milliseconds");
+
+            do {
+                dates.put(curDates.getLong(indexId), curDates.getLong(indexMilliseconds));
+            } while (curDates.moveToNext());
+        }
+        curDates.close();
+
+        return dates;
+    }
+
+    private String getIdsSeparatedByComma(Cursor c, int index) {
+        final int originalPos = c.getPosition();
+        final int size = c.getCount() - originalPos;
+        int count = 0;
+
+        final StringBuilder sb = getClearStringBuilder();
+        do {
+            sb.append(c.getLong(index));
+            if(++count < size)
+                sb.append(", ");
+
+        } while (c.moveToNext());
+        c.moveToPosition(originalPos);
+        return sb.toString();
     }
 
     private DescriptionProgram getDescriptionProgram(long idProgram) {

@@ -22,7 +22,6 @@ public class CustomFragment extends Fragment {
 
     private FloatingActionButton floatingActionButton;
     private Preparer preparer;
-    private ResourceManager resourceManager;
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
@@ -89,11 +88,15 @@ public class CustomFragment extends Fragment {
         }
     }
 
-    public final void setResourceManager(ResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
+    protected final Object getObjectFromGeneralStorage(int id) {
+        return getMainActivity().getGeneralStorage().get(id);
+    }
+
+    public final MainActivity getMainActivity() {
+        return (MainActivity) getActivity();
     }
 
     public final ResourceManager getResourceManager() {
-        return resourceManager;
+        return getMainActivity().getResourceManager();
     }
 }

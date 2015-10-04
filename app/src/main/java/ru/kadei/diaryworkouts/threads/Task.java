@@ -11,7 +11,6 @@ public class Task {
     private Object client;
 
     private Method executedMethod;
-    private Object[] parameters;
     private Class returnType;
     private Object returnValue;
 
@@ -53,11 +52,6 @@ public class Task {
             throw new RuntimeException("You first need call [setClient(Object)] method");
     }
 
-    public Task setParameters(Object... parameters) {
-        this.parameters = parameters;
-        return this;
-    }
-
     public Task setCompleteMethod(String name) {
         if (returnType == null)
             throw new RuntimeException("You first need call [setExecutedMethod(String, Class...)] method");
@@ -87,7 +81,7 @@ public class Task {
         return this;
     }
 
-    void execute() throws TaskException {
+    void execute(Object... parameters) throws TaskException {
         try {
             returnValue = executedMethod.invoke(client, parameters);
         } catch (IllegalAccessException e) {
@@ -121,9 +115,5 @@ public class Task {
 
     boolean isSuccessful() {
         return exception == null;
-    }
-
-    void forgetParameters() {
-        parameters = null;
     }
 }

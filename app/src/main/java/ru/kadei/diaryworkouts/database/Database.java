@@ -57,8 +57,7 @@ public class Database {
 
     public void load(String query, DatabaseReader reader, DatabaseClient client) {
         clients.offer(client);
-        taskLoadFromDatabase.setParameters(query, reader);
-        bgLogic.execute(taskLoadFromDatabase);
+        bgLogic.execute(taskLoadFromDatabase, query, reader);
     }
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
@@ -86,8 +85,7 @@ public class Database {
 
     public void save(Record record, DatabaseWriter writer, DatabaseClient client) {
         clients.offer(client);
-        taskSaveInDatabase.setParameters(record, writer);
-        bgLogic.execute(taskSaveInDatabase);
+        bgLogic.execute(taskSaveInDatabase, record, writer);
     }
 
     private Record executeSave(Record record, DatabaseWriter writer) {

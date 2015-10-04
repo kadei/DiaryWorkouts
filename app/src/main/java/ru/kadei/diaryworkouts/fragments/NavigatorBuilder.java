@@ -7,7 +7,7 @@ import android.util.SparseArray;
 
 import ru.kadei.diaryworkouts.activities.MainActivity;
 
-import static ru.kadei.diaryworkouts.util.PrimitiveCollection.ArrayUtil.exists;
+import static ru.kadei.diaryworkouts.util.primitive_collection.ArrayUtil.exists;
 
 /**
  * Created by kadei on 26.09.15.

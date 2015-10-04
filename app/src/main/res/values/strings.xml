@@ -19,18 +19,19 @@
     <string name="exit">Выход</string>
 
     <!-- activity__main fragment -->
-    <string name="current_training">Программа</string>
-    <string name="last_training">Последняя тр.</string>
-    <string name="upcoming_training">Предстоящая тр.</string>
+    <string name="current_program">Текущая программа</string>
+    <string name="last_workout">Последняя тренировка</string>
+    <string name="upcoming_workout">Предстоящая тренировка</string>
     <string name="begin_program">Начало программы</string>
     <string name="duration_program">Продолжительность</string>
-    <string name="amount_training">Кол-во тренировок</string>
+    <string name="amount_workout">Кол-во тренировок</string>
     <string name="time_elapsed">Время прошло</string>
     <string name="less_hour">Меньше часа</string>
 
-    <string name="program_no_select">программа не выбрана</string>
-    <string name="training_was_not">тренировок не было </string>
-    <string name="not_determined">не определена</string>
+    <string name="program_no_select">Программа не выбрана</string>
+    <string name="just_begun">Только началась</string>
+    <string name="workout_was_not">Тренировок не было </string>
+    <string name="not_determined">Не определена</string>
 
     <string name="drawer_open">Открыто</string>
     <string name="drawer_close">Закрыто</string>
@@ -245,7 +246,7 @@
     <string name="press_again">Нажмите еще раз для выхода</string>
     <string name="no_description">Нет описания</string>
     <string name="empty"></string>
-    <string name="symbol">---</string>
+    <string name="symbol"> \t---</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
     <string name="slash">/</string>

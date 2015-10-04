@@ -163,7 +163,6 @@ public class Navigator {
     private void replaceFragment(int id) {
         final Pair<Class<? extends CustomFragment>, Bundle> pair = fragments.get(id);
         final CustomFragment frg = getInstanceFor(pair.first);
-        frg.setResourceManager(activity.getResourceManager());
         frg.setFloatingActionButton(floatingActionButton);
         frg.restore(pair.second);
         activity.getFragmentManager().beginTransaction().replace(idContainer, frg).commit();

@@ -19,12 +19,12 @@ public abstract class DatabaseWriter extends SQLCreator {
         this.db = db;
     }
 
-    public final void writeObjects(ArrayList<?> objects) {
+    public final void writeObjects(ArrayList<Record> objects) {
         for (int i = 0, end = objects.size(); i < end; ++i)
             writeObject(objects.get(i));
     }
 
-    public abstract void writeObject(Object object);
+    public abstract void writeObject(Record object);
 
     public void forgetReferenceDB() {
         db = null;

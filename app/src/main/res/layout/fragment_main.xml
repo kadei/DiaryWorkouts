@@ -1,6 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <!-- current program -->
+    <TextView
+        android:id="@+id/lbl_current_program"
+        style="@style/label_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/current_program" />
+
+    <TextView
+        android:id="@+id/current_program"
+        style="@style/info_main_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/lbl_current_program"
+        android:fontFamily="sans-serif"
+        android:text="Программа для новичков"
+        android:textSize="25sp" />
+
+    <!-- duration program -->
+    <TextView
+        android:id="@+id/lbl_duration_program"
+        style="@style/label_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/current_program"
+        android:layout_marginTop="8dp"
+        android:text="@string/duration_program" />
+
+    <TextView
+        android:id="@+id/duration_program"
+        style="@style/info_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/lbl_duration_program"
+        android:text="3 месяца 2 недели" />
+
+    <!-- amount workout -->
+    <TextView
+        android:id="@+id/lbl_amount_workout"
+        style="@style/label_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/duration_program"
+        android:layout_marginTop="8dp"
+        android:text="@string/amount_workout" />
+
+    <TextView
+        android:id="@+id/amount_workout"
+        style="@style/info_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/lbl_amount_workout"
+        android:text="3" />
+
+    <!-- upcoming workout -->
+    <TextView
+        android:id="@+id/lbl_upcoming_workout"
+        style="@style/label_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/amount_workout"
+        android:layout_marginTop="32dp"
+        android:fontFamily="sans-serif"
+        android:text="@string/upcoming_workout"/>
+
+    <TextView
+        android:id="@+id/upcoming_workout"
+        style="@style/info_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/lbl_upcoming_workout"
+        android:layout_toLeftOf="@+id/btn_select_upcoming_workout"
+        android:layout_toStartOf="@+id/btn_select_upcoming_workout"
+        android:fontFamily="sans-serif"
+        android:text="Все тело за раз"
+        android:textSize="22sp" />
+
+    <ImageButton
+        android:id="@+id/btn_select_upcoming_workout"
+        style="@style/test"
+        android:layout_width="@dimen/min_touchable_height"
+        android:layout_height="@dimen/min_touchable_height"
+        android:layout_alignBaseline="@+id/lbl_upcoming_workout"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:contentDescription="Выбор предстоящей тренировки"
+        android:src="@drawable/ic_list_black_18dp" />
+
+    <!-- time elapsed upcoming workout -->
+    <TextView
+        android:id="@+id/lbl_time_elapsed_upcoming_workout"
+        style="@style/label_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/upcoming_workout"
+        android:layout_marginTop="8dp"
+        android:text="@string/time_elapsed" />
+
+    <TextView
+        android:id="@+id/time_elapsed_upcoming_workout"
+        style="@style/info_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/lbl_time_elapsed_upcoming_workout"
+        android:layout_toLeftOf="@+id/btn_select_upcoming_workout"
+        android:layout_toStartOf="@+id/btn_select_upcoming_workout"
+        android:text="2 недели 1 день" />
+
+    <!-- last workout -->
+    <TextView
+        android:id="@+id/lbl_last_workout"
+        style="@style/label_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/time_elapsed_upcoming_workout"
+        android:layout_marginTop="32dp"
+        android:text="@string/last_workout" />
+
+    <TextView
+        android:id="@+id/last_workout"
+        style="@style/info_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/lbl_last_workout"
+        android:layout_toLeftOf="@+id/btn_select_upcoming_workout"
+        android:layout_toStartOf="@+id/btn_select_upcoming_workout"
+        android:text="Низ тела"
+        android:textSize="22sp" />
+
+    <!-- time elapsed last workout -->
+    <TextView
+        android:id="@+id/lbl_time_elapsed_last_workout"
+        style="@style/label_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/last_workout"
+        android:layout_marginTop="8dp"
+        android:text="@string/time_elapsed" />
+
+    <TextView
+        android:id="@+id/time_elapsed_last_workout"
+        style="@style/info_main_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/lbl_time_elapsed_last_workout"
+        android:layout_toLeftOf="@+id/btn_select_upcoming_workout"
+        android:layout_toStartOf="@+id/btn_select_upcoming_workout"
+        android:text="2 недели 1 день" />
 
 </RelativeLayout>

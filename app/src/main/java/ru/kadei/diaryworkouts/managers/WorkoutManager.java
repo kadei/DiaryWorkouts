@@ -23,6 +23,8 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
 
+import static java.lang.String.valueOf;
+
 /**
  * Created by kadei on 02.09.15.
  */
@@ -82,7 +84,10 @@ public class WorkoutManager extends SQLCreator {
     }
 
     public void loadAllHistory(WorkoutManagerClient client) {
-        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC", historyReader,
+        database.load("SELECT" + allColumnsHistoryWorkout() +
+                        "FROM historyWorkout, dateEvent " +
+                        "WHERE historyWorkout.idDateEvent = dateEvent._id " +
+                        "ORDER BY dateEvent.milliseconds DESC", historyReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
@@ -92,8 +97,17 @@ public class WorkoutManager extends SQLCreator {
                 });
     }
 
+    private static String allColumnsHistoryWorkout() {
+        return " historyWorkout._id, historyWorkout.idProgram, historyWorkout.idWorkout, " +
+                "historyWorkout.posWorkout, historyWorkout.idDateEvent, " +
+                "historyWorkout.duration, historyWorkout.comment ";
+    }
+
     public void loadLastWorkout(WorkoutManagerClient client) {
-        database.load("SELECT * FROM historyWorkout ORDER BY startDate DESC LIMIT 1", historyReader,
+        database.load("SELECT" + allColumnsHistoryWorkout() +
+                        "FROM historyWorkout, dateEvent " +
+                        "WHERE historyWorkout.idDateEvent = dateEvent._id " +
+                        "ORDER BY dateEvent.milliseconds DESC LIMIT 1", historyReader,
                 new BridgeLoad(client) {
                     @SuppressWarnings("unchecked")
                     @Override
@@ -105,8 +119,17 @@ public class WorkoutManager extends SQLCreator {
     }
 
     public void loadHistoryFor(final Workout workout, WorkoutManagerClient client) {
-        String query = query("SELECT * FROM historyWorkout WHERE idProgram = ").append(workout.getIdProgram())
-                .append(" AND posWorkout = ").append(workout.getPosCurrentWorkout()).toString();
+        loadHistoryFor(workout, 0, client);
+    }
+
+    public void loadHistoryFor(final Workout workout, int limit, WorkoutManagerClient client) {
+        String strLimit = limit <= 0 ? "" : " LIMIT " + valueOf(limit);
+        String query = query("SELECT").append(allColumnsHistoryWorkout())
+                .append("FROM historyWorkout, dateEvent ")
+                .append("WHERE historyWorkout.idDateEvent = dateEvent._id")
+                .append(" AND historyWorkout.idProgram = ").append(workout.getIdProgram())
+                .append(" AND historyWorkout.posWorkout = ").append(workout.getPosCurrentWorkout())
+                .append(" ORDER BY dateEvent.milliseconds DESC").append(strLimit).toString();
 
         database.load(query, historyReader, new BridgeLoad(client) {
             @SuppressWarnings("unchecked")

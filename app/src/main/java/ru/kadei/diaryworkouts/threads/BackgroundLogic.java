@@ -2,6 +2,7 @@ package ru.kadei.diaryworkouts.threads;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Pair;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -14,7 +15,7 @@ import static java.lang.Thread.sleep;
  */
 public class BackgroundLogic {
 
-    private final Queue<Task> tasks = new ArrayDeque<>();
+    private final Queue<Pair<Task, Object[]>> tasks = new ArrayDeque<>();
     private boolean stop = false;
     private boolean pause = true;
 
@@ -25,7 +26,6 @@ public class BackgroundLogic {
         public boolean handleMessage(Message msg) {
             Task task = (Task) msg.obj;
             msg.obj = null;
-            task.forgetParameters();
 
             if (task.isSuccessful())
                 task.noticeCompletion();
@@ -49,7 +49,7 @@ public class BackgroundLogic {
 
     public BackgroundLogic(boolean thisThread) {
         this.thisThread = thisThread;
-        if(!thisThread)
+        if (!thisThread)
             thread.start();
     }
 
@@ -57,11 +57,13 @@ public class BackgroundLogic {
         Task active = null;
         while (true) {
             try {
-                active = scheduleNext();
+                Pair<Task, Object[]> pair = scheduleNext();
+                active = pair != null ? pair.first : null;
+
                 if (active != null) {
                     if (isStop()) return;
 
-                    active.execute();
+                    active.execute(pair.second);
                     if (isStop()) return;
 
                     sendTask(active);
@@ -88,7 +90,7 @@ public class BackgroundLogic {
         handler.sendMessage(msg);
     }
 
-    private synchronized Task scheduleNext() {
+    private synchronized Pair<Task, Object[]> scheduleNext() {
         return tasks.poll();
     }
 
@@ -100,19 +102,19 @@ public class BackgroundLogic {
         pause = value;
     }
 
-    public synchronized void execute(Task task) {
-        if(thisThread)
-            executeInThisThread(task);
+    public synchronized void execute(Task task, Object... parameters) {
+        if (thisThread)
+            executeInThisThread(task, parameters);
         else {
-            tasks.offer(task);
+            tasks.offer(new Pair<>(task, parameters));
             if (pause)
                 thread.interrupt();
         }
     }
 
-    private void executeInThisThread(Task task) {
+    private void executeInThisThread(Task task, Object... parameters) {
         try {
-            task.execute();
+            task.execute(parameters);
             task.noticeCompletion();
         } catch (TaskException e) {
             task.exception = e.getOriginalException();
@@ -122,7 +124,7 @@ public class BackgroundLogic {
 
     public synchronized void stop() {
         stop = true;
-        if(pause)
+        if (pause)
             thread.interrupt();
     }
 

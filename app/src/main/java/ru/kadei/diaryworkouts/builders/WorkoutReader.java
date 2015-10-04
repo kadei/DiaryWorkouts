@@ -20,17 +20,9 @@ public class WorkoutReader extends DescriptionReader {
         this.exerciseReader = exerciseReader;
     }
 
-    @Override
-    public void readObjects(String query) {
-        Cursor c = db.rawQuery(query, null);
-        if (c.moveToFirst()) {
-            objects = buildList(c);
-        }
-        c.close();
-    }
-
     @SuppressWarnings("unchecked")
-    private ArrayList<DescriptionWorkout> buildList(Cursor c) {
+    @Override
+    public ArrayList<?> buildFromCursor(Cursor c) {
         final DescriptionReader reader = exerciseReader;
         final BufferDescriptions buffer = bufferDescriptions;
         final ArrayList<DescriptionWorkout> list = new ArrayList<>(c.getCount());

@@ -3,6 +3,7 @@ package ru.kadei.diaryworkouts.builders;
 import android.content.ContentValues;
 
 import ru.kadei.diaryworkouts.database.Cortege;
+import ru.kadei.diaryworkouts.database.Record;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 
 /**
@@ -11,7 +12,7 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 public class ProgramWriter extends DescriptionWriter {
 
     @Override
-    public void writeObject(Object object) {
+    public void writeObject(Record object) {
         if(object instanceof DescriptionProgram)
             saveProgram((DescriptionProgram) object);
         else

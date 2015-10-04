@@ -19,17 +19,9 @@ public class ExerciseReader extends DescriptionReader {
         super(bufferDescriptions);
     }
 
-    @Override
-    public void readObjects(String query) {
-        Cursor c = db.rawQuery(query, null);
-        if(c.moveToFirst()) {
-            objects = buildList(c);
-        }
-        c.close();
-    }
-
     @SuppressWarnings("unchecked")
-    private ArrayList<DescriptionExercise> buildList(Cursor c) {
+    @Override
+    public ArrayList<DescriptionExercise> buildFromCursor(Cursor c) {
         final BufferDescriptions buffer = bufferDescriptions;
         final ArrayList<DescriptionExercise> list = new ArrayList<>(c.getCount());
 
@@ -43,7 +35,7 @@ public class ExerciseReader extends DescriptionReader {
         do {
             long id = c.getLong(indexID);
             DescriptionExercise de = buffer.getExercise(id);
-            if(de == null) {
+            if (de == null) {
                 int type = c.getInt(indexType);
                 if (type == SUPERSET) {
                     DescriptionSupersetExercise superExe = new DescriptionSupersetExercise();
@@ -78,6 +70,6 @@ public class ExerciseReader extends DescriptionReader {
                 "FROM descriptionExercise, listContentSuperset " +
                 "WHERE listContentSuperset.idSuperset = ").append(id).append(
                 " AND descriptionExercise._id = listContentSuperset.idExercise " +
-                "ORDER BY listContentSuperset.orderInList;").toString();
+                        "ORDER BY listContentSuperset.orderInList;").toString();
     }
 }

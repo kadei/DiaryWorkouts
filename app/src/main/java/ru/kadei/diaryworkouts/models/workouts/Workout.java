@@ -75,4 +75,12 @@ public class Workout extends Record {
     public int getCountExercises() {
         return exercises.size();
     }
+
+    public Workout getNextWorkout() {
+        final int nextPos = posCurrentWorkout + 1 < descriptionProgram.workouts.size()
+                ? posCurrentWorkout + 1
+                : 0;
+
+        return new Workout(descriptionProgram, nextPos);
+    }
 }

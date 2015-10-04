@@ -3,8 +3,6 @@ package ru.kadei.diaryworkouts.adapters;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.SpannedString;
 import android.text.style.UnderlineSpan;
 import android.util.Pair;
 import android.view.View;
@@ -16,7 +14,7 @@ import java.util.ArrayList;
 import ru.kadei.diaryworkouts.R;
 import ru.kadei.diaryworkouts.activities.MainActivity;
 import ru.kadei.diaryworkouts.managers.ResourceManager;
-import ru.kadei.diaryworkouts.util.PrimitiveCollection.IntegerArray;
+import ru.kadei.diaryworkouts.util.primitive_collection.IntegerArray;
 
 import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
 

@@ -20,17 +20,9 @@ public class ProgramReader extends DescriptionReader {
         this.workoutReader = workoutReader;
     }
 
-    @Override
-    public void readObjects(String query) {
-        Cursor c = db.rawQuery(query, null);
-        if(c.moveToFirst()) {
-            objects = buildList(c);
-        }
-        c.close();
-    }
-
     @SuppressWarnings(value = "unchecked")
-    private ArrayList<DescriptionProgram> buildList(Cursor c) {
+    @Override
+    public ArrayList<?> buildFromCursor(Cursor c) {
         final DescriptionReader reader = workoutReader;
         final BufferDescriptions buffer = bufferDescriptions;
         final ArrayList<DescriptionProgram> list = new ArrayList<>(c.getCount());
@@ -43,7 +35,7 @@ public class ProgramReader extends DescriptionReader {
         do {
             long id = c.getLong(indexID);
             DescriptionProgram dp = buffer.getProgram(id);
-            if(dp == null) {
+            if (dp == null) {
                 dp = new DescriptionProgram();
                 dp.id = id;
                 dp.name = c.getString(indexName);
