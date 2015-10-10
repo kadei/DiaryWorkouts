@@ -1,7 +1,6 @@
 package ru.kadei.diaryworkouts.models.workouts;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import ru.kadei.diaryworkouts.database.Record;
 
@@ -44,12 +43,31 @@ public class Workout extends Record {
         this.exercises = exercises;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        else {
+            if (o instanceof Workout) {
+                Workout w = (Workout) o;
+                return getIdProgram() == w.getIdProgram()
+                        && getWorkoutId() == w.getWorkoutId()
+                        && getPosCurrentWorkout() == w.getPosCurrentWorkout();
+            }
+            return false;
+        }
+    }
+
     public String getName() {
         return getDescriptionWorkout().name;
     }
 
     public long getIdProgram() {
         return descriptionProgram.id;
+    }
+
+    public long getWorkoutId() {
+        return getDescriptionWorkout().id;
     }
 
     public Exercise getCurrentExercise() {

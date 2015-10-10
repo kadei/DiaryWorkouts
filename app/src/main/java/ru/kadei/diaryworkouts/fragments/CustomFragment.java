@@ -13,13 +13,14 @@ import com.github.clans.fab.FloatingActionButton;
 import ru.kadei.diaryworkouts.R;
 import ru.kadei.diaryworkouts.activities.MainActivity;
 import ru.kadei.diaryworkouts.managers.ResourceManager;
-import ru.kadei.diaryworkouts.util.StubAnimationListener;
+import ru.kadei.diaryworkouts.util.stubs.StubAnimationListener;
 import ru.kadei.diaryworkouts.view.ActionBarDecorator;
 
 import static android.view.animation.AnimationUtils.loadAnimation;
 
 public class CustomFragment extends Fragment {
 
+    private boolean alive;
     private FloatingActionButton floatingActionButton;
     private Preparer preparer;
 
@@ -35,6 +36,18 @@ public class CustomFragment extends Fragment {
 
         defaultConfigFAB();
         configFloatingActionButton(floatingActionButton);
+
+        alive = true;
+    }
+
+    @Override
+    public final void onDestroy() {
+        super.onDestroy();
+        alive = false;
+    }
+
+    public boolean isAlive() {
+        return alive;
     }
 
     protected void configToolbar(ActionBarDecorator bar) {

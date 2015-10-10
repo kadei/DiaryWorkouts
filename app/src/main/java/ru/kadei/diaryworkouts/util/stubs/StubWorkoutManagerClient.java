@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.util;
+package ru.kadei.diaryworkouts.util.stubs;
 
 import java.util.ArrayList;
 
@@ -7,6 +7,7 @@ import ru.kadei.diaryworkouts.models.workouts.Description;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
+import ru.kadei.diaryworkouts.models.workouts.StatisticPeriodOfProgram;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
 
 /**
@@ -40,6 +41,11 @@ public class StubWorkoutManagerClient implements WorkoutManagerClient {
 
     @Override
     public void lastWorkoutLoaded(Workout workout) {
+
+    }
+
+    @Override
+    public void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic) {
 
     }
 

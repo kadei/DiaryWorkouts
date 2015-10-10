@@ -1,4 +1,4 @@
-package ru.kadei.diaryworkouts.util;
+package ru.kadei.diaryworkouts.util.stubs;
 
 import android.view.animation.Animation;
 

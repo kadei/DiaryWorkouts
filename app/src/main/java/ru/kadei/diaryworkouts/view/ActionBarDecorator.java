@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.TextView;
 
-import ru.kadei.diaryworkouts.util.StubAnimatorListener;
+import ru.kadei.diaryworkouts.util.stubs.StubAnimatorListener;
 
 /**
  * Created by kadei on 03.10.15.

@@ -22,7 +22,7 @@
     <string name="current_program">Текущая программа</string>
     <string name="last_workout">Последняя тренировка</string>
     <string name="upcoming_workout">Предстоящая тренировка</string>
-    <string name="begin_program">Начало программы</string>
+    <string name="start_of_program">Начало программы</string>
     <string name="duration_program">Продолжительность</string>
     <string name="amount_workout">Кол-во тренировок</string>
     <string name="time_elapsed">Время прошло</string>

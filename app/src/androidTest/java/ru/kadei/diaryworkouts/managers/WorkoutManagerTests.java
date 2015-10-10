@@ -11,6 +11,7 @@ import ru.kadei.diaryworkouts.models.workouts.Description;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
+import ru.kadei.diaryworkouts.models.workouts.StatisticPeriodOfProgram;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
 import ru.kadei.diaryworkouts.threads.BackgroundLogic;
 
@@ -122,6 +123,11 @@ public class WorkoutManagerTests extends ApplicationTest implements WorkoutManag
 
     @Override
     public void lastWorkoutLoaded(Workout workout) {
+
+    }
+
+    @Override
+    public void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic) {
 
     }
 

@@ -2,6 +2,7 @@ package ru.kadei.diaryworkouts.database;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -23,6 +24,7 @@ public class Database {
 
     private final Task taskLoadFromDatabase;
     private final Task taskSaveInDatabase;
+    private final Task taskExecute;
 
     public Database(SQLiteOpenHelper dbHelper, BackgroundLogic bgLogic) {
         this.dbHelper = dbHelper;
@@ -31,6 +33,7 @@ public class Database {
 
         taskLoadFromDatabase = new Task();
         taskSaveInDatabase = new Task();
+        taskExecute = new Task();
         initialTasks();
     }
 
@@ -46,6 +49,12 @@ public class Database {
                 .setExecutedMethod("executeSave", Record.class, DatabaseWriter.class)
                 .setCompleteMethod("completeSave")
                 .setFailMethod("fail");
+
+        taskExecute
+                .setClient(this)
+                .setExecutedMethod("executeExecutor", DatabaseExecutor.class)
+                .setCompleteMethod("completeExecute")
+                .setFailMethod("fail");
     }
 
     public void stop() {
@@ -56,12 +65,14 @@ public class Database {
     }
 
     public void load(String query, DatabaseReader reader, DatabaseClient client) {
+        Log.i("TEST_DB", query);
         clients.offer(client);
         bgLogic.execute(taskLoadFromDatabase, query, reader);
     }
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private DatabaseReader executeLoad(String query, DatabaseReader reader) {
+        Log.d("TEST_DB", "executeLoad");
         SQLiteDatabase db = getDB();
         try {
             reader.setDb(db);
@@ -74,11 +85,13 @@ public class Database {
     }
 
     private void completeLoad(DatabaseReader reader) {
+        Log.d("TEST_DB", "completeLoad");
         if (!clients.isEmpty())
             clients.poll().loaded(reader);
     }
 
     private void fail(Throwable throwable) {
+        Log.d("TEST_DB", "fail DB");
         if (!clients.isEmpty())
             clients.poll().fail(throwable);
     }
@@ -115,5 +128,28 @@ public class Database {
         if (db == null)
             throw new RuntimeException("Error connection database");
         return db;
+    }
+
+    public void executeTask(DatabaseExecutor executor, DatabaseClient client) {
+        clients.offer(client);
+        bgLogic.execute(taskExecute, executor);
+    }
+
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
+    private DatabaseExecutor executeExecutor(DatabaseExecutor executor) {
+        final SQLiteDatabase db = getDB();
+        try {
+            executor.setDB(db);
+            executor.execute();
+            executor.forgetReferenceDB();
+        } finally {
+            db.close();
+        }
+        return executor;
+    }
+
+    private void completeExecute(DatabaseExecutor executor) {
+        if(!clients.isEmpty())
+            clients.poll().executed(executor);
     }
 }

@@ -6,6 +6,7 @@ import ru.kadei.diaryworkouts.models.workouts.Description;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
+import ru.kadei.diaryworkouts.models.workouts.StatisticPeriodOfProgram;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
 
 /**
@@ -13,12 +14,22 @@ import ru.kadei.diaryworkouts.models.workouts.Workout;
  */
 public interface WorkoutManagerClient {
     void allProgramsLoaded(ArrayList<DescriptionProgram> programs);
+
     void allWorkoutsLoaded(ArrayList<DescriptionWorkout> workouts);
+
     void allExercisesLoaded(ArrayList<DescriptionExercise> exercises);
+
     void allHistoryLoaded(ArrayList<Workout> history);
+
     void allHistoryLoadedFor(Workout target, ArrayList<Workout> history);
+
     void lastWorkoutLoaded(Workout workout);
+
+    void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic);
+
     void descriptionSaved(Description description);
+
     void workoutSaved(Workout workout);
+
     void fail(Throwable throwable);
 }

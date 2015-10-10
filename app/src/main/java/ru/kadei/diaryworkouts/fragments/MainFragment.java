@@ -12,21 +12,29 @@ import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import ru.kadei.diaryworkouts.R;
 import ru.kadei.diaryworkouts.managers.ResourceManager;
 import ru.kadei.diaryworkouts.managers.WorkoutManager;
+import ru.kadei.diaryworkouts.managers.WorkoutManagerClient;
+import ru.kadei.diaryworkouts.models.workouts.StatisticPeriodOfProgram;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
-import ru.kadei.diaryworkouts.util.StubWorkoutManagerClient;
+import ru.kadei.diaryworkouts.util.ProxyWorkoutManagerClient;
+import ru.kadei.diaryworkouts.util.stubs.StubWorkoutManagerClient;
+import ru.kadei.diaryworkouts.util.time.TimeUtil;
 import ru.kadei.diaryworkouts.view.ActionBarDecorator;
 
-import static java.lang.String.valueOf;
+import static java.lang.System.currentTimeMillis;
 import static ru.kadei.diaryworkouts.activities.MainActivity.GENERAL_ID_SELECTED_WORKOUT;
+import static ru.kadei.diaryworkouts.models.workouts.DescriptionProgram.newProgram;
 
 public class MainFragment extends CustomFragment {
 
     private TextView tvCurrentProgram;
+    private TextView tvDateStart;
     private TextView tvDurationProgram;
     private TextView tvAmountWorkout;
     private TextView tvUpcomingWorkout;
@@ -39,16 +47,13 @@ public class MainFragment extends CustomFragment {
     private Workout selectedWorkout;
     private Workout lastWorkout;
     private Workout upcomingAfterLastWorkout;
+    private StatisticPeriodOfProgram statisticLastProgram;
+//    private LongSparseArray<StatisticPeriodOfProgram> statisticPeriod = new LongSparseArray<>(2);
+//
+//    private int downloadRequired = 0;
+//    private int downloadFulfilled = 0;
 
-    private int downloadRequired;
-    private int downloadFulfilled;
-
-    private enum TYPE_CONFLICT {
-        NO_LAST_NO_SLECTED,
-        ONLY_SELECTED,
-        ONLY_LAST,
-        LAST_AND_SELECTED
-    }
+    private boolean downloadFulfilled = true;
 
     @Override
     protected void configToolbar(ActionBarDecorator bar) {
@@ -67,6 +72,7 @@ public class MainFragment extends CustomFragment {
         final View v = inflater.inflate(R.layout.fragment_main, container, false);
 
         tvCurrentProgram = (TextView) v.findViewById(R.id.current_program);
+        tvDateStart = (TextView) v.findViewById(R.id.date_of_start);
         tvDurationProgram = (TextView) v.findViewById(R.id.duration_program);
         tvAmountWorkout = (TextView) v.findViewById(R.id.amount_workout);
         tvUpcomingWorkout = (TextView) v.findViewById(R.id.upcoming_workout);
@@ -82,79 +88,145 @@ public class MainFragment extends CustomFragment {
     @Override
     public void onStart() {
         super.onStart();
-        final WorkoutManager wm = getMainActivity().getWorkoutManager();
-        wm.loadLastWorkout(workoutManagerListener);
+
+        forgetReferences();
+
+        if (downloadFulfilled)
+            loadLastWorkout();
+        else
+            throw new RuntimeException("Unexpected case");
     }
 
-    private final StubWorkoutManagerClient workoutManagerListener = new StubWorkoutManagerClient() {
-        @Override
-        public void lastWorkoutLoaded(Workout workout) {
-            final ArrayList<Workout> workoutsForLoadHistory = new ArrayList<>(2);
-            downloadRequired = 0;
-            downloadFulfilled = 0;
+    private void forgetReferences() {
+        lastWorkout = null;
+        selectedWorkout = null;
+        upcomingAfterLastWorkout = null;
+    }
 
-            selectedWorkout = (Workout) getObjectFromGeneralStorage(GENERAL_ID_SELECTED_WORKOUT);
-            if(selectedWorkout != null)
-                workoutsForLoadHistory.add(selectedWorkout);
-
-            lastWorkout = workout;
-            upcomingAfterLastWorkout = workout != null ? workout.getNextWorkout() : null;
-            if(upcomingAfterLastWorkout != null)
-                workoutsForLoadHistory.add(upcomingAfterLastWorkout);
-
-            downloadRequired = workoutsForLoadHistory.size();
-            if(downloadRequired == downloadFulfilled)
-                solveConflictWorkouts();
-            else {
-                final WorkoutManager wm = getMainActivity().getWorkoutManager();
-                for (Workout w : workoutsForLoadHistory)
-                    wm.loadHistoryFor(w, 1, this);
-            }
-        }
-
-        @Override
-        public void allHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
-            ++downloadFulfilled;
-            if (target == selectedWorkout) {
-                selectedWorkout = !history.isEmpty() ? history.get(0) : selectedWorkout;
-            } else if (target == upcomingAfterLastWorkout) {
-                upcomingAfterLastWorkout = !history.isEmpty() ? history.get(0) : upcomingAfterLastWorkout;
+    private void loadLastWorkout() {
+        downloadFulfilled = false;
+        getMainActivity().getWorkoutManager().loadLastWorkout(new ProxyWorkoutManagerClient(this, new StubWorkoutManagerClient() {
+            @Override
+            public void lastWorkoutLoaded(Workout workout) {
+                Log.d("TEST", "LISTENER lastWorkoutLoaded");
+                lastWorkout = workout == null ? getFakeWorkout() : workout;
+                loadStatisticAndHistoryForWorkouts();
             }
 
-            if(downloadRequired == downloadFulfilled)
-                solveConflictWorkouts();
+            @Override
+            public void fail(Throwable throwable) {
+                Log.e("TEST", "FAIL: Load last workout");
+            }
+        }));
+    }
+
+    private Workout getFakeWorkout() {
+        return new Workout(newProgram(-1L, null, null, 0), -1, null);
+    }
+
+    private boolean isFake(Workout workout) {
+        return workout.getIdProgram() < 0L && workout.getPosCurrentWorkout() < 0;
+    }
+
+    private void loadStatisticAndHistoryForWorkouts() {
+        final ArrayList<Workout> workoutsForLoadHistory = new ArrayList<>(2);
+
+        selectedWorkout = (Workout) getObjectFromGeneralStorage(GENERAL_ID_SELECTED_WORKOUT);
+        if (selectedWorkout == null || selectedWorkout.equals(lastWorkout))
+            selectedWorkout = getFakeWorkout();
+        else if (selectedWorkout != null)
+            workoutsForLoadHistory.add(selectedWorkout);
+
+        if (isFake(lastWorkout)) {
+            upcomingAfterLastWorkout = getFakeWorkout();
+        }
+        else {
+            upcomingAfterLastWorkout = lastWorkout.getNextWorkout();
+            workoutsForLoadHistory.add(upcomingAfterLastWorkout);
         }
 
-        @Override
-        public void fail(Throwable throwable) {
-            Log.e("TEST", throwable.getMessage());
+        if (workoutsForLoadHistory.isEmpty())
+            solveConflictWorkouts();
+        else {
+            final StubWorkoutManagerClient listener = new StubWorkoutManagerClient() {
+                @Override
+                public void allHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
+                    Log.d("TEST", "all history loaded");
+                    handleAllHistoryLoadedFor(target, history);
+                }
+
+                @Override
+                public void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic) {
+                    Log.d("TEST", "statistic loaded");
+                    handleStatisticLoaded(statistic);
+                }
+
+                @Override
+                public void fail(Throwable throwable) {
+                    Log.e("TEST", "FAIL: Load statistic or history\nmessage = " + throwable.getMessage());
+                }
+            };
+            final ProxyWorkoutManagerClient proxy = new ProxyWorkoutManagerClient(this, listener);
+            loadHistoryFor(workoutsForLoadHistory, proxy);
+            loadStatisticLastProgram(proxy);
         }
-    };
+    }
+
+    private void loadHistoryFor(ArrayList<Workout> workouts, WorkoutManagerClient listener) {
+        final WorkoutManager wm = getMainActivity().getWorkoutManager();
+        for (Workout w : workouts) {
+            wm.loadHistoryFor(w, 1, listener);
+        }
+    }
+
+    private void loadStatisticLastProgram(WorkoutManagerClient listener) {
+        getMainActivity().getWorkoutManager().loadStatisticLastProgram(listener);
+    }
+
+    private void handleAllHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
+        if (target.equals(selectedWorkout)) {
+            selectedWorkout = !history.isEmpty() ? history.get(0) : selectedWorkout;
+        } else if (target.equals(upcomingAfterLastWorkout)) {
+            upcomingAfterLastWorkout = !history.isEmpty() ? history.get(0) : upcomingAfterLastWorkout;
+        }
+    }
+
+    private void handleStatisticLoaded(StatisticPeriodOfProgram statistic) {
+        statisticLastProgram = statistic;
+        downloadFulfilled = true;
+        solveConflictWorkouts();
+    }
 
     private void solveConflictWorkouts() {
-        TYPE_CONFLICT typeConflict;
+        if (!isFake(selectedWorkout) && selectedSameProgram()) {
+            upcomingAfterLastWorkout = selectedWorkout;
+            selectedWorkout = getFakeWorkout();
+        }
+
         SparseArray<String> values;
-        if (lastWorkout == null && selectedWorkout == null) {
-            typeConflict = TYPE_CONFLICT.NO_LAST_NO_SLECTED;
+        if (isFake(lastWorkout) && isFake(selectedWorkout)) {
             values = noLastAndNoSelected();
-        } else if (lastWorkout == null) {
-            typeConflict = TYPE_CONFLICT.ONLY_SELECTED;
+        } else if (isFake(lastWorkout)) {
             values = onlySelected();
-        } else if (selectedWorkout == null) {
-            typeConflict = TYPE_CONFLICT.ONLY_LAST;
+        } else if (isFake(selectedWorkout)) {
             values = onlyLast();
         } else {
-            typeConflict = TYPE_CONFLICT.LAST_AND_SELECTED;
             values = lastAndSelected();
         }
 
         updateTextViews(values);
     }
 
+    private boolean selectedSameProgram() {
+        return selectedWorkout.getIdProgram() == lastWorkout.getIdProgram();
+    }
+
     private SparseArray<String> noLastAndNoSelected() {
         final ResourceManager res = getResourceManager();
         final SparseArray<String> v = new SparseArray<>(8);
+
         v.put(R.id.current_program, res.getString(R.string.program_no_select));
+        v.put(R.id.date_of_start, res.getString(R.string.symbol));
         v.put(R.id.duration_program, res.getString(R.string.symbol));
         v.put(R.id.amount_workout, res.getString(R.string.symbol));
         v.put(R.id.upcoming_workout, res.getString(R.string.not_determined));
@@ -166,39 +238,87 @@ public class MainFragment extends CustomFragment {
 
     private SparseArray<String> onlySelected() {
         final ResourceManager res = getResourceManager();
-        final Workout sw = selectedWorkout;
+        final Workout S = selectedWorkout;
         final SparseArray<String> v = new SparseArray<>(8);
-        v.put(R.id.current_program, sw.getDescriptionProgram().name);
+
+        v.put(R.id.current_program, S.getDescriptionProgram().name);
+        v.put(R.id.date_of_start, now());
         v.put(R.id.duration_program, res.getString(R.string.just_begun));
-        v.put(R.id.amount_workout, valueOf(0));
-        v.put(R.id.upcoming_workout, sw.getDescriptionWorkout().name);
+        v.put(R.id.amount_workout, Integer.toString(0));
+        v.put(R.id.upcoming_workout, S.getDescriptionWorkout().name);
         v.put(R.id.time_elapsed_upcoming_workout, res.getString(R.string.symbol));
         v.put(R.id.last_workout, res.getString(R.string.workout_was_not));
         v.put(R.id.time_elapsed_last_workout, res.getString(R.string.symbol));
         return v;
     }
 
+    private String now() {
+        DateFormat dateFormat = getDateFormat();
+        return dateFormat.format(new Date(currentTimeMillis()));
+    }
+
+    private DateFormat getDateFormat() {
+        return DateFormat.getDateInstance(DateFormat.MEDIUM);
+    }
+
     private SparseArray<String> onlyLast() {
+        final long currentTime = currentTimeMillis();
+        final Workout L = lastWorkout;
+        final Workout U = upcomingAfterLastWorkout;
+        final StatisticPeriodOfProgram statistic = statisticLastProgram;
         final SparseArray<String> v = new SparseArray<>(8);
+
+        v.put(R.id.current_program, L.getDescriptionProgram().name);
+        v.put(R.id.date_of_start, formatDate(statistic.begin));
+        v.put(R.id.duration_program, durationBetween(currentTime, statistic.begin));
+        v.put(R.id.amount_workout, Integer.toString(statistic.amountWorkout));
+        v.put(R.id.upcoming_workout, U.getDescriptionWorkout().name);
+        v.put(R.id.time_elapsed_upcoming_workout,
+                U.date == 0L
+                        ? getResourceManager().getString(R.string.symbol)
+                        : durationBetween(currentTime, U.date + U.duration));
+        v.put(R.id.last_workout, L.getDescriptionWorkout().name);
+        v.put(R.id.time_elapsed_last_workout, durationBetween(currentTime, L.date + L.duration));
         return v;
     }
 
+    private String formatDate(long date) {
+        DateFormat df = getDateFormat();
+        return df.format(new Date(date));
+    }
+
     private SparseArray<String> lastAndSelected() {
-        final Workout selected = selectedWorkout;
-        final Workout last = lastWorkout;
+        final ResourceManager res = getResourceManager();
+        final long currentTime = currentTimeMillis();
+        final Workout S = selectedWorkout;
+        final Workout L = lastWorkout;
         final SparseArray<String> v = new SparseArray<>(8);
-//        v.put(R.id.current_program, selected.getDescriptionProgram().name);
-//        v.put(R.id.duration_program, );
-//        v.put(R.id.amount_workout, );
-//        v.put(R.id.upcoming_workout, selected.getDescriptionWorkout().name);
-//        v.put(R.id.time_elapsed_upcoming_workout, );
-//        v.put(R.id.last_workout, last.getDescriptionWorkout().name);
-//        v.put(R.id.time_elapsed_last_workout, );
+
+        v.put(R.id.current_program, S.getDescriptionProgram().name);
+        v.put(R.id.date_of_start, now());
+        v.put(R.id.duration_program, res.getString(R.string.just_begun));
+        v.put(R.id.amount_workout, Integer.toString(0));
+        v.put(R.id.upcoming_workout, S.getDescriptionWorkout().name);
+        v.put(R.id.time_elapsed_upcoming_workout,
+                S.date == 0L
+                        ? res.getString(R.string.symbol)
+                        : durationBetween(currentTime, S.date));
+        v.put(R.id.last_workout, L.getDescriptionWorkout().name);
+        v.put(R.id.time_elapsed_last_workout, durationBetween(currentTime, L.date));
         return v;
+    }
+
+    private String durationBetween(long currentTime, long pastTime) {
+        final StringBuilder sb = new StringBuilder(64);
+        long elapsed = currentTime - pastTime;
+        long minimum = TimeUtil.solveMin(elapsed);
+        TimeUtil.timeElapsed(sb, elapsed, minimum);
+        return sb.toString();
     }
 
     private void updateTextViews(SparseArray<String> values) {
         tvCurrentProgram.setText(values.get(R.id.current_program));
+        tvDateStart.setText(values.get(R.id.date_of_start));
         tvDurationProgram.setText(values.get(R.id.duration_program));
         tvAmountWorkout.setText(values.get(R.id.amount_workout));
         tvUpcomingWorkout.setText(values.get(R.id.upcoming_workout));

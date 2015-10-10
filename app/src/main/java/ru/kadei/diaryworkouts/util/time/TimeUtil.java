@@ -1,20 +1,17 @@
 package ru.kadei.diaryworkouts.util.time;
 
-import android.content.res.ColorStateList;
-import android.widget.TextView;
-
 /**
  * Created by kadei on 31.01.2015.
  */
 public class TimeUtil {
 
-    public static final long SEC =  1000;
-    public static final long MIN =  SEC * 60;
-    public static final long HOUR = MIN * 60;
-    public static final long DAY =  HOUR * 24;
-    public static final long WEEK = DAY * 7;
-    public static final long MONTH = DAY * 30;
-    public static final long YEAR = MONTH * 12;
+    public static final long SEC =  1000L;
+    public static final long MIN =  SEC * 60L;
+    public static final long HOUR = MIN * 60L;
+    public static final long DAY =  HOUR * 24L;
+    public static final long WEEK = DAY * 7L;
+    public static final long MONTH = DAY * 30L;
+    public static final long YEAR = DAY * 365L;
 
     private static final String[] year =    {" год",    " года",    " лет"};
     private static final String[] month =   {" месяц",  " месяца",  " месяцев"};

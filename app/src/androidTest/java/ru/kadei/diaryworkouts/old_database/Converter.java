@@ -17,13 +17,14 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionSupersetExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
 import ru.kadei.diaryworkouts.models.workouts.Measure;
 import ru.kadei.diaryworkouts.models.workouts.Set;
+import ru.kadei.diaryworkouts.models.workouts.StatisticPeriodOfProgram;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
 import ru.kadei.diaryworkouts.old_database.managers.TrainingManager;
 import ru.kadei.diaryworkouts.old_database.training_data.Exercise;
 import ru.kadei.diaryworkouts.old_database.training_data.Set_;
 import ru.kadei.diaryworkouts.old_database.training_data.Template;
-import serega_kadei.training_data.Training;
 import ru.kadei.diaryworkouts.threads.BackgroundLogic;
+import serega_kadei.training_data.Training;
 
 /**
  * Created by kadei on 13.09.15.
@@ -52,6 +53,7 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
                 new Database(
                         new DBHelper(getContext(), "test_convert.db", 1),
                         new BackgroundLogic(true)));
+
     }
 
     public void testLoad() throws Exception {
@@ -83,9 +85,9 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
 
         Measure m = new Measure();
 
-        for(Template old : list) {
+        for (Template old : list) {
             DescriptionExercise de = null;
-            if(!old.isSuperSet()) {
+            if (!old.isSuperSet()) {
                 DescriptionStandardExercise stdExe = new DescriptionStandardExercise();
                 m.extractSpec(old.getMeasureSpec());
                 int newMeasureSpec = convertMeasure(m);
@@ -108,7 +110,7 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
     ArrayList<Description> convertSuperExercise(ArrayList<Template> list) {
         final ArrayList<Description> newList = new ArrayList<>(list.size());
 
-        for(Template old : list) {
+        for (Template old : list) {
             if (old.isSuperSet()) {
                 DescriptionSupersetExercise superExe = new DescriptionSupersetExercise();
                 ArrayList<DescriptionStandardExercise> newContent = new ArrayList<>(old.list.size());
@@ -129,7 +131,7 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
 
     static Description getByName(ArrayList<Description> list, String name) {
         for (Description d : list) {
-            if(d.name.equals(name))
+            if (d.name.equals(name))
                 return d;
         }
         fail("Description not found");
@@ -162,7 +164,7 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
         }
 
         int result = 0;
-        for(int newM : measures) {
+        for (int newM : measures) {
             result |= newM;
         }
         return result;
@@ -229,7 +231,7 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
     }
 
     void savePrograms(ArrayList<Description> programs) {
-        for (Description d: programs) {
+        for (Description d : programs) {
             manager.saveDescriptionProgram((DescriptionProgram) d, this);
         }
         Assert.assertEquals(countSavedProgram, programs.size());
@@ -253,7 +255,7 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
             workout.comment = training.mark;
 
             workout.posCurrentExercise = 0;
-            for(Exercise oldExe : training.exerciseList) {
+            for (Exercise oldExe : training.exerciseList) {
 
                 for (int i = 0; i < oldExe.getSetCount(); ++i) {
                     for (int j = 0; j < oldExe.getExerciseCount(); ++j) {
@@ -343,10 +345,10 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
 
     void compareExercises(DescriptionExercise first, DescriptionExercise second) {
         compareDescriptions(first, second);
-        Assert.assertEquals(first.type,         second.type);
-        Assert.assertEquals(first.getMeasureSpec(),     second.getMeasureSpec());
+        Assert.assertEquals(first.type, second.type);
+        Assert.assertEquals(first.getMeasureSpec(), second.getMeasureSpec());
         Assert.assertEquals(first.getMuscleGroupSpec(), second.getMuscleGroupSpec());
-        Assert.assertEquals(first.getExerciseCount(),   second.getExerciseCount());
+        Assert.assertEquals(first.getExerciseCount(), second.getExerciseCount());
 
         if (first.isSuperset()) {
             for (int i = 0, end = first.getExerciseCount(); i < end; ++i) {
@@ -356,9 +358,9 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
     }
 
     void compareDescriptions(Description first, Description second) {
-        Assert.assertEquals(first.id,           second.id);
-        Assert.assertEquals(first.name,         second.name);
-        Assert.assertEquals(first.description,  second.description);
+        Assert.assertEquals(first.id, second.id);
+        Assert.assertEquals(first.name, second.name);
+        Assert.assertEquals(first.description, second.description);
     }
 
     @Override
@@ -377,12 +379,17 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
     }
 
     @Override
+    public void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic) {
+
+    }
+
+    @Override
     public void descriptionSaved(Description description) {
-        if(description instanceof DescriptionExercise)
+        if (description instanceof DescriptionExercise)
             ++countSavedExercise;
-        else if(description instanceof DescriptionWorkout)
+        else if (description instanceof DescriptionWorkout)
             ++countSavedWorkout;
-        else if(description instanceof DescriptionProgram)
+        else if (description instanceof DescriptionProgram)
             ++countSavedProgram;
     }
 

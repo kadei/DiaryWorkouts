@@ -5,17 +5,15 @@ package ru.kadei.diaryworkouts.models.workouts;
  */
 public class StatisticPeriodOfProgram {
 
-    public final DescriptionProgram descriptionProgram;
     public final long begin;
     public final long end;
-    public final int totalAmountWorkout;
-    public final int monthAmountWorkout;
+    public final int amountWorkout;
 
-    public StatisticPeriodOfProgram(DescriptionProgram descriptionProgram, long begin, long end, int totalAmountWorkout, int monthAmountWorkout) {
-        this.descriptionProgram = descriptionProgram;
+    public StatisticPeriodOfProgram(long begin,
+                                    long end,
+                                    int amountWorkout) {
         this.begin = begin;
         this.end = end;
-        this.totalAmountWorkout = totalAmountWorkout;
-        this.monthAmountWorkout = monthAmountWorkout;
+        this.amountWorkout = amountWorkout;
     }
 }

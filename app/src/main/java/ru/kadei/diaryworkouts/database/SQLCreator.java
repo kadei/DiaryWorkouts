@@ -4,7 +4,7 @@ package ru.kadei.diaryworkouts.database;
  * Created by kadei on 13.09.15.
  */
 public class SQLCreator {
-    private final StringBuilder sb = new StringBuilder(512);
+    private final StringBuilder sb = new StringBuilder(256);
 
     protected final StringBuilder query(String s) {
         sb.delete(0, sb.length());
