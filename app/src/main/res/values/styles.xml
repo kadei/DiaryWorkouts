@@ -29,9 +29,9 @@
     </style>
 
     <style name="info_main_fragment" parent="TextAppearance.AppCompat">
-        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">@color/primary_text</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="test" parent="Widget.AppCompat.Button.Borderless">

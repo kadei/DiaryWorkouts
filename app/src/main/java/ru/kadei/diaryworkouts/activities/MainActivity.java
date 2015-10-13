@@ -15,6 +15,7 @@ import ru.kadei.diaryworkouts.database.Database;
 import ru.kadei.diaryworkouts.fragments.CreateExerciseFragment;
 import ru.kadei.diaryworkouts.fragments.CreateProgramFragment;
 import ru.kadei.diaryworkouts.fragments.CreateWorkoutFragment;
+import ru.kadei.diaryworkouts.fragments.CustomFragment;
 import ru.kadei.diaryworkouts.fragments.MainFragment;
 import ru.kadei.diaryworkouts.fragments.MeasurementsFragment;
 import ru.kadei.diaryworkouts.fragments.Navigator;
@@ -100,6 +101,10 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     };
+
+    public CustomFragment getActiveFragment() {
+        return navigator.getActiveFragment();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

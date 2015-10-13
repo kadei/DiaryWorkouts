@@ -23,7 +23,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/lbl_current_program"
-        android:fontFamily="sans-serif"
+        android:fontFamily="sans-serif-medium"
         android:text="Программа для новичков"
         android:textSize="25sp" />
 
@@ -103,7 +103,6 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/amount_workout"
         android:layout_marginTop="32dp"
-        android:fontFamily="sans-serif"
         android:text="@string/upcoming_workout"/>
 
     <TextView
@@ -116,7 +115,7 @@
         android:layout_below="@+id/lbl_upcoming_workout"
         android:layout_toLeftOf="@+id/btn_select_upcoming_workout"
         android:layout_toStartOf="@+id/btn_select_upcoming_workout"
-        android:fontFamily="sans-serif"
+        android:fontFamily="sans-serif-medium"
         android:text="Все тело за раз"
         android:textSize="22sp" />
 

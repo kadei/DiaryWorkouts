@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="dialog_top_padding">24dp</dimen>
+    <dimen name="dialog_left_right_padding">24dp</dimen>
+    <dimen name="dialog_bottom_padding">8dp</dimen>
+
+    <dimen name="dialog_between_title_content">20dp</dimen>
+    <dimen name="dialog_between_content_button">24dp</dimen>
+
+</resources>

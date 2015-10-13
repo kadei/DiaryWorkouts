@@ -54,6 +54,11 @@ public class CustomFragment extends Fragment {
     }
 
     private void defaultConfigFAB() {
+        if(floatingActionButton.getTag() != null)
+            return;
+
+        Log.d("TEST", "defaultConfigFAB");
+        floatingActionButton.setTag(new Object());
         final Activity a = getActivity();
         final Animation show = loadAnimation(a, R.anim.fab_scale_up);
         final Animation hide = loadAnimation(a, R.anim.fab_scale_down);
@@ -111,5 +116,13 @@ public class CustomFragment extends Fragment {
 
     public final ResourceManager getResourceManager() {
         return getMainActivity().getResourceManager();
+    }
+
+    protected final void fatalError(String message) {
+        getActivity().finish();
+    }
+
+    protected final void error() {
+
     }
 }

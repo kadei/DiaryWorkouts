@@ -2,6 +2,7 @@ package ru.kadei.diaryworkouts.old_database;
 
 import junit.framework.Assert;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import ru.kadei.diaryworkouts.ApplicationTest;
@@ -49,11 +50,13 @@ public class Converter extends ApplicationTest implements WorkoutManagerClient {
 
         tm = new TrainingManager(getContext());
 
-        manager = new WorkoutManager(
-                new Database(
-                        new DBHelper(getContext(), "test_convert.db", 1),
-                        new BackgroundLogic(true)));
+//        File f = getContext().getDatabasePath("test_convert.db");
+//        if(f.exists())
+//            if(!f.delete())
+//                fail();
 
+        Database db = new Database(new DBHelper(getContext(), "test_convert.db", 1), new BackgroundLogic(true));
+        manager = new WorkoutManager(db);
     }
 
     public void testLoad() throws Exception {

@@ -9,7 +9,6 @@ import ru.kadei.diaryworkouts.database.DatabaseWriter;
 import ru.kadei.diaryworkouts.database.Record;
 import ru.kadei.diaryworkouts.models.workouts.DateEvent;
 
-import static java.lang.String.valueOf;
 import static java.util.Calendar.DATE;
 import static java.util.Calendar.HOUR_OF_DAY;
 import static java.util.Calendar.MONTH;
@@ -21,7 +20,7 @@ import static java.util.TimeZone.getTimeZone;
  */
 public class DateEventWriter extends DatabaseWriter {
 
-    public static final int GTM = 3;
+    public static final int GMT = 3;
 
     @Override
     public void writeObject(Record object) {
@@ -35,7 +34,7 @@ public class DateEventWriter extends DatabaseWriter {
         if (existsDateEventWithMilliseconds(dateEvent.date))
             deleteDateEventWhereMilliseconds(dateEvent.date);
 
-        Calendar calendar = new GregorianCalendar(getTimeZone(getGTM()));
+        Calendar calendar = new GregorianCalendar(getTimeZone(getGMT()));
         calendar.setTimeInMillis(dateEvent.date);
 
         ContentValues cv = new ContentValues(5);
@@ -50,14 +49,14 @@ public class DateEventWriter extends DatabaseWriter {
     }
 
     private boolean existsDateEventWithMilliseconds(long milliseconds) {
-        return existsColumnIn("dateEvent", "milliseconds", valueOf(milliseconds));
+        return existsColumnIn("dateEvent", "milliseconds", Long.toString(milliseconds));
     }
 
     private void deleteDateEventWhereMilliseconds(long milliseconds) {
         db.delete("dateEvent", query("milliseconds = ").append(milliseconds).toString(), null);
     }
 
-    private String getGTM() {
-        return GTM >= 0 ? "GTM+" + GTM : "GTM" + GTM;
+    static String getGMT() {
+        return GMT >= 0 ? "GMT+" + GMT : "GMT" + GMT;
     }
 }

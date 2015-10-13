@@ -2,8 +2,8 @@ package ru.kadei.diaryworkouts.database;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -65,14 +65,12 @@ public class Database {
     }
 
     public void load(String query, DatabaseReader reader, DatabaseClient client) {
-        Log.i("TEST_DB", query);
         clients.offer(client);
         bgLogic.execute(taskLoadFromDatabase, query, reader);
     }
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private DatabaseReader executeLoad(String query, DatabaseReader reader) {
-        Log.d("TEST_DB", "executeLoad");
         SQLiteDatabase db = getDB();
         try {
             reader.setDb(db);
@@ -85,13 +83,11 @@ public class Database {
     }
 
     private void completeLoad(DatabaseReader reader) {
-        Log.d("TEST_DB", "completeLoad");
         if (!clients.isEmpty())
             clients.poll().loaded(reader);
     }
 
     private void fail(Throwable throwable) {
-        Log.d("TEST_DB", "fail DB");
         if (!clients.isEmpty())
             clients.poll().fail(throwable);
     }
@@ -149,7 +145,24 @@ public class Database {
     }
 
     private void completeExecute(DatabaseExecutor executor) {
-        if(!clients.isEmpty())
+        if (!clients.isEmpty())
             clients.poll().executed(executor);
+    }
+
+    public void removeDB() {
+        SQLiteDatabase db = getDB();
+        File dbFile = new File(db.getPath());
+        db.close();
+
+        if(dbFile.exists()) {
+            if (!dbFile.delete())
+                throw new RuntimeException("Error delete database file: " + dbFile.getPath());
+
+            String journalName = dbFile.getName().replace(".db", ".db-journal");
+            File journalFile = new File(journalName);
+            if(journalFile.exists())
+                if(!journalFile.delete())
+                    throw new RuntimeException("Error delete journal file: " + journalFile.getPath());
+        }
     }
 }

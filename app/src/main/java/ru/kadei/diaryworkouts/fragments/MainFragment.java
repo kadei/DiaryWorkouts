@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import ru.kadei.diaryworkouts.R;
+import ru.kadei.diaryworkouts.dialogs.NewDialog;
 import ru.kadei.diaryworkouts.managers.ResourceManager;
 import ru.kadei.diaryworkouts.managers.WorkoutManager;
 import ru.kadei.diaryworkouts.managers.WorkoutManagerClient;
@@ -48,10 +49,6 @@ public class MainFragment extends CustomFragment {
     private Workout lastWorkout;
     private Workout upcomingAfterLastWorkout;
     private StatisticPeriodOfProgram statisticLastProgram;
-//    private LongSparseArray<StatisticPeriodOfProgram> statisticPeriod = new LongSparseArray<>(2);
-//
-//    private int downloadRequired = 0;
-//    private int downloadFulfilled = 0;
 
     private boolean downloadFulfilled = true;
 
@@ -81,8 +78,19 @@ public class MainFragment extends CustomFragment {
         tvTimeElapsedLastWorkout = (TextView) v.findViewById(R.id.time_elapsed_last_workout);
 
         ibSelectUpcomingWorkout = (ImageButton) v.findViewById(R.id.btn_select_upcoming_workout);
+        ibSelectUpcomingWorkout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickSelectWorkout();
+            }
+        });
 
         return v;
+    }
+
+    private void clickSelectWorkout() {
+        NewDialog d = NewDialog.createDialog("Test dialog", "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+        d.show(getFragmentManager(), "test");
     }
 
     @Override
@@ -108,7 +116,6 @@ public class MainFragment extends CustomFragment {
         getMainActivity().getWorkoutManager().loadLastWorkout(new ProxyWorkoutManagerClient(this, new StubWorkoutManagerClient() {
             @Override
             public void lastWorkoutLoaded(Workout workout) {
-                Log.d("TEST", "LISTENER lastWorkoutLoaded");
                 lastWorkout = workout == null ? getFakeWorkout() : workout;
                 loadStatisticAndHistoryForWorkouts();
             }
@@ -148,28 +155,30 @@ public class MainFragment extends CustomFragment {
         if (workoutsForLoadHistory.isEmpty())
             solveConflictWorkouts();
         else {
-            final StubWorkoutManagerClient listener = new StubWorkoutManagerClient() {
-                @Override
-                public void allHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
-                    Log.d("TEST", "all history loaded");
-                    handleAllHistoryLoadedFor(target, history);
-                }
-
-                @Override
-                public void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic) {
-                    Log.d("TEST", "statistic loaded");
-                    handleStatisticLoaded(statistic);
-                }
-
-                @Override
-                public void fail(Throwable throwable) {
-                    Log.e("TEST", "FAIL: Load statistic or history\nmessage = " + throwable.getMessage());
-                }
-            };
+            final StubWorkoutManagerClient listener = getListener();
             final ProxyWorkoutManagerClient proxy = new ProxyWorkoutManagerClient(this, listener);
             loadHistoryFor(workoutsForLoadHistory, proxy);
             loadStatisticLastProgram(proxy);
         }
+    }
+
+    private StubWorkoutManagerClient getListener() {
+        return new StubWorkoutManagerClient() {
+            @Override
+            public void allHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
+                handleAllHistoryLoadedFor(target, history);
+            }
+
+            @Override
+            public void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic) {
+                handleStatisticLoaded(statistic);
+            }
+
+            @Override
+            public void fail(Throwable throwable) {
+                Log.e("TEST", "FAIL: Load statistic or history\nmessage = " + throwable.getMessage());
+            }
+        };
     }
 
     private void loadHistoryFor(ArrayList<Workout> workouts, WorkoutManagerClient listener) {
@@ -258,7 +267,7 @@ public class MainFragment extends CustomFragment {
     }
 
     private DateFormat getDateFormat() {
-        return DateFormat.getDateInstance(DateFormat.MEDIUM);
+        return DateFormat.getDateInstance(DateFormat.FULL);
     }
 
     private SparseArray<String> onlyLast() {
