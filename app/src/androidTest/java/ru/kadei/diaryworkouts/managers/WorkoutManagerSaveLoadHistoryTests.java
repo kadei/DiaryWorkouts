@@ -81,7 +81,7 @@ public class WorkoutManagerSaveLoadHistoryTests extends ApplicationTest implemen
         Assert.assertEquals(workout.duration, 555l);
         Assert.assertEquals(workout.comment, "test save and load workout");
 
-        for (int i = 0; i < workout.getCountExercises(); ++i) {
+        for (int i = 0; i < workout.getCountExercisesInCurrentWorkout(); ++i) {
             workout.posCurrentExercise = i;
             Exercise exe = workout.getCurrentExercise();
 

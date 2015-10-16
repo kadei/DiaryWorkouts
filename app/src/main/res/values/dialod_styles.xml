@@ -9,6 +9,7 @@
 
     <style name="dialog_button" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/accent</item>
     </style>
 
 </resources>

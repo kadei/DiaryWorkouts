@@ -70,7 +70,7 @@ public class HistoryWriter extends DatabaseWriter {
 
         final int originalPos = workout.posCurrentExercise;
 
-        for (int i = 0, end = workout.getCountExercises(); i < end; ++i) {
+        for (int i = 0, end = workout.getCountExercisesInCurrentWorkout(); i < end; ++i) {
             workout.posCurrentExercise = i;
             Exercise exercise = workout.getCurrentExercise();
 

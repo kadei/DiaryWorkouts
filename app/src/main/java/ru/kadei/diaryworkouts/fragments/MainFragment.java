@@ -1,5 +1,6 @@
 package ru.kadei.diaryworkouts.fragments;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import ru.kadei.diaryworkouts.R;
-import ru.kadei.diaryworkouts.dialogs.NewDialog;
+import ru.kadei.diaryworkouts.dialogs.SelectWorkoutDialog;
 import ru.kadei.diaryworkouts.managers.ResourceManager;
 import ru.kadei.diaryworkouts.managers.WorkoutManager;
 import ru.kadei.diaryworkouts.managers.WorkoutManagerClient;
@@ -32,7 +33,7 @@ import static java.lang.System.currentTimeMillis;
 import static ru.kadei.diaryworkouts.activities.MainActivity.GENERAL_ID_SELECTED_WORKOUT;
 import static ru.kadei.diaryworkouts.models.workouts.DescriptionProgram.newProgram;
 
-public class MainFragment extends CustomFragment {
+public class MainFragment extends CustomFragment implements SelectWorkoutDialog.Communicator {
 
     private TextView tvCurrentProgram;
     private TextView tvDateStart;
@@ -43,7 +44,7 @@ public class MainFragment extends CustomFragment {
     private TextView tvLastWorkout;
     private TextView tvTimeElapsedLastWorkout;
 
-    private ImageButton ibSelectUpcomingWorkout;
+    private ImageButton ibSelectWorkout;
 
     private Workout selectedWorkout;
     private Workout lastWorkout;
@@ -77,20 +78,21 @@ public class MainFragment extends CustomFragment {
         tvLastWorkout = (TextView) v.findViewById(R.id.last_workout);
         tvTimeElapsedLastWorkout = (TextView) v.findViewById(R.id.time_elapsed_last_workout);
 
-        ibSelectUpcomingWorkout = (ImageButton) v.findViewById(R.id.btn_select_upcoming_workout);
-        ibSelectUpcomingWorkout.setOnClickListener(new View.OnClickListener() {
+        ibSelectWorkout = (ImageButton) v.findViewById(R.id.btn_select_upcoming_workout);
+        ibSelectWorkout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickSelectWorkout();
             }
         });
+        ibSelectWorkout.setEnabled(false);
 
         return v;
     }
 
     private void clickSelectWorkout() {
-        NewDialog d = NewDialog.createDialog("Test dialog", "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
-        d.show(getFragmentManager(), "test");
+        DialogFragment d = SelectWorkoutDialog.create(getActivity());
+        d.show(getFragmentManager(), "select_workout");
     }
 
     @Override
@@ -146,8 +148,7 @@ public class MainFragment extends CustomFragment {
 
         if (isFake(lastWorkout)) {
             upcomingAfterLastWorkout = getFakeWorkout();
-        }
-        else {
+        } else {
             upcomingAfterLastWorkout = lastWorkout.getNextWorkout();
             workoutsForLoadHistory.add(upcomingAfterLastWorkout);
         }
@@ -155,10 +156,9 @@ public class MainFragment extends CustomFragment {
         if (workoutsForLoadHistory.isEmpty())
             solveConflictWorkouts();
         else {
-            final StubWorkoutManagerClient listener = getListener();
-            final ProxyWorkoutManagerClient proxy = new ProxyWorkoutManagerClient(this, listener);
-            loadHistoryFor(workoutsForLoadHistory, proxy);
-            loadStatisticLastProgram(proxy);
+            final StubWorkoutManagerClient listener = wrapListener(getListener());
+            loadHistoryFor(workoutsForLoadHistory, listener);
+            loadStatisticLastProgram(listener);
         }
     }
 
@@ -179,6 +179,10 @@ public class MainFragment extends CustomFragment {
                 Log.e("TEST", "FAIL: Load statistic or history\nmessage = " + throwable.getMessage());
             }
         };
+    }
+
+    private ProxyWorkoutManagerClient wrapListener(StubWorkoutManagerClient listener) {
+        return new ProxyWorkoutManagerClient(this, listener);
     }
 
     private void loadHistoryFor(ArrayList<Workout> workouts, WorkoutManagerClient listener) {
@@ -202,11 +206,12 @@ public class MainFragment extends CustomFragment {
 
     private void handleStatisticLoaded(StatisticPeriodOfProgram statistic) {
         statisticLastProgram = statistic;
-        downloadFulfilled = true;
         solveConflictWorkouts();
     }
 
     private void solveConflictWorkouts() {
+        downloadFulfilled = true;
+
         if (!isFake(selectedWorkout) && selectedSameProgram()) {
             upcomingAfterLastWorkout = selectedWorkout;
             selectedWorkout = getFakeWorkout();
@@ -215,12 +220,16 @@ public class MainFragment extends CustomFragment {
         SparseArray<String> values;
         if (isFake(lastWorkout) && isFake(selectedWorkout)) {
             values = noLastAndNoSelected();
+            // still disabled
         } else if (isFake(lastWorkout)) {
             values = onlySelected();
+            ibSelectWorkout.setEnabled(true);
         } else if (isFake(selectedWorkout)) {
             values = onlyLast();
+            ibSelectWorkout.setEnabled(true);
         } else {
             values = lastAndSelected();
+            ibSelectWorkout.setEnabled(true);
         }
 
         updateTextViews(values);
@@ -334,5 +343,38 @@ public class MainFragment extends CustomFragment {
         tvTimeElapsedUpcomingWorkout.setText(values.get(R.id.time_elapsed_upcoming_workout));
         tvLastWorkout.setText(values.get(R.id.last_workout));
         tvTimeElapsedLastWorkout.setText(values.get(R.id.time_elapsed_last_workout));
+    }
+
+    @Override
+    public DefaultCommunicator getCommunicator() {
+        return this;
+    }
+
+    @Override
+    public Workout getWorkout() {
+        if (!isFake(selectedWorkout))
+            return selectedWorkout;
+        else
+            return upcomingAfterLastWorkout;
+    }
+
+    @Override
+    public void onUpcomingWorkoutChanged(Workout workout) {
+        if (!isFake(selectedWorkout))
+            selectedWorkout = workout;
+        else
+            upcomingAfterLastWorkout = workout;
+
+        final ProxyWorkoutManagerClient listener = wrapListener(getListener());
+        listener.addListener(new ProxyWorkoutManagerClient.Listener() {
+            @Override
+            public void executed(String method, Object returnValue) {
+                if (method.equals("allHistoryLoadedFor"))
+                    solveConflictWorkouts();
+            }
+        });
+
+        downloadFulfilled = false;
+        getMainActivity().getWorkoutManager().loadHistoryFor(workout, 1, listener);
     }
 }

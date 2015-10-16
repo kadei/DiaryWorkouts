@@ -39,10 +39,10 @@ public class NewDialog extends CustomDialog {
         args.putInt(KEY_TYPE_CONTENT, STATIC_CONTENT);
         args.putString(KEY_CONTENT_MSG, message);
 
-        args.putInt(KEY_ACTIVE_BUTTONS, MASK_RIGHT_TOP_BTN | MASK_CENTER_BTN | MASK_LEFT_BOTTOM_BTN);
-        args.putString(KEY_TEXT_RIGHT_TOP_BTN, "apply");
-        args.putString(KEY_TEXT_CENTER_BTN, "cancel");
-        args.putString(KEY_TEXT_LEFT_BOTTOM_BTN, "rolling back");
+        args.putInt(KEY_ACTIVE_BUTTONS, MASK_POSITIVE_BTN | MASK_NEUTRAL_BTN | MASK_NEGATIVE_BTN);
+        args.putString(KEY_TEXT_POSITIVE_BTN, "apply");
+        args.putString(KEY_TEXT_NEUTRAL_BTN, "cancel");
+        args.putString(KEY_TEXT_NEGATIVE_BTN, "rolling back");
 
         NewDialog d = new NewDialog();
         d.setArguments(args);

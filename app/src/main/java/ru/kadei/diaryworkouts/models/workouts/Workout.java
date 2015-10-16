@@ -90,7 +90,20 @@ public class Workout extends Record {
         return getDescriptionWorkout().exercises.get(posCurrentExercise);
     }
 
-    public int getCountExercises() {
+    public int getCountWorkouts() {
+        return descriptionProgram.workouts.size();
+    }
+
+    public int getCountExerciseTotal() {
+        final ArrayList<DescriptionWorkout> w = descriptionProgram.workouts;
+        int counter = 0;
+        for(int i = 0, end = w.size(); i < end; ++i) {
+            counter += w.get(i).exercises.size();
+        }
+        return counter;
+    }
+
+    public int getCountExercisesInCurrentWorkout() {
         return exercises.size();
     }
 
@@ -100,5 +113,30 @@ public class Workout extends Record {
                 : 0;
 
         return new Workout(descriptionProgram, nextPos);
+    }
+
+    public String[] getExerciseNames() {
+        final ArrayList<DescriptionWorkout> workouts = descriptionProgram.workouts;
+        final String[] names = new String[getCountExerciseTotal()];
+
+        int ptr = 0;
+        for (int i = 0, end = workouts.size(); i < end; ++i) {
+            ArrayList<DescriptionExercise> de = workouts.get(i).exercises;
+            fillNames(de, names, ptr);
+            ptr += de.size();
+        }
+        return names;
+    }
+
+    public String[] getWorkoutNames() {
+        final String[] names = new String[getCountWorkouts()];
+        fillNames(descriptionProgram.workouts, names, 0);
+        return names;
+    }
+
+    private void fillNames(ArrayList<? extends Description> list, String[] array, int start) {
+        for (int i = 0, end = list.size(); i < end; ++i) {
+            array[start + i] = list.get(i).name;
+        }
     }
 }

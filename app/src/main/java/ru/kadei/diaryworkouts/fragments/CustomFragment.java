@@ -123,6 +123,12 @@ public class CustomFragment extends Fragment {
     }
 
     protected final void error() {
+    }
 
+    public DefaultCommunicator getCommunicator() {
+        return null;
+    }
+
+    public interface DefaultCommunicator {
     }
 }

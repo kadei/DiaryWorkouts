@@ -42,14 +42,14 @@ import static java.lang.System.arraycopy;
 public class CustomDialog extends DialogFragment {
 
     public static final String KEY_ACTIVE_BUTTONS = "active_button";
-    public static final int MASK_RIGHT_TOP_BTN = 1;
-    public static final int MASK_CENTER_BTN = 2;
-    public static final int MASK_LEFT_BOTTOM_BTN = 4;
+    public static final int MASK_POSITIVE_BTN = 1;
+    public static final int MASK_NEUTRAL_BTN = 2;
+    public static final int MASK_NEGATIVE_BTN = 4;
 
     public static final String KEY_TITLE = "title";
-    public static final String KEY_TEXT_RIGHT_TOP_BTN = "right";
-    public static final String KEY_TEXT_CENTER_BTN = "center";
-    public static final String KEY_TEXT_LEFT_BOTTOM_BTN = "left";
+    public static final String KEY_TEXT_POSITIVE_BTN = "positive";
+    public static final String KEY_TEXT_NEUTRAL_BTN = "neutral";
+    public static final String KEY_TEXT_NEGATIVE_BTN = "negative";
 
     public static final String KEY_MAX_HEIGHT_CONTENT = "max_height_content";
     public static final int MAX_HEIGHT_CONTENT_DEFAULT = 240;
@@ -79,17 +79,16 @@ public class CustomDialog extends DialogFragment {
     }
 
     protected void onFragmentObtained(CustomFragment customFragment) {
-
     }
 
     private void applyArgsDefault(Bundle args) {
         title = args.getString(KEY_TITLE, "");
         typeContent = args.getInt(KEY_TYPE_CONTENT, STATIC_CONTENT);
 
-        activeButtons = args.getInt(KEY_ACTIVE_BUTTONS, MASK_RIGHT_TOP_BTN | MASK_CENTER_BTN | MASK_LEFT_BOTTOM_BTN);
-        textButtons.put(R.id.dialog_right_top_button, args.getString(KEY_TEXT_RIGHT_TOP_BTN, ""));
-        textButtons.put(R.id.dialog_center_button, args.getString(KEY_TEXT_CENTER_BTN, ""));
-        textButtons.put(R.id.dialog_left_bottom_button, args.getString(KEY_TEXT_LEFT_BOTTOM_BTN, ""));
+        activeButtons = args.getInt(KEY_ACTIVE_BUTTONS, MASK_POSITIVE_BTN | MASK_NEUTRAL_BTN | MASK_NEGATIVE_BTN);
+        textButtons.put(R.id.dialog_positive_button, args.getString(KEY_TEXT_POSITIVE_BTN, ""));
+        textButtons.put(R.id.dialog_neutral_button, args.getString(KEY_TEXT_NEUTRAL_BTN, ""));
+        textButtons.put(R.id.dialog_negative_button, args.getString(KEY_TEXT_NEGATIVE_BTN, ""));
 
         maxHeightContent = args.getInt(KEY_MAX_HEIGHT_CONTENT, MAX_HEIGHT_CONTENT_DEFAULT);
         maxHeightContent = dpToPx(maxHeightContent, getDensity());
@@ -113,7 +112,7 @@ public class CustomDialog extends DialogFragment {
 
         final View content = onCreateContentView(inflater, container, savedInstanceState);
 
-        final RelativeLayout btnArea = getButtonsArea(inflater, root);
+        final RelativeLayout btnArea = getButtonsArea(inflater);
 
         root.addView(title);
         if (content != null)
@@ -147,7 +146,7 @@ public class CustomDialog extends DialogFragment {
         return fl;
     }
 
-    private RelativeLayout getButtonsArea(LayoutInflater inflater, LinearLayout dialogContainer) {
+    private RelativeLayout getButtonsArea(LayoutInflater inflater) {
         final RelativeLayout area = createButtonsArea();
         final Button[] buttons = createButtons(inflater, area);
         setTextFor(buttons);
@@ -177,9 +176,7 @@ public class CustomDialog extends DialogFragment {
     }
 
     private static int dpToPx(float dp, float density) {
-        int result = (int) (dp * density);
-        if (result == 0) result = 1;
-        return result;
+        return (int) (dp * density);
     }
 
     private Button[] createButtons(LayoutInflater inflater, RelativeLayout area) {
@@ -189,9 +186,9 @@ public class CustomDialog extends DialogFragment {
 
     private int[] solveButtonIds() {
         final int[] ids = new int[]{
-                R.id.dialog_right_top_button,
-                R.id.dialog_center_button,
-                R.id.dialog_left_bottom_button
+                R.id.dialog_positive_button,
+                R.id.dialog_neutral_button,
+                R.id.dialog_negative_button
         };
         final int size = countActiveButton();
         final int[] resultIds = new int[size];
@@ -201,7 +198,7 @@ public class CustomDialog extends DialogFragment {
 
     private int countActiveButton() {
         int countButton = 0;
-        for (int mask = MASK_RIGHT_TOP_BTN; mask <= MASK_LEFT_BOTTOM_BTN; mask <<= 1) {
+        for (int mask = MASK_POSITIVE_BTN; mask <= MASK_NEGATIVE_BTN; mask <<= 1) {
             if ((activeButtons & mask) != 0)
                 ++countButton;
         }
@@ -239,6 +236,7 @@ public class CustomDialog extends DialogFragment {
         final int widest = getWidestFrom(buttons);
         final int dialogWidth = approximateDialogWidth();
         final int maxButtonWidth = (dialogWidth - 3 * dpToPx(8f, getDensity())) / 2;
+
         if (widest >= maxButtonWidth || countActiveButton() >= 3)
             verticalDirection(buttons);
         else
@@ -290,14 +288,14 @@ public class CustomDialog extends DialogFragment {
             RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) btn.getLayoutParams();
             int id = btn.getId();
 
-            if (id == R.id.dialog_right_top_button) {
+            if (id == R.id.dialog_positive_button) {
                 lp.addRule(alignParentRight, TRUE);
                 rightId = id;
-            } else if (id == R.id.dialog_center_button) {
+            } else if (id == R.id.dialog_neutral_button) {
                 lp.addRule(toLeftOf, rightId);
                 final int rightMargin = dpToPx(8f, getDensity());
                 lp.setMargins(0, 0, rightMargin, 0);
-            } else if (id == R.id.dialog_left_bottom_button) {
+            } else if (id == R.id.dialog_negative_button) {
                 lp.addRule(alignParentLeft, TRUE);
             }
             lp.addRule(ALIGN_PARENT_TOP, TRUE);
@@ -316,7 +314,7 @@ public class CustomDialog extends DialogFragment {
             RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) btn.getLayoutParams();
             int id = btn.getId();
 
-            if (id == R.id.dialog_right_top_button) {
+            if (id == R.id.dialog_positive_button) {
                 lp.addRule(ALIGN_PARENT_TOP, TRUE);
                 ids[countIds++] = id;
             } else {
@@ -332,22 +330,22 @@ public class CustomDialog extends DialogFragment {
         @Override
         public void onClick(View v) {
             final int id = v.getId();
-            if (id == R.id.dialog_right_top_button)
-                rightTopButtonClick();
-            else if (id == R.id.dialog_center_button)
-                centerButtonClick();
-            else if (id == R.id.dialog_left_bottom_button)
-                leftBottomButtonClick();
+            if (id == R.id.dialog_positive_button)
+                positiveClick();
+            else if (id == R.id.dialog_neutral_button)
+                neutralClick();
+            else if (id == R.id.dialog_negative_button)
+                negativeClick();
         }
     };
 
-    protected void rightTopButtonClick() {
+    protected void positiveClick() {
     }
 
-    protected void centerButtonClick() {
+    protected void neutralClick() {
     }
 
-    protected void leftBottomButtonClick() {
+    protected void negativeClick() {
     }
 
     protected View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -5,14 +5,14 @@
     <string name="action_settings">Настройки</string>
 
     <!-- menu -->
-    <string name="complete_training">Закончить тренировку</string>
+    <string name="complete_workout">Закончить тренировку</string>
     <string name="settings">Настройки</string>
 
     <!-- navigation items -->
     <string name="main_fragment">Главная</string>
     <string name="measurement_fragment">Замеры</string>
     <string name="statistic_fragment">Статистика</string>
-    <string name="select_program_fragment">Выбрать программу</string>
+    <string name="select_program_fragment">Выбор программы</string>
     <string name="create_program_fragment">Создать программу</string>
     <string name="create_workout_fragment">Создать тренировку</string>
     <string name="create_exercise_fragment">Создать упражнение</string>
@@ -43,10 +43,10 @@
     <string name="statistic">Статистика</string>
 
     <!-- select program fragment -->
-    <string name="select_program">Выбрать программу</string>
+    <string name="select_program">Выбор программы</string>
 
-    <!-- select training dialog -->
-    <string name="select_start_training">Выберите начальную тренировку</string>
+    <!-- select workout dialog -->
+    <string name="select_workout">Выбор тренировки</string>
 
     <!-- set timer dialog -->
     <string name="timer_value">Значение таймера</string>
@@ -61,7 +61,7 @@
     <string name="new_program">Новая программа</string>
     <string name="my_new_program">Моя новая программа</string>
     <string name="no_description_available">Описание отсутствует</string>
-    <string name="list_of_training">Список тренировок</string>
+    <string name="list_of_workout">Список тренировок</string>
     <string name="create_program">Создать программу</string>
     <string name="name_of_program">Название программы</string>
     <string name="enter_program_name">Введите название программы</string>
@@ -70,18 +70,18 @@
     <string name="filter">Фильтр</string>
     <string name="list">Список</string>
 
-    <!-- create training fragment -->
-    <string name="new_training">Новая тренировка</string>
-    <string name="my_new_training">Моя новая тренировка</string>
+    <!-- create workout fragment -->
+    <string name="new_workout">Новая тренировка</string>
+    <string name="my_new_workout">Моя новая тренировка</string>
     <string name="list_of_exercises">Список упражнений</string>
     <string name="select">Выбрать</string>
     <string name="type">Тип:</string>
     <string name="group">Группа:</string>
     <string name="groups">Группы:</string>
-    <string name="create_training">Создать тренировку</string>
-    <string name="name_of_training">Название тренировки</string>
-    <string name="enter_training_name">Введите название тренировки</string>
-    <string name="training_name_already_exists">Тренировка с таким именем уже существует</string>
+    <string name="create_workout">Создать тренировку</string>
+    <string name="name_of_workout">Название тренировки</string>
+    <string name="enter_workout_name">Введите название тренировки</string>
+    <string name="workout_name_already_exists">Тренировка с таким именем уже существует</string>
 
     <!-- create exercise fragment -->
     <string name="new_exercise">Новое упражнение</string>
@@ -91,11 +91,11 @@
     <string name="enter_exercise_name">Введите название упражнения</string>
     <string name="exercise_name_already_exists">Упражнение с таким именем уже существует</string>
 
-    <!-- current training fragment -->
+    <!-- current workout fragment -->
     <string name="refresh_timer">Обновить</string>
     <string name="start_timer">Старт</string>
     <string name="pause_timer">Пауза</string>
-    <string name="training_upper">ТРЕНИРОВКА</string>
+    <string name="workout_upper">ТРЕНИРОВКА</string>
     <string name="history_upper">ИСТОРИЯ</string>
     <string name="set_was_not">Подходов не было</string>
     <string name="set_number">Подход #</string>
@@ -103,17 +103,17 @@
     <string name="edit">Редактировать</string>
     <string name="remove">Удалить</string>
     <string name="data_removed">Данные удалены</string>
-    <string name="comment_from_prev_training">Комментарий с прошлой тренировки:</string>
+    <string name="comment_from_prev_workout">Комментарий с прошлой тренировки:</string>
     <string name="program">Программа</string>
-    <string name="training">Тренировка</string>
+    <string name="workout">Тренировка</string>
     <string name="exercise">Упражнение</string>
     <string name="all_programs">Все программы</string>
-    <string name="all_trainings">Все тренировки</string>
+    <string name="all_workouts">Все тренировки</string>
     <string name="all_exercises">Все упражнения</string>
 
-    <string name="end_training">Закончить тренировку?</string>
+    <string name="end_workout">Закончить тренировку?</string>
     <string name="do_not_save">Не сохранять тренировку?</string>
-    <string name="do_you_save_training">Сохранить тренировку?</string>
+    <string name="do_you_save_workout">Сохранить тренировку?</string>
     <string name="msg_for_end">Вы хотите закончить тренировку, выберите что хотите сделать с данными.</string>
     <string name="msg_for_save_with_empty">Вы не сделали ни одного подхода в некоторых упражнениях.</string>
     <string name="msg_for_finish_without_saving">Данные будут удалены без возможности восстановления.</string>
@@ -126,13 +126,13 @@
 
     <!-- confirmation dialog (attention) -->
     <string name="attention">Внимание</string>
-    <string name="training_list_is_empty">Невозможно создать программу, т.к. список тренировок пуст</string>
+    <string name="workout_list_is_empty">Невозможно создать программу, т.к. список тренировок пуст</string>
     <string name="exercise_list_is_empty">Невозможно создать тренировку, т. к. список упражнений пуст</string>
     <string name="exercise_list_for_superset_is_empty">Невозможно создать упражнение "Суперсет", т. к. список упражнений пуст</string>
     <string name="muscle_groups_is_empty">Невозможно создать упражнение, т. к. не выбрана не одна мышечная группа</string>
 
     <!-- sort list dialog -->
-    <string name="training_list">Список тренировок</string>
+    <string name="workout_list">Список тренировок</string>
     <string name="exercise_list">Список упражнений</string>
 
     <!-- add set dialog -->
@@ -152,12 +152,12 @@
     <!-- description dialog -->
     <string name="description">Описание</string>
     <string name="program_description">Описание программы</string>
-    <string name="training_description">Описание тренировки</string>
+    <string name="workout_description">Описание тренировки</string>
     <string name="exercise_description">Описание упражнения</string>
 
     <!-- filter dialog -->
-    <string name="training_filter">Фильтр тренировок</string>
-    <string name="trainings">Тренировки</string>
+    <string name="workout_filter">Фильтр тренировок</string>
+    <string name="workouts">Тренировки</string>
     <string name="exercises">Упражнения</string>
     <string name="exercises_filter">Фильтр упражнений</string>
     <string name="standard">Стандартные</string>
