@@ -28,9 +28,10 @@ public class Database {
         bgLogic.stop();
     }
 
-    public void _load(DatabaseReader reader, DatabaseClient client) {
-//        Log.i("TEST", reader.getQuery());
-        bgLogic.__execute(new ReadTask(reader, client) {
+    public void load(DatabaseReader reader, DatabaseClient client) {
+        Log.i("TEST", reader.getQuery());
+//        Log.i("TEST", "load client = " + client);
+        bgLogic.execute(new ReadTask(reader, client) {
 
             @SuppressWarnings("TryFinallyCanBeTryWithResources")
             @Override
@@ -59,8 +60,8 @@ public class Database {
         });
     }
 
-    public void _save(DatabaseWriter writer, DatabaseClient client) {
-        bgLogic.__execute(new WriteTask(writer, client) {
+    public void save(DatabaseWriter writer, DatabaseClient client) {
+        bgLogic.execute(new WriteTask(writer, client) {
             @Override
             public void execute() {
                 final DatabaseWriter w = getWriter();
@@ -92,8 +93,8 @@ public class Database {
         });
     }
 
-    public void _executeTask(DatabaseExecutor executor, DatabaseClient client) {
-        bgLogic.__execute(new ExecuteTask(executor, client) {
+    public void executeTask(DatabaseExecutor executor, DatabaseClient client) {
+        bgLogic.execute(new ExecuteTask(executor, client) {
             @SuppressWarnings("TryFinallyCanBeTryWithResources")
             @Override
             public void execute() {

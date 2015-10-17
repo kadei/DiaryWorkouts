@@ -16,6 +16,10 @@ public abstract class DatabaseWriter extends SQLCreator {
     protected Record record;
     protected SQLiteDatabase db;
 
+    public DatabaseWriter() {
+        super(createStringBuilder());
+    }
+
     public void setRecord(Record record) {
         this.record = record;
     }

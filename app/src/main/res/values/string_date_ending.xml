@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="__year_1">год</string>
+    <string name="__year_2">года</string>
+    <string name="__year_3">лет</string>
+
+    <string name="__month_1">месяц</string>
+    <string name="__month_2">меняца</string>
+    <string name="__month_3">месяцев</string>
+
+    <string name="__week_1">неделя</string>
+    <string name="__week_2">недели</string>
+    <string name="__week_3">недель</string>
+
+    <string name="__day_1">день</string>
+    <string name="__day_2">дня</string>
+    <string name="__day_3">дней</string>
+
+    <string name="__hour_1">час</string>
+    <string name="__hour_2">часа</string>
+    <string name="__hour_3">часов</string>
+
+    <string name="__minute_1">минута</string>
+    <string name="__minute_2">минуты</string>
+    <string name="__minute_3">минут</string>
+
+    <string name="__second_1">секунда</string>
+    <string name="__second_2">секунды</string>
+    <string name="__second_3">секунд</string>
+
+</resources>

@@ -15,6 +15,10 @@ public abstract class DatabaseReader extends SQLCreator {
     protected SQLiteDatabase db;
     protected ArrayList<?> objects;
 
+    public DatabaseReader(StringBuilder sb) {
+        super(sb);
+    }
+
     public void setQuery(String query) {
         this.query = query;
     }

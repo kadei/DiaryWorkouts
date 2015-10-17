@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
+import ru.kadei.diaryworkouts.models.workouts.Workout;
 
 /**
  * Created by kadei on 01.09.15.
@@ -14,10 +15,13 @@ public class WorkoutReader extends DescriptionReader {
 
     private DescriptionReader exerciseReader;
 
-    public WorkoutReader(BufferDescriptions bufferDescriptions,
-                         ExerciseReader exerciseReader) {
-        super(bufferDescriptions);
-        this.exerciseReader = exerciseReader;
+    public WorkoutReader(BufferDescriptions bufferDescriptions) {
+        this(bufferDescriptions, createStringBuilder());
+    }
+
+    public WorkoutReader(BufferDescriptions bufferDescriptions, StringBuilder sb) {
+        super(bufferDescriptions, sb);
+        this.exerciseReader = new ExerciseReader(bufferDescriptions, sb);
     }
 
     @SuppressWarnings("unchecked")

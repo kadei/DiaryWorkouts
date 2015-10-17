@@ -6,6 +6,9 @@ import android.os.Message;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import static java.lang.Long.MAX_VALUE;
+import static java.lang.Thread.sleep;
+
 /**
  * Created by kadei on 04.09.15.
  */
@@ -49,22 +52,22 @@ public class BackgroundLogic {
             Task task = scheduleNext();
 
             if (task == null)
-                sleep();
+                _sleep();
             else
-                execute(task);
+                _execute(task);
         }
     }
 
-    private void sleep() {
+    private void _sleep() {
         try {
             pause(true);
-            Thread.sleep(Long.MAX_VALUE);
+            sleep(MAX_VALUE);
         } catch (InterruptedException e) {
             pause(false);
         }
     }
 
-    private void execute(Task t) {
+    private void _execute(Task t) {
         int statusExecution = 0;
         try {
             t.execute();
@@ -112,7 +115,7 @@ public class BackgroundLogic {
         pause = value;
     }
 
-    public synchronized void __execute(Task task) {
+    public synchronized void execute(Task task) {
         if (thisThread) {
             try {
                 task.execute();

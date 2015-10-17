@@ -14,10 +14,13 @@ public class ProgramReader extends DescriptionReader {
 
     private final DescriptionReader workoutReader;
 
-    public ProgramReader(BufferDescriptions bufferDescriptions,
-                         WorkoutReader workoutReader) {
-        super(bufferDescriptions);
-        this.workoutReader = workoutReader;
+    public ProgramReader(BufferDescriptions bufferDescriptions) {
+        this(bufferDescriptions, createStringBuilder());
+    }
+
+    public ProgramReader(BufferDescriptions bufferDescriptions, StringBuilder sb) {
+        super(bufferDescriptions, sb);
+        this.workoutReader = new WorkoutReader(bufferDescriptions, sb);
     }
 
     @SuppressWarnings(value = "unchecked")

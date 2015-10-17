@@ -11,10 +11,14 @@ import ru.kadei.diaryworkouts.managers.WorkoutManagerClient;
  */
 public class StubDatabaseClient implements DatabaseClient {
 
-    protected final WorkoutManagerClient client;
+    private final WorkoutManagerClient client;
 
     public StubDatabaseClient(WorkoutManagerClient client) {
         this.client = client;
+    }
+
+    public WorkoutManagerClient getClient() {
+        return client;
     }
 
     @Override

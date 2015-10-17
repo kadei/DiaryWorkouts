@@ -1,4 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string-array name="years">
+        <item>@string/__year_1</item>
+        <item>@string/__year_2</item>
+        <item>@string/__year_3</item>
+    </string-array>
+
+    <string-array name="months">
+        <item>@string/__month_1</item>
+        <item>@string/__month_2</item>
+        <item>@string/__month_3</item>
+    </string-array>
+
+    <string-array name="weeks">
+        <item>@string/__week_1</item>
+        <item>@string/__week_2</item>
+        <item>@string/__week_3</item>
+    </string-array>
+
+    <string-array name="days">
+        <item>@string/__day_1</item>
+        <item>@string/__day_2</item>
+        <item>@string/__day_3</item>
+    </string-array>
+
+    <string-array name="hours">
+        <item>@string/__hour_1</item>
+        <item>@string/__hour_2</item>
+        <item>@string/__hour_3</item>
+    </string-array>
+
+    <string-array name="minutes">
+        <item>@string/__minute_1</item>
+        <item>@string/__minute_2</item>
+        <item>@string/__minute_3</item>
+    </string-array>
+
+    <string-array name="seconds">
+        <item>@string/__second_1</item>
+        <item>@string/__second_2</item>
+        <item>@string/__second_3</item>
+    </string-array>
+
 </resources>

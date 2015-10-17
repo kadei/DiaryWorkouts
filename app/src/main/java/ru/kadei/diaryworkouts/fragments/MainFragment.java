@@ -3,7 +3,6 @@ package ru.kadei.diaryworkouts.fragments;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,12 +25,20 @@ import ru.kadei.diaryworkouts.models.workouts.StatisticPeriodOfProgram;
 import ru.kadei.diaryworkouts.models.workouts.Workout;
 import ru.kadei.diaryworkouts.util.ProxyWorkoutManagerClient;
 import ru.kadei.diaryworkouts.util.stubs.StubWorkoutManagerClient;
+import ru.kadei.diaryworkouts.util.time.TimeElapsedConfig;
 import ru.kadei.diaryworkouts.util.time.TimeUtil;
 import ru.kadei.diaryworkouts.view.ActionBarDecorator;
 
 import static java.lang.System.currentTimeMillis;
 import static ru.kadei.diaryworkouts.activities.MainActivity.GENERAL_ID_SELECTED_WORKOUT;
 import static ru.kadei.diaryworkouts.models.workouts.DescriptionProgram.newProgram;
+import static ru.kadei.diaryworkouts.util.time.TimeElapsedConfig.INDEX_DAY;
+import static ru.kadei.diaryworkouts.util.time.TimeElapsedConfig.INDEX_HOUR;
+import static ru.kadei.diaryworkouts.util.time.TimeElapsedConfig.INDEX_MINUTE;
+import static ru.kadei.diaryworkouts.util.time.TimeElapsedConfig.INDEX_MONTH;
+import static ru.kadei.diaryworkouts.util.time.TimeElapsedConfig.INDEX_SECOND;
+import static ru.kadei.diaryworkouts.util.time.TimeElapsedConfig.INDEX_WEEK;
+import static ru.kadei.diaryworkouts.util.time.TimeElapsedConfig.INDEX_YEAR;
 
 public class MainFragment extends CustomFragment implements SelectWorkoutDialog.Communicator {
 
@@ -51,7 +58,11 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
     private Workout upcomingAfterLastWorkout;
     private StatisticPeriodOfProgram statisticLastProgram;
 
+    private TimeElapsedConfig timeElapsedConfig;
+
     private boolean downloadFulfilled = true;
+
+    private static final Workout FAKE_WORKOUT = new Workout(newProgram(-1L, null, null, 0), -1, null);
 
     @Override
     protected void configToolbar(ActionBarDecorator bar) {
@@ -98,7 +109,23 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
     @Override
     public void onStart() {
         super.onStart();
+        loadTimeElapsedConfig();
         loadData();
+    }
+
+    private void loadTimeElapsedConfig() {
+        final ResourceManager res = getResourceManager();
+        final TimeElapsedConfig cfg = new TimeElapsedConfig();
+
+        cfg.words[INDEX_YEAR] = res.getStringArray(R.array.years);
+        cfg.words[INDEX_MONTH] = res.getStringArray(R.array.months);
+        cfg.words[INDEX_WEEK] = res.getStringArray(R.array.weeks);
+        cfg.words[INDEX_DAY] = res.getStringArray(R.array.days);
+        cfg.words[INDEX_HOUR] = res.getStringArray(R.array.hours);
+        cfg.words[INDEX_MINUTE] = res.getStringArray(R.array.minutes);
+        cfg.words[INDEX_SECOND] = res.getStringArray(R.array.seconds);
+
+        timeElapsedConfig = cfg;
     }
 
     @Override
@@ -119,6 +146,7 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
         lastWorkout = null;
         selectedWorkout = null;
         upcomingAfterLastWorkout = null;
+        statisticLastProgram = null;
     }
 
     private void loadLastWorkout() {
@@ -126,23 +154,19 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
         getMainActivity().getWorkoutManager().loadLastWorkout(wrapListener(new StubWorkoutManagerClient() {
             @Override
             public void lastWorkoutLoaded(Workout workout) {
-                lastWorkout = workout == null ? getFakeWorkout() : workout;
+                lastWorkout = workout == null ? FAKE_WORKOUT : workout;
                 loadStatisticAndHistoryForWorkouts();
             }
 
             @Override
             public void fail(Throwable throwable) {
-                Log.e("TEST", "FAIL: Load last workout");
+                throw new RuntimeException(throwable);
             }
         }));
     }
 
-    private Workout getFakeWorkout() {
-        return new Workout(newProgram(-1L, null, null, 0), -1, null);
-    }
-
     private static boolean isFake(Workout workout) {
-        return workout.getIdProgram() < 0L && workout.getPosCurrentWorkout() < 0;
+        return workout == FAKE_WORKOUT;
     }
 
     private void loadStatisticAndHistoryForWorkouts() {
@@ -150,12 +174,12 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
 
         selectedWorkout = (Workout) getObjectFromGeneralStorage(GENERAL_ID_SELECTED_WORKOUT);
         if (selectedWorkout == null)
-            selectedWorkout = getFakeWorkout();
+            selectedWorkout = FAKE_WORKOUT;
         else
             workoutsForLoadHistory.add(selectedWorkout);
 
         if (isFake(lastWorkout)) {
-            upcomingAfterLastWorkout = getFakeWorkout();
+            upcomingAfterLastWorkout = FAKE_WORKOUT;
         } else {
             upcomingAfterLastWorkout = lastWorkout.getNextWorkout();
             workoutsForLoadHistory.add(upcomingAfterLastWorkout);
@@ -174,6 +198,11 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
                 public void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic) {
                     onStatisticPeriodLoaded(statistic);
                     solveConflictWorkouts();
+                }
+
+                @Override
+                public void fail(Throwable throwable) {
+                    throw new RuntimeException(throwable);
                 }
             });
 
@@ -215,7 +244,7 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
 
         if (!isFake(selectedWorkout) && selectedSameProgram()) {
             upcomingAfterLastWorkout = selectedWorkout;
-            selectedWorkout = getFakeWorkout();
+            selectedWorkout = FAKE_WORKOUT;
         }
 
         SparseArray<String> values;
@@ -328,11 +357,9 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
     }
 
     private String durationBetween(long currentTime, long pastTime) {
-        final StringBuilder sb = new StringBuilder(64);
-        long elapsed = currentTime - pastTime;
-        long minimum = TimeUtil.solveMin(elapsed);
-        TimeUtil.timeElapsed(sb, elapsed, minimum);
-        return sb.toString();
+        timeElapsedConfig.calcTimeElapsedAndMin(currentTime, pastTime);
+        TimeUtil.timeElapsed(timeElapsedConfig);
+        return timeElapsedConfig.result();
     }
 
     private void updateTextViews(SparseArray<String> values) {
@@ -364,7 +391,7 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
         putObjectInGeneralStorage(GENERAL_ID_SELECTED_WORKOUT, workout);
         selectedWorkout = workout;
 
-        final ProxyWorkoutManagerClient listener = wrapListener(new StubWorkoutManagerClient(){
+        final ProxyWorkoutManagerClient listener = wrapListener(new StubWorkoutManagerClient() {
             @Override
             public void allHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
                 onHistoryLoadedFor(target, history);

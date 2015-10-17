@@ -32,51 +32,49 @@ import ru.kadei.diaryworkouts.util.stubs.StubDatabaseClient;
 public class WorkoutManager extends SQLCreator {
 
     private final Database database;
-
-    private ExerciseReader exerciseReader;
-    private WorkoutReader workoutReader;
-    private ProgramReader programReader;
-    private HistoryReader historyReader;
+    private final BufferDescriptions buffer;
 
     public WorkoutManager(Database database) {
+        super(createStringBuilder());
         this.database = database;
-
-        BufferDescriptions buffer = new BufferDescriptions();
-        exerciseReader = new ExerciseReader(buffer);
-        workoutReader = new WorkoutReader(buffer, exerciseReader);
-        programReader = new ProgramReader(buffer, workoutReader);
-        historyReader = new HistoryReader(programReader);
+        buffer = new BufferDescriptions();
     }
 
     public void loadAllDescriptionPrograms(WorkoutManagerClient client) {
-        programReader.setQuery("SELECT * FROM descriptionProgram");
-        database._load(programReader, new StubDatabaseClient(client) {
+        final DatabaseReader reader = new ProgramReader(buffer);
+        reader.setQuery("SELECT * FROM descriptionProgram");
+
+        database.load(reader, new StubDatabaseClient(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader reader) {
-                client.allProgramsLoaded((ArrayList<DescriptionProgram>) reader.getObjects());
+                getClient().allProgramsLoaded((ArrayList<DescriptionProgram>) reader.getObjects());
             }
         });
     }
 
     public void loadAllDescriptionWorkout(WorkoutManagerClient client) {
-        workoutReader.setQuery("SELECT * FROM descriptionWorkout");
-        database._load(workoutReader, new StubDatabaseClient(client) {
+        final DatabaseReader reader = new WorkoutReader(buffer);
+        reader.setQuery("SELECT * FROM descriptionWorkout");
+
+        database.load(reader, new StubDatabaseClient(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader reader) {
-                client.allWorkoutsLoaded((ArrayList<DescriptionWorkout>) reader.getObjects());
+                getClient().allWorkoutsLoaded((ArrayList<DescriptionWorkout>) reader.getObjects());
             }
         });
     }
 
     public void loadAllDescriptionExercise(WorkoutManagerClient client) {
-        exerciseReader.setQuery("SELECT * FROM descriptionExercise");
-        database._load(exerciseReader, new StubDatabaseClient(client) {
+        final DatabaseReader reader = new ExerciseReader(buffer);
+        reader.setQuery("SELECT * FROM descriptionExercise");
+
+        database.load(reader, new StubDatabaseClient(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader reader) {
-                client.allExercisesLoaded((ArrayList<DescriptionExercise>) reader.getObjects());
+                getClient().allExercisesLoaded((ArrayList<DescriptionExercise>) reader.getObjects());
             }
         });
     }
@@ -87,12 +85,14 @@ public class WorkoutManager extends SQLCreator {
                 "WHERE historyWorkout.idDateEvent = dateEvent._id " +
                 "ORDER BY dateEvent.milliseconds DESC";
 
-        historyReader.setQuery(query);
-        database._load(historyReader, new StubDatabaseClient(client) {
+        final DatabaseReader reader = new HistoryReader(buffer);
+        reader.setQuery(query);
+
+        database.load(reader, new StubDatabaseClient(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader reader) {
-                client.allHistoryLoaded((ArrayList<Workout>) reader.getObjects());
+                getClient().allHistoryLoaded((ArrayList<Workout>) reader.getObjects());
             }
         });
     }
@@ -111,13 +111,15 @@ public class WorkoutManager extends SQLCreator {
                 "WHERE historyWorkout.idDateEvent = dateEvent._id " +
                 "ORDER BY dateEvent.milliseconds DESC LIMIT 1";
 
-        historyReader.setQuery(query);
-        database._load(historyReader, new StubDatabaseClient(client) {
+        final DatabaseReader reader = new HistoryReader(buffer);
+        reader.setQuery(query);
+
+        database.load(reader, new StubDatabaseClient(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader reader) {
                 ArrayList<Workout> workouts = (ArrayList<Workout>) reader.getObjects();
-                client.lastWorkoutLoaded(workouts.isEmpty() ? null : workouts.get(0));
+                getClient().lastWorkoutLoaded(workouts.isEmpty() ? null : workouts.get(0));
             }
         });
     }
@@ -134,22 +136,24 @@ public class WorkoutManager extends SQLCreator {
                 .append(" AND historyWorkout.posWorkout = ").append(workout.getPosCurrentWorkout())
                 .append(" ORDER BY dateEvent.milliseconds DESC").append(strLimit).toString();
 
-        historyReader.setQuery(query);
-        database._load(historyReader, new StubDatabaseClient(client) {
+        final DatabaseReader reader = new HistoryReader(buffer);
+        reader.setQuery(query);
+
+        database.load(reader, new StubDatabaseClient(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader reader) {
                 ArrayList<Workout> history = (ArrayList<Workout>) reader.getObjects();
-                client.allHistoryLoadedFor(workout, history);
+                getClient().allHistoryLoadedFor(workout, history);
             }
         });
     }
 
     public void loadStatisticLastProgram(WorkoutManagerClient client) {
-        database._executeTask(new LastPeriodReader(), new StubDatabaseClient(client) {
+        database.executeTask(new LastPeriodReader(), new StubDatabaseClient(client) {
             @Override
             public void executed(DatabaseExecutor executor) {
-                client.statisticPeriodsLoaded((StatisticPeriodOfProgram) executor.getResult());
+                getClient().statisticPeriodsLoaded((StatisticPeriodOfProgram) executor.getResult());
             }
         });
     }
@@ -158,10 +162,10 @@ public class WorkoutManager extends SQLCreator {
         DatabaseWriter writer = new ProgramWriter();
         writer.setRecord(program);
 
-        database._save(writer, new StubDatabaseClient(client) {
+        database.save(writer, new StubDatabaseClient(client) {
             @Override
             public void saved(DatabaseWriter writer) {
-                client.descriptionSaved((Description) writer.getRecord());
+                getClient().descriptionSaved((Description) writer.getRecord());
             }
         });
     }
@@ -170,10 +174,10 @@ public class WorkoutManager extends SQLCreator {
         final DatabaseWriter writer = new WorkoutWriter();
         writer.setRecord(workout);
 
-        database._save(writer, new StubDatabaseClient(client) {
+        database.save(writer, new StubDatabaseClient(client) {
             @Override
             public void saved(DatabaseWriter writer) {
-                client.descriptionSaved((Description) writer.getRecord());
+                getClient().descriptionSaved((Description) writer.getRecord());
             }
         });
     }
@@ -182,10 +186,10 @@ public class WorkoutManager extends SQLCreator {
         final DatabaseWriter writer = new ExerciseWriter();
         writer.setRecord(exercise);
 
-        database._save(writer, new StubDatabaseClient(client) {
+        database.save(writer, new StubDatabaseClient(client) {
             @Override
             public void saved(DatabaseWriter writer) {
-                client.descriptionSaved((Description) writer.getRecord());
+                getClient().descriptionSaved((Description) writer.getRecord());
             }
         });
     }
@@ -194,10 +198,10 @@ public class WorkoutManager extends SQLCreator {
         final DatabaseWriter writer = new HistoryWriter();
         writer.setRecord(workout);
 
-        database._save(writer, new StubDatabaseClient(client) {
+        database.save(writer, new StubDatabaseClient(client) {
             @Override
             public void saved(DatabaseWriter writer) {
-                client.workoutSaved((Workout) writer.getRecord());
+                getClient().workoutSaved((Workout) writer.getRecord());
             }
         });
     }

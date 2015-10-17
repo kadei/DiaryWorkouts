@@ -16,7 +16,11 @@ import static ru.kadei.diaryworkouts.models.workouts.DescriptionExercise.SUPERSE
 public class ExerciseReader extends DescriptionReader {
 
     public ExerciseReader(BufferDescriptions bufferDescriptions) {
-        super(bufferDescriptions);
+        super(bufferDescriptions, createStringBuilder());
+    }
+
+    public ExerciseReader(BufferDescriptions bufferDescriptions, StringBuilder sb) {
+        super(bufferDescriptions, sb);
     }
 
     @SuppressWarnings("unchecked")

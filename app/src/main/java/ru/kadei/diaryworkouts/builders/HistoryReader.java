@@ -29,8 +29,13 @@ public class HistoryReader extends DatabaseReader {
     private final Measure measure = new Measure();
     private SparseArray<String[]> bufferNameColumns = new SparseArray<>(4);
 
-    public HistoryReader(ProgramReader programReader) {
-        this.programReader = programReader;
+    public HistoryReader(BufferDescriptions bufferDescriptions) {
+        this(bufferDescriptions, createStringBuilder());
+    }
+
+    private HistoryReader(BufferDescriptions bufferDescriptions, StringBuilder sb) {
+        super(sb);
+        this.programReader = new ProgramReader(bufferDescriptions, sb);
     }
 
     @Override

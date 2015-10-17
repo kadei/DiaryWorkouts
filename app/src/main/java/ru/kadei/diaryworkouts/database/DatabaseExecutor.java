@@ -9,7 +9,11 @@ public abstract class DatabaseExecutor extends SQLCreator {
 
     protected Object object;
     protected SQLiteDatabase db;
-    
+
+    public DatabaseExecutor() {
+        super(createStringBuilder());
+    }
+
     public abstract void execute();
 
     public void setDB(SQLiteDatabase db) {

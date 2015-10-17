@@ -9,7 +9,8 @@ public abstract class DescriptionReader extends DatabaseReader {
 
     protected final BufferDescriptions bufferDescriptions;
 
-    public DescriptionReader(BufferDescriptions bufferDescriptions) {
+    public DescriptionReader(BufferDescriptions bufferDescriptions, StringBuilder sb) {
+        super(sb);
         this.bufferDescriptions = bufferDescriptions;
     }
 
