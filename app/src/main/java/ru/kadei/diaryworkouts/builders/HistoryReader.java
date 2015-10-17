@@ -70,7 +70,8 @@ public class HistoryReader extends DatabaseReader {
         DescriptionProgram dp = reader.getBufferDescriptions().getProgram(idProgram);
         if (dp == null) {
             reader.setDb(db);
-            reader.readObjects("SELECT * FROM descriptionProgram WHERE _id = " + idProgram);
+            reader.setQuery("SELECT * FROM descriptionProgram WHERE _id = " + idProgram);
+            reader.readObjects();
             reader.forgetReferenceDB();
             dp = (DescriptionProgram) reader.getObjects().get(0);
         }

@@ -41,7 +41,8 @@ public class ProgramReader extends DescriptionReader {
                 dp.name = c.getString(indexName);
                 dp.description = c.getString(indexDescription);
 
-                reader.readObjects(createQueryFor(dp.id));
+                reader.setQuery(createQueryFor(dp.id));
+                reader.readObjects();
                 dp.workouts = (ArrayList<DescriptionWorkout>) reader.getObjects();
 
                 buffer.addProgram(dp);

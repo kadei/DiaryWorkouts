@@ -44,7 +44,8 @@ public class ExerciseReader extends DescriptionReader {
                     superExe.description = c.getString(indexDescription);
                     superExe.type = type;
 
-                    this.readObjects(createQueryFor(superExe.id));
+                    setQuery(createQueryFor(superExe.id));
+                    readObjects();
                     superExe.exercises = (ArrayList<DescriptionStandardExercise>) this.getObjects();
                     de = superExe;
                 } else {

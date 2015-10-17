@@ -45,7 +45,7 @@ public class SelectWorkoutDialog extends CustomDialog implements AdapterView.OnI
 
         final String[] names = workout.getWorkoutNames();
 
-        ListView listView = (ListView) inflater.inflate(R.layout.list, container, false);
+        final ListView listView = (ListView) inflater.inflate(R.layout.list, container, false);
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_list_item_single_choice, names);
         listView.setAdapter(adapter);

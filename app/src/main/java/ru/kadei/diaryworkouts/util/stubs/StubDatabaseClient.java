@@ -3,7 +3,7 @@ package ru.kadei.diaryworkouts.util.stubs;
 import ru.kadei.diaryworkouts.database.DatabaseClient;
 import ru.kadei.diaryworkouts.database.DatabaseExecutor;
 import ru.kadei.diaryworkouts.database.DatabaseReader;
-import ru.kadei.diaryworkouts.database.Record;
+import ru.kadei.diaryworkouts.database.DatabaseWriter;
 import ru.kadei.diaryworkouts.managers.WorkoutManagerClient;
 
 /**
@@ -19,17 +19,14 @@ public class StubDatabaseClient implements DatabaseClient {
 
     @Override
     public void loaded(DatabaseReader reader) {
-
     }
 
     @Override
-    public void saved(Record record) {
-
+    public void saved(DatabaseWriter writer) {
     }
 
     @Override
     public void executed(DatabaseExecutor executor) {
-
     }
 
     @Override

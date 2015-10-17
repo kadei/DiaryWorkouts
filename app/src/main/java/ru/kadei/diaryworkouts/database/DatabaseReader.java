@@ -10,10 +10,16 @@ import java.util.ArrayList;
  */
 public abstract class DatabaseReader extends SQLCreator {
 
+    private String query;
+
     protected SQLiteDatabase db;
     protected ArrayList<?> objects;
 
-    public final void readObjects(String query){
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public final void readObjects(){
         Cursor c = db.rawQuery(query, null);
         if (c.moveToFirst()) {
             objects = buildFromCursor(c);
@@ -24,6 +30,8 @@ public abstract class DatabaseReader extends SQLCreator {
     public abstract ArrayList<?> buildFromCursor(Cursor c);
 
     public final ArrayList<?> getObjects() {
+        query = null;
+
         if(objects == null)
             return new ArrayList<>();
         else {
@@ -39,5 +47,9 @@ public abstract class DatabaseReader extends SQLCreator {
 
     public final void forgetReferenceDB() {
         db = null;
+    }
+
+    public String getQuery() {
+        return query;
     }
 }

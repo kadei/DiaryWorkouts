@@ -41,7 +41,8 @@ public class WorkoutReader extends DescriptionReader {
                 dw.name = c.getString(indexName);
                 dw.description = c.getString(indexDescription);
 
-                reader.readObjects(createQueryFor(dw.id));
+                reader.setQuery(createQueryFor(dw.id));
+                reader.readObjects();
                 dw.exercises = (ArrayList<DescriptionExercise>) reader.getObjects();
 
                 buffer.addWorkout(dw);

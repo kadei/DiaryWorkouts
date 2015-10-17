@@ -16,7 +16,7 @@ import ru.kadei.diaryworkouts.builders.WorkoutWriter;
 import ru.kadei.diaryworkouts.database.Database;
 import ru.kadei.diaryworkouts.database.DatabaseExecutor;
 import ru.kadei.diaryworkouts.database.DatabaseReader;
-import ru.kadei.diaryworkouts.database.Record;
+import ru.kadei.diaryworkouts.database.DatabaseWriter;
 import ru.kadei.diaryworkouts.database.SQLCreator;
 import ru.kadei.diaryworkouts.models.workouts.Description;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionExercise;
@@ -49,36 +49,36 @@ public class WorkoutManager extends SQLCreator {
     }
 
     public void loadAllDescriptionPrograms(WorkoutManagerClient client) {
-        database.load("SELECT * FROM descriptionProgram", programReader,
-                new StubDatabaseClient(client) {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void loaded(DatabaseReader reader) {
-                        client.allProgramsLoaded((ArrayList<DescriptionProgram>) reader.getObjects());
-                    }
-                });
+        programReader.setQuery("SELECT * FROM descriptionProgram");
+        database._load(programReader, new StubDatabaseClient(client) {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void loaded(DatabaseReader reader) {
+                client.allProgramsLoaded((ArrayList<DescriptionProgram>) reader.getObjects());
+            }
+        });
     }
 
     public void loadAllDescriptionWorkout(WorkoutManagerClient client) {
-        database.load("SELECT * FROM descriptionWorkout", workoutReader,
-                new StubDatabaseClient(client) {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void loaded(DatabaseReader reader) {
-                        client.allWorkoutsLoaded((ArrayList<DescriptionWorkout>) reader.getObjects());
-                    }
-                });
+        workoutReader.setQuery("SELECT * FROM descriptionWorkout");
+        database._load(workoutReader, new StubDatabaseClient(client) {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void loaded(DatabaseReader reader) {
+                client.allWorkoutsLoaded((ArrayList<DescriptionWorkout>) reader.getObjects());
+            }
+        });
     }
 
     public void loadAllDescriptionExercise(WorkoutManagerClient client) {
-        database.load("SELECT * FROM descriptionExercise", exerciseReader,
-                new StubDatabaseClient(client) {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void loaded(DatabaseReader reader) {
-                        client.allExercisesLoaded((ArrayList<DescriptionExercise>) reader.getObjects());
-                    }
-                });
+        exerciseReader.setQuery("SELECT * FROM descriptionExercise");
+        database._load(exerciseReader, new StubDatabaseClient(client) {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void loaded(DatabaseReader reader) {
+                client.allExercisesLoaded((ArrayList<DescriptionExercise>) reader.getObjects());
+            }
+        });
     }
 
     public void loadAllHistory(WorkoutManagerClient client) {
@@ -87,7 +87,8 @@ public class WorkoutManager extends SQLCreator {
                 "WHERE historyWorkout.idDateEvent = dateEvent._id " +
                 "ORDER BY dateEvent.milliseconds DESC";
 
-        database.load(query, historyReader, new StubDatabaseClient(client) {
+        historyReader.setQuery(query);
+        database._load(historyReader, new StubDatabaseClient(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader reader) {
@@ -110,7 +111,8 @@ public class WorkoutManager extends SQLCreator {
                 "WHERE historyWorkout.idDateEvent = dateEvent._id " +
                 "ORDER BY dateEvent.milliseconds DESC LIMIT 1";
 
-        database.load(query, historyReader, new StubDatabaseClient(client) {
+        historyReader.setQuery(query);
+        database._load(historyReader, new StubDatabaseClient(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader reader) {
@@ -132,7 +134,8 @@ public class WorkoutManager extends SQLCreator {
                 .append(" AND historyWorkout.posWorkout = ").append(workout.getPosCurrentWorkout())
                 .append(" ORDER BY dateEvent.milliseconds DESC").append(strLimit).toString();
 
-        database.load(query, historyReader, new StubDatabaseClient(client) {
+        historyReader.setQuery(query);
+        database._load(historyReader, new StubDatabaseClient(client) {
             @SuppressWarnings("unchecked")
             @Override
             public void loaded(DatabaseReader reader) {
@@ -143,7 +146,7 @@ public class WorkoutManager extends SQLCreator {
     }
 
     public void loadStatisticLastProgram(WorkoutManagerClient client) {
-        database.executeTask(new LastPeriodReader(), new StubDatabaseClient(client) {
+        database._executeTask(new LastPeriodReader(), new StubDatabaseClient(client) {
             @Override
             public void executed(DatabaseExecutor executor) {
                 client.statisticPeriodsLoaded((StatisticPeriodOfProgram) executor.getResult());
@@ -152,37 +155,49 @@ public class WorkoutManager extends SQLCreator {
     }
 
     public void saveDescriptionProgram(DescriptionProgram program, WorkoutManagerClient client) {
-        database.save(program, new ProgramWriter(), new StubDatabaseClient(client) {
+        DatabaseWriter writer = new ProgramWriter();
+        writer.setRecord(program);
+
+        database._save(writer, new StubDatabaseClient(client) {
             @Override
-            public void saved(Record record) {
-                client.descriptionSaved((Description) record);
+            public void saved(DatabaseWriter writer) {
+                client.descriptionSaved((Description) writer.getRecord());
             }
         });
     }
 
     public void saveDescriptionWorkout(DescriptionWorkout workout, WorkoutManagerClient client) {
-        database.save(workout, new WorkoutWriter(), new StubDatabaseClient(client) {
+        final DatabaseWriter writer = new WorkoutWriter();
+        writer.setRecord(workout);
+
+        database._save(writer, new StubDatabaseClient(client) {
             @Override
-            public void saved(Record record) {
-                client.descriptionSaved((Description) record);
+            public void saved(DatabaseWriter writer) {
+                client.descriptionSaved((Description) writer.getRecord());
             }
         });
     }
 
     public void saveDescriptionExercise(DescriptionExercise exercise, WorkoutManagerClient client) {
-        database.save(exercise, new ExerciseWriter(), new StubDatabaseClient(client) {
+        final DatabaseWriter writer = new ExerciseWriter();
+        writer.setRecord(exercise);
+
+        database._save(writer, new StubDatabaseClient(client) {
             @Override
-            public void saved(Record record) {
-                client.descriptionSaved((Description) record);
+            public void saved(DatabaseWriter writer) {
+                client.descriptionSaved((Description) writer.getRecord());
             }
         });
     }
 
     public void saveWorkout(Workout workout, WorkoutManagerClient client) {
-        database.save(workout, new HistoryWriter(), new StubDatabaseClient(client) {
+        final DatabaseWriter writer = new HistoryWriter();
+        writer.setRecord(workout);
+
+        database._save(writer, new StubDatabaseClient(client) {
             @Override
-            public void saved(Record record) {
-                client.workoutSaved((Workout) record);
+            public void saved(DatabaseWriter writer) {
+                client.workoutSaved((Workout) writer.getRecord());
             }
         });
     }

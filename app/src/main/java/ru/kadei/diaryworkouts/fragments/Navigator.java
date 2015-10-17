@@ -13,6 +13,7 @@ import android.util.Pair;
 import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
 
 import com.github.clans.fab.FloatingActionButton;
 
@@ -20,6 +21,7 @@ import ru.kadei.diaryworkouts.R;
 import ru.kadei.diaryworkouts.activities.MainActivity;
 
 import static android.support.v7.app.ActionBar.DISPLAY_SHOW_CUSTOM;
+import static android.view.animation.AnimationUtils.loadAnimation;
 
 /**
  * Created by kadei on 20.09.15.
@@ -34,6 +36,7 @@ public class Navigator {
 
     private final FloatingActionButton floatingActionButton;
 
+    private int currentItemID = -1;
     private final NavigationView.OnNavigationItemSelectedListener listenerUnbound;
 
     Navigator(MainActivity activity,
@@ -49,6 +52,15 @@ public class Navigator {
         this.activity = activity;
         activity.setContentView(IdLayout);
 
+        configToolbar(idToolbar);
+        this.idContainer = idContainer;
+        this.drawer = configDrawer(idDrawer, idNavigationList);
+        this.fragments = createBundlesFor(fragments);
+        this.floatingActionButton = createAndConfigFAB(idFloatingActionButton);
+        this.listenerUnbound = listenerUnbound;
+    }
+
+    private void configToolbar(int idToolbar) {
         final Toolbar toolbar = (Toolbar) activity.findViewById(idToolbar);
         toolbar.setSubtitleTextAppearance(activity, R.style.toolbar_title);
         activity.setSupportActionBar(toolbar);
@@ -57,30 +69,49 @@ public class Navigator {
             ab.setDisplayOptions(DISPLAY_SHOW_CUSTOM);
             ab.setCustomView(R.layout.toolbar_custom_view);
         }
+    }
 
-        this.idContainer = idContainer;
-        drawer = (DrawerLayout) activity.findViewById(idDrawer);
+    private DrawerLayout configDrawer(int idDrawer, int idNavigationList) {
+        final DrawerLayout drawer = (DrawerLayout) activity.findViewById(idDrawer);
         ActionBarDrawerToggle toggle = createToggleFor(drawer);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         NavigationView navigationView = (NavigationView) activity.findViewById(idNavigationList);
         navigationView.setNavigationItemSelectedListener(navigationItemSelectedListener);
+        return drawer;
+    }
+
+    private SparseArray<Pair<Class<? extends CustomFragment>, Bundle>> createBundlesFor(
+            SparseArray<Class<? extends CustomFragment>> fragments) {
 
         final int size = fragments.size();
         final SparseArray<Pair<Class<? extends CustomFragment>, Bundle>> frg = new SparseArray<>(size);
+
         for (int i = 0; i < size; ++i) {
             int key = fragments.keyAt(i);
             Class<? extends CustomFragment> c = fragments.get(key);
             Bundle b = new Bundle(4);
             frg.put(key, new Pair<Class<? extends CustomFragment>, Bundle>(c, b));
         }
-        this.fragments = frg;
-
-        floatingActionButton = (FloatingActionButton) activity.findViewById(idFloatingActionButton);
-        floatingActionButton.hide(false);
-
-        this.listenerUnbound = listenerUnbound;
+        return frg;
     }
+
+    private FloatingActionButton createAndConfigFAB(int idFloatingActionButton) {
+        final FloatingActionButton fab = (FloatingActionButton) activity.findViewById(idFloatingActionButton);
+        fab.hide(false);
+
+        final Animation show = loadAnimation(activity, R.anim.fab_scale_up);
+        show.setAnimationListener(notifier.getShowAnimationListener());
+
+        final Animation hide = loadAnimation(activity, R.anim.fab_scale_down);
+        hide.setAnimationListener(notifier.getHideAnimationListener());
+
+        fab.setShowAnimation(show);
+        fab.setHideAnimation(hide);
+        return fab;
+    }
+
+    private final FABAnimationNotifier notifier = new FABAnimationNotifier();
 
     private ActionBarDrawerToggle createToggleFor(DrawerLayout drawer) {
         return new ActionBarDrawerToggle(activity, drawer, R.string.drawer_open, R.string.drawer_close) {
@@ -104,6 +135,13 @@ public class Navigator {
         public boolean onNavigationItemSelected(MenuItem menuItem) {
             final int id = menuItem.getItemId();
 
+            if (id == currentItemID) {
+                getActiveFragment().update();
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+
+            currentItemID = id;
             saveStateActiveFragment();
 
             if (id == R.id.exit) {
@@ -146,15 +184,16 @@ public class Navigator {
         throw new RuntimeException("Unexpected class = " + classFragment);
     }
 
-    private void openFragmentBy(final int id) {
+    private void openFragmentBy(int id) {
         final CustomFragment prevFragment = getActiveFragment();
         if (prevFragment == null)
             replaceFragment(id);
         else {
-            prevFragment.prepareForClose(new Preparer(id) {
+            notifier.setListener(prevFragment);
+            prevFragment.prepareForClose(new Inspector(id) {
                 @Override
                 public void iReady() {
-                    replaceFragment(id);
+                    replaceFragment(getNextFragment());
                 }
             });
         }
@@ -165,6 +204,7 @@ public class Navigator {
         final CustomFragment frg = getInstanceFor(pair.first);
         frg.setFloatingActionButton(floatingActionButton);
         frg.restore(pair.second);
+
         activity.getFragmentManager().beginTransaction().replace(idContainer, frg).commit();
     }
 

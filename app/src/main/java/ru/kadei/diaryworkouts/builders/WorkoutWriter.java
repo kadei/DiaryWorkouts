@@ -11,11 +11,11 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionWorkout;
  */
 public class WorkoutWriter extends DescriptionWriter {
     @Override
-    public void writeObject(Record object) {
-        if(object instanceof DescriptionWorkout)
-            saveWorkout((DescriptionWorkout) object);
+    public void writeObject() {
+        if(record instanceof DescriptionWorkout)
+            saveWorkout((DescriptionWorkout) record);
         else
-            oops(object);
+            oops(record);
     }
 
     private void saveWorkout(DescriptionWorkout workout) {

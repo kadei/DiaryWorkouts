@@ -4,7 +4,6 @@ import android.content.ContentValues;
 
 import ru.kadei.diaryworkouts.database.Cortege;
 import ru.kadei.diaryworkouts.database.DatabaseWriter;
-import ru.kadei.diaryworkouts.database.Record;
 import ru.kadei.diaryworkouts.models.workouts.DateEvent;
 import ru.kadei.diaryworkouts.models.workouts.Exercise;
 import ru.kadei.diaryworkouts.models.workouts.Set;
@@ -28,11 +27,11 @@ public class HistoryWriter extends DatabaseWriter {
     private Cortege cortegeSet;
 
     @Override
-    public void writeObject(Record object) {
-        if (object instanceof Workout)
-            saveWorkout((Workout) object);
+    public void writeObject() {
+        if (record instanceof Workout)
+            saveWorkout((Workout) record);
         else
-            oops(object);
+            oops(record);
     }
 
     private void saveWorkout(Workout workout) {
@@ -58,10 +57,12 @@ public class HistoryWriter extends DatabaseWriter {
     private long saveDateEvent(long date) {
         DateEvent dateEvent = new DateEvent(date);
         DateEventWriter dateEventWriter = new DateEventWriter();
+
         dateEventWriter.setDB(db);
-        dateEventWriter.writeObject(dateEvent);
+        dateEventWriter.setRecord(dateEvent);
+        dateEventWriter.writeObject();
         dateEventWriter.forgetReferenceDB();
-        return dateEvent.id;
+        return dateEventWriter.getRecord().id;
     }
 
     private void saveHistoryExercise(Workout workout, long idHistory) {

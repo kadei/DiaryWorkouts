@@ -3,7 +3,6 @@ package ru.kadei.diaryworkouts.builders;
 import android.content.ContentValues;
 
 import ru.kadei.diaryworkouts.database.Cortege;
-import ru.kadei.diaryworkouts.database.Record;
 import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 
 /**
@@ -12,11 +11,11 @@ import ru.kadei.diaryworkouts.models.workouts.DescriptionProgram;
 public class ProgramWriter extends DescriptionWriter {
 
     @Override
-    public void writeObject(Record object) {
-        if(object instanceof DescriptionProgram)
-            saveProgram((DescriptionProgram) object);
+    public void writeObject() {
+        if (record instanceof DescriptionProgram)
+            saveProgram((DescriptionProgram) record);
         else
-            oops(object);
+            oops(record);
     }
 
     private void saveProgram(DescriptionProgram program) {
@@ -32,7 +31,7 @@ public class ProgramWriter extends DescriptionWriter {
         saveRelations(program.id, program.workouts, TABLE_INFO);
     }
 
-    private static final String[] TABLE_INFO = new String[] {
+    private static final String[] TABLE_INFO = new String[]{
             "listDescriptionWorkout", "idProgram", "idWorkout", "orderInList"
     };
 }

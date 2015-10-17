@@ -5,7 +5,7 @@ package ru.kadei.diaryworkouts.database;
  */
 public interface DatabaseClient {
     void loaded(DatabaseReader reader);
-    void saved(Record record);
+    void saved(DatabaseWriter writer);
     void executed(DatabaseExecutor executor);
     void fail(Throwable throwable);
 }

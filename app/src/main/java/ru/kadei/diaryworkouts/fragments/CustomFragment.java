@@ -1,41 +1,35 @@
 package ru.kadei.diaryworkouts.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
 
 import com.github.clans.fab.FloatingActionButton;
 
-import ru.kadei.diaryworkouts.R;
 import ru.kadei.diaryworkouts.activities.MainActivity;
 import ru.kadei.diaryworkouts.managers.ResourceManager;
-import ru.kadei.diaryworkouts.util.stubs.StubAnimationListener;
 import ru.kadei.diaryworkouts.view.ActionBarDecorator;
 
-import static android.view.animation.AnimationUtils.loadAnimation;
-
-public class CustomFragment extends Fragment {
+public class CustomFragment extends Fragment implements FABAnimationNotifier.FABListener {
 
     private boolean alive;
     private FloatingActionButton floatingActionButton;
-    private Preparer preparer;
+    private Inspector inspector;
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String name = getClass().getName();
-        Log.d("TEST", name);
+        Log.d("TEST", "onCreate() " + name);
 
         final MainActivity a = (MainActivity) getActivity();
         ActionBarDecorator decorator = new ActionBarDecorator(a.getSupportActionBar());
         configToolbar(decorator);
 
         defaultConfigFAB();
-        configFloatingActionButton(floatingActionButton);
+        config(floatingActionButton);
 
         alive = true;
     }
@@ -50,28 +44,14 @@ public class CustomFragment extends Fragment {
         return alive;
     }
 
+    protected void update() {
+        Log.d("TEST", "UPDATE CustomFragment");
+    }
+
     protected void configToolbar(ActionBarDecorator bar) {
     }
 
     private void defaultConfigFAB() {
-        if(floatingActionButton.getTag() != null)
-            return;
-
-        Log.d("TEST", "defaultConfigFAB");
-        floatingActionButton.setTag(new Object());
-        final Activity a = getActivity();
-        final Animation show = loadAnimation(a, R.anim.fab_scale_up);
-        final Animation hide = loadAnimation(a, R.anim.fab_scale_down);
-        hide.setAnimationListener(new StubAnimationListener() {
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                if (preparer != null)
-                    preparer.iReady();
-            }
-        });
-
-        floatingActionButton.setShowAnimation(show);
-        floatingActionButton.setHideAnimation(hide);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,7 +60,27 @@ public class CustomFragment extends Fragment {
         });
     }
 
-    protected void configFloatingActionButton(FloatingActionButton fab) {
+    protected void config(FloatingActionButton fab) {
+    }
+
+    @Override
+    public void FABShowed() {
+
+    }
+
+    @Override
+    public void FABHidden() {
+        if (inspector != null)
+            inspector.iReady();
+    }
+
+    public final void prepareForClose(Inspector inspector) {
+        this.inspector = inspector;
+
+        if (floatingActionButton.isHidden())
+            inspector.iReady();
+        else
+            floatingActionButton.hide(true); // iReady after animation hide
     }
 
     protected void onClickFloatingActionButton(FloatingActionButton fab) {
@@ -97,13 +97,8 @@ public class CustomFragment extends Fragment {
     public void restore(Bundle bundle) {
     }
 
-    public void prepareForClose(Preparer preparer) {
-        if(floatingActionButton.isHidden())
-            preparer.iReady();
-        else {
-            this.preparer = preparer;
-            floatingActionButton.hide(true); // iReady after animation hide
-        }
+    protected final void putObjectInGeneralStorage(int id, Object object) {
+        getMainActivity().getGeneralStorage().put(id, object);
     }
 
     protected final Object getObjectFromGeneralStorage(int id) {

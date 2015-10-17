@@ -3,6 +3,9 @@
 
     <string name="app_name">Тренировочный дневник</string>
     <string name="action_settings">Настройки</string>
+    
+    <!-- content descriptions -->
+    <string name="select_upcoming_workout">Выбор предстоящей тренировки</string>
 
     <!-- menu -->
     <string name="complete_workout">Закончить тренировку</string>

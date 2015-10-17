@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="label_main_fragment" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="info_main_fragment" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    
+    <style name="action_button" parent="Widget.AppCompat.ActionButton">
+
+    </style>
+    
+</resources>

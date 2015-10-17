@@ -3,11 +3,11 @@ package ru.kadei.diaryworkouts.fragments;
 /**
  * Created by kadei on 20.09.15.
  */
-public abstract class Preparer {
+public abstract class Inspector {
 
     private final int nextFragment;
 
-    protected Preparer(int nextFragment) {
+    protected Inspector(int nextFragment) {
         this.nextFragment = nextFragment;
     }
 

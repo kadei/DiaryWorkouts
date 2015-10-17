@@ -59,7 +59,7 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
     }
 
     @Override
-    protected void configFloatingActionButton(FloatingActionButton fab) {
+    protected void config(FloatingActionButton fab) {
         fab.setImageDrawable(getResourceManager().getDrawable(R.drawable.ic_play_arrow_white_24dp));
         fab.show(true);
     }
@@ -98,7 +98,15 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
     @Override
     public void onStart() {
         super.onStart();
+        loadData();
+    }
 
+    @Override
+    protected void update() {
+        loadData();
+    }
+
+    private void loadData() {
         forgetReferences();
 
         if (downloadFulfilled)
@@ -115,7 +123,7 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
 
     private void loadLastWorkout() {
         downloadFulfilled = false;
-        getMainActivity().getWorkoutManager().loadLastWorkout(new ProxyWorkoutManagerClient(this, new StubWorkoutManagerClient() {
+        getMainActivity().getWorkoutManager().loadLastWorkout(wrapListener(new StubWorkoutManagerClient() {
             @Override
             public void lastWorkoutLoaded(Workout workout) {
                 lastWorkout = workout == null ? getFakeWorkout() : workout;
@@ -133,7 +141,7 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
         return new Workout(newProgram(-1L, null, null, 0), -1, null);
     }
 
-    private boolean isFake(Workout workout) {
+    private static boolean isFake(Workout workout) {
         return workout.getIdProgram() < 0L && workout.getPosCurrentWorkout() < 0;
     }
 
@@ -141,9 +149,9 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
         final ArrayList<Workout> workoutsForLoadHistory = new ArrayList<>(2);
 
         selectedWorkout = (Workout) getObjectFromGeneralStorage(GENERAL_ID_SELECTED_WORKOUT);
-        if (selectedWorkout == null || selectedWorkout.equals(lastWorkout))
+        if (selectedWorkout == null)
             selectedWorkout = getFakeWorkout();
-        else if (selectedWorkout != null)
+        else
             workoutsForLoadHistory.add(selectedWorkout);
 
         if (isFake(lastWorkout)) {
@@ -156,29 +164,35 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
         if (workoutsForLoadHistory.isEmpty())
             solveConflictWorkouts();
         else {
-            final StubWorkoutManagerClient listener = wrapListener(getListener());
+            final StubWorkoutManagerClient listener = wrapListener(new StubWorkoutManagerClient() {
+                @Override
+                public void allHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
+                    onHistoryLoadedFor(target, history);
+                }
+
+                @Override
+                public void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic) {
+                    onStatisticPeriodLoaded(statistic);
+                    solveConflictWorkouts();
+                }
+            });
+
             loadHistoryFor(workoutsForLoadHistory, listener);
             loadStatisticLastProgram(listener);
         }
     }
 
-    private StubWorkoutManagerClient getListener() {
-        return new StubWorkoutManagerClient() {
-            @Override
-            public void allHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
-                handleAllHistoryLoadedFor(target, history);
-            }
+    private void onHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
+        if (target.equals(selectedWorkout)) {
+            selectedWorkout = !history.isEmpty() ? history.get(0) : selectedWorkout;
+        } else if (target.equals(upcomingAfterLastWorkout)) {
+            upcomingAfterLastWorkout = !history.isEmpty() ? history.get(0) : upcomingAfterLastWorkout;
+        } else
+            throw new RuntimeException("Unexpected target for load history: " + target);
+    }
 
-            @Override
-            public void statisticPeriodsLoaded(StatisticPeriodOfProgram statistic) {
-                handleStatisticLoaded(statistic);
-            }
-
-            @Override
-            public void fail(Throwable throwable) {
-                Log.e("TEST", "FAIL: Load statistic or history\nmessage = " + throwable.getMessage());
-            }
-        };
+    private void onStatisticPeriodLoaded(StatisticPeriodOfProgram statistic) {
+        statisticLastProgram = statistic;
     }
 
     private ProxyWorkoutManagerClient wrapListener(StubWorkoutManagerClient listener) {
@@ -196,19 +210,6 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
         getMainActivity().getWorkoutManager().loadStatisticLastProgram(listener);
     }
 
-    private void handleAllHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
-        if (target.equals(selectedWorkout)) {
-            selectedWorkout = !history.isEmpty() ? history.get(0) : selectedWorkout;
-        } else if (target.equals(upcomingAfterLastWorkout)) {
-            upcomingAfterLastWorkout = !history.isEmpty() ? history.get(0) : upcomingAfterLastWorkout;
-        }
-    }
-
-    private void handleStatisticLoaded(StatisticPeriodOfProgram statistic) {
-        statisticLastProgram = statistic;
-        solveConflictWorkouts();
-    }
-
     private void solveConflictWorkouts() {
         downloadFulfilled = true;
 
@@ -220,7 +221,7 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
         SparseArray<String> values;
         if (isFake(lastWorkout) && isFake(selectedWorkout)) {
             values = noLastAndNoSelected();
-            // still disabled
+            // image button still disabled
         } else if (isFake(lastWorkout)) {
             values = onlySelected();
             ibSelectWorkout.setEnabled(true);
@@ -360,17 +361,14 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
 
     @Override
     public void onUpcomingWorkoutChanged(Workout workout) {
-        if (!isFake(selectedWorkout))
-            selectedWorkout = workout;
-        else
-            upcomingAfterLastWorkout = workout;
+        putObjectInGeneralStorage(GENERAL_ID_SELECTED_WORKOUT, workout);
+        selectedWorkout = workout;
 
-        final ProxyWorkoutManagerClient listener = wrapListener(getListener());
-        listener.addListener(new ProxyWorkoutManagerClient.Listener() {
+        final ProxyWorkoutManagerClient listener = wrapListener(new StubWorkoutManagerClient(){
             @Override
-            public void executed(String method, Object returnValue) {
-                if (method.equals("allHistoryLoadedFor"))
-                    solveConflictWorkouts();
+            public void allHistoryLoadedFor(Workout target, ArrayList<Workout> history) {
+                onHistoryLoadedFor(target, history);
+                solveConflictWorkouts();
             }
         });
 

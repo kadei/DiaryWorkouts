@@ -23,11 +23,11 @@ public class DateEventWriter extends DatabaseWriter {
     public static final int GMT = 3;
 
     @Override
-    public void writeObject(Record object) {
-        if (object instanceof DateEvent)
-            saveDate((DateEvent) object);
+    public void writeObject() {
+        if (record instanceof DateEvent)
+            saveDate((DateEvent) record);
         else
-            oops(object);
+            oops(record);
     }
 
     private void saveDate(DateEvent dateEvent) {

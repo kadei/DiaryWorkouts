@@ -2,13 +2,11 @@ package ru.kadei.diaryworkouts.database;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.File;
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 import ru.kadei.diaryworkouts.threads.BackgroundLogic;
-import ru.kadei.diaryworkouts.threads.Task;
 
 /**
  * Created by kadei on 04.09.15.
@@ -20,103 +18,107 @@ public class Database {
 
     private final SQLiteOpenHelper dbHelper;
     private final BackgroundLogic bgLogic;
-    private final Queue<DatabaseClient> clients;
-
-    private final Task taskLoadFromDatabase;
-    private final Task taskSaveInDatabase;
-    private final Task taskExecute;
 
     public Database(SQLiteOpenHelper dbHelper, BackgroundLogic bgLogic) {
         this.dbHelper = dbHelper;
         this.bgLogic = bgLogic;
-        clients = new ArrayDeque<>();
-
-        taskLoadFromDatabase = new Task();
-        taskSaveInDatabase = new Task();
-        taskExecute = new Task();
-        initialTasks();
-    }
-
-    private void initialTasks() {
-        taskLoadFromDatabase
-                .setClient(this)
-                .setExecutedMethod("executeLoad", String.class, DatabaseReader.class)
-                .setCompleteMethod("completeLoad")
-                .setFailMethod("fail");
-
-        taskSaveInDatabase
-                .setClient(this)
-                .setExecutedMethod("executeSave", Record.class, DatabaseWriter.class)
-                .setCompleteMethod("completeSave")
-                .setFailMethod("fail");
-
-        taskExecute
-                .setClient(this)
-                .setExecutedMethod("executeExecutor", DatabaseExecutor.class)
-                .setCompleteMethod("completeExecute")
-                .setFailMethod("fail");
     }
 
     public void stop() {
-        if (!bgLogic.isThisThread())
-            bgLogic.stop();
-
-        clients.clear();
+        bgLogic.stop();
     }
 
-    public void load(String query, DatabaseReader reader, DatabaseClient client) {
-        clients.offer(client);
-        bgLogic.execute(taskLoadFromDatabase, query, reader);
+    public void _load(DatabaseReader reader, DatabaseClient client) {
+//        Log.i("TEST", reader.getQuery());
+        bgLogic.__execute(new ReadTask(reader, client) {
+
+            @SuppressWarnings("TryFinallyCanBeTryWithResources")
+            @Override
+            public void execute() {
+                final DatabaseReader r = getReader();
+                final SQLiteDatabase db = getDB();
+
+                try {
+                    r.setDb(db);
+                    r.readObjects();
+                    r.forgetReferenceDB();
+                } finally {
+                    db.close();
+                }
+            }
+
+            @Override
+            public void successfully() {
+                getClient().loaded(getReader());
+            }
+
+            @Override
+            public void fail() {
+                getClient().fail(getThrowable());
+            }
+        });
     }
 
-    @SuppressWarnings("TryFinallyCanBeTryWithResources")
-    private DatabaseReader executeLoad(String query, DatabaseReader reader) {
-        SQLiteDatabase db = getDB();
-        try {
-            reader.setDb(db);
-            reader.readObjects(query);
-            reader.forgetReferenceDB();
-        } finally {
-            db.close();
-        }
-        return reader;
+    public void _save(DatabaseWriter writer, DatabaseClient client) {
+        bgLogic.__execute(new WriteTask(writer, client) {
+            @Override
+            public void execute() {
+                final DatabaseWriter w = getWriter();
+                final SQLiteDatabase db = getDB();
+
+                try {
+                    db.beginTransaction();
+
+                    w.setDB(db);
+                    w.writeObject();
+                    w.forgetReferenceDB();
+
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                    db.close();
+                }
+            }
+
+            @Override
+            public void successfully() {
+                getClient().saved(getWriter());
+            }
+
+            @Override
+            public void fail() {
+                getClient().fail(getThrowable());
+            }
+        });
     }
 
-    private void completeLoad(DatabaseReader reader) {
-        if (!clients.isEmpty())
-            clients.poll().loaded(reader);
-    }
+    public void _executeTask(DatabaseExecutor executor, DatabaseClient client) {
+        bgLogic.__execute(new ExecuteTask(executor, client) {
+            @SuppressWarnings("TryFinallyCanBeTryWithResources")
+            @Override
+            public void execute() {
+                final DatabaseExecutor e = getExecutor();
+                final SQLiteDatabase db = getDB();
 
-    private void fail(Throwable throwable) {
-        if (!clients.isEmpty())
-            clients.poll().fail(throwable);
-    }
+                try {
+                    e.setDB(db);
+                    e.execute();
+                    e.forgetReferenceDB();
+                } finally {
+                    db.close();
+                }
+            }
 
-    public void save(Record record, DatabaseWriter writer, DatabaseClient client) {
-        clients.offer(client);
-        bgLogic.execute(taskSaveInDatabase, record, writer);
-    }
+            @Override
+            public void successfully() {
+                getClient().executed(getExecutor());
+            }
 
-    private Record executeSave(Record record, DatabaseWriter writer) {
-        final SQLiteDatabase db = getDB();
-        try {
-            db.beginTransaction();
-
-            writer.setDB(db);
-            writer.writeObject(record);
-            writer.forgetReferenceDB();
-
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-            db.close();
-        }
-        return record;
-    }
-
-    private void completeSave(Record record) {
-        if (!clients.isEmpty())
-            clients.poll().saved(record);
+            @Override
+            public void fail() {
+                getClient().fail(getThrowable());
+            }
+        });
     }
 
     private SQLiteDatabase getDB() {
@@ -126,42 +128,19 @@ public class Database {
         return db;
     }
 
-    public void executeTask(DatabaseExecutor executor, DatabaseClient client) {
-        clients.offer(client);
-        bgLogic.execute(taskExecute, executor);
-    }
-
-    @SuppressWarnings("TryFinallyCanBeTryWithResources")
-    private DatabaseExecutor executeExecutor(DatabaseExecutor executor) {
-        final SQLiteDatabase db = getDB();
-        try {
-            executor.setDB(db);
-            executor.execute();
-            executor.forgetReferenceDB();
-        } finally {
-            db.close();
-        }
-        return executor;
-    }
-
-    private void completeExecute(DatabaseExecutor executor) {
-        if (!clients.isEmpty())
-            clients.poll().executed(executor);
-    }
-
     public void removeDB() {
         SQLiteDatabase db = getDB();
         File dbFile = new File(db.getPath());
         db.close();
 
-        if(dbFile.exists()) {
+        if (dbFile.exists()) {
             if (!dbFile.delete())
                 throw new RuntimeException("Error delete database file: " + dbFile.getPath());
 
             String journalName = dbFile.getName().replace(".db", ".db-journal");
             File journalFile = new File(journalName);
-            if(journalFile.exists())
-                if(!journalFile.delete())
+            if (journalFile.exists())
+                if (!journalFile.delete())
                     throw new RuntimeException("Error delete journal file: " + journalFile.getPath());
         }
     }

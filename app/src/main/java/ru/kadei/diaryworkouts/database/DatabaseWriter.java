@@ -13,18 +13,31 @@ import static java.lang.String.valueOf;
  */
 public abstract class DatabaseWriter extends SQLCreator {
 
+    protected Record record;
     protected SQLiteDatabase db;
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
+
+    public Record getRecord() {
+        final Record tmp = record;
+        record = null;
+        return tmp;
+    }
 
     public void setDB(SQLiteDatabase db) {
         this.db = db;
     }
 
     public final void writeObjects(ArrayList<Record> objects) {
-        for (int i = 0, end = objects.size(); i < end; ++i)
-            writeObject(objects.get(i));
+        for (int i = 0, end = objects.size(); i < end; ++i) {
+            setRecord(objects.get(i));
+            writeObject();
+        }
     }
 
-    public abstract void writeObject(Record object);
+    public abstract void writeObject();
 
     public void forgetReferenceDB() {
         db = null;
@@ -38,8 +51,7 @@ public abstract class DatabaseWriter extends SQLCreator {
         if (existsRecordsInTable(cortege.nameTable, record.id)) {
             String query = query("_id = ").append(record.id).toString();
             update(cortege.nameTable, cortege.values, query);
-        }
-        else {
+        } else {
             record.id = insertInto(cortege.nameTable, cortege.values);
         }
         return record.id;

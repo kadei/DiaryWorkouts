@@ -2,95 +2,105 @@ package ru.kadei.diaryworkouts.threads;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Pair;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-
-import static java.lang.Long.MAX_VALUE;
-import static java.lang.Thread.sleep;
 
 /**
  * Created by kadei on 04.09.15.
  */
 public class BackgroundLogic {
 
-    private final Queue<Pair<Task, Object[]>> tasks = new ArrayDeque<>();
-    private boolean stop = false;
-    private boolean pause = true;
+    private final Queue<Task> tasks;
 
+    private boolean stop;
+    private boolean pause;
+
+    private final Thread thread;
     private final boolean thisThread;
 
-    private final Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            Task task = (Task) msg.obj;
-            msg.obj = null;
-
-            if (task.isSuccessful())
-                task.noticeCompletion();
-            else
-                task.noticeFail();
-
-            return false;
-        }
-    });
-
-    private final Thread thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            runBackgroundThread();
-        }
-    });
+    private static final int EXECUTE_SUCCESSFULLY = 0;
+    private static final int EXECUTE_FAIL = -1;
 
     public BackgroundLogic() {
         this(false);
     }
 
     public BackgroundLogic(boolean thisThread) {
+        tasks = new ArrayDeque<>();
+        pause = false;
+        stop = false;
+
         this.thisThread = thisThread;
-        if (!thisThread)
+        if (!thisThread) {
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    runBackgroundThread();
+                }
+            });
             thread.start();
+        } else
+            thread = null;
     }
 
     private void runBackgroundThread() {
-        Task active = null;
-        while (true) {
-            try {
-                Pair<Task, Object[]> pair = scheduleNext();
-                active = pair != null ? pair.first : null;
+        while (!isStop()) {
+            Task task = scheduleNext();
 
-                if (active != null) {
-                    if (isStop()) return;
-
-                    active.execute(pair.second);
-                    if (isStop()) return;
-
-                    sendTask(active);
-                } else {
-                    pause(true);
-                    sleep(MAX_VALUE);
-                }
-            } catch (InterruptedException e) {
-                if (isStop()) return;
-                else pause(false);
-            } catch (TaskException e) {
-                if (isStop()) return;
-                else {
-                    active.exception = e.getOriginalException();
-                    sendTask(active);
-                }
-            }
+            if (task == null)
+                sleep();
+            else
+                execute(task);
         }
     }
 
-    private void sendTask(Task task) {
-        Message msg = handler.obtainMessage();
-        msg.obj = task;
-        handler.sendMessage(msg);
+    private void sleep() {
+        try {
+            pause(true);
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (InterruptedException e) {
+            pause(false);
+        }
     }
 
-    private synchronized Pair<Task, Object[]> scheduleNext() {
+    private void execute(Task t) {
+        int statusExecution = 0;
+        try {
+            t.execute();
+            statusExecution = EXECUTE_SUCCESSFULLY;
+        } catch (Exception e) {
+            t.setThrowable(e);
+            statusExecution = EXECUTE_FAIL;
+        } finally {
+            if (!isStop())
+                sendTask(statusExecution, t);
+        }
+    }
+
+    private void sendTask(int status, Task t) {
+        final Message m = handler.obtainMessage(status, t);
+        handler.sendMessage(m);
+    }
+
+    private final Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            final int what = msg.what;
+            final Task t = (Task) msg.obj;
+
+            if (what == EXECUTE_SUCCESSFULLY)
+                t.successfully();
+            else if (what == EXECUTE_FAIL)
+                t.fail();
+            else
+                throw new RuntimeException("BackgroundLogic unexpected code = " + what);
+
+            return false;
+        }
+    });
+
+    private synchronized Task scheduleNext() {
         return tasks.poll();
     }
 
@@ -102,23 +112,19 @@ public class BackgroundLogic {
         pause = value;
     }
 
-    public synchronized void execute(Task task, Object... parameters) {
-        if (thisThread)
-            executeInThisThread(task, parameters);
-        else {
-            tasks.offer(new Pair<>(task, parameters));
+    public synchronized void __execute(Task task) {
+        if (thisThread) {
+            try {
+                task.execute();
+                task.successfully();
+            } catch (Exception e) {
+                task.setThrowable(e);
+                task.fail();
+            }
+        } else {
+            tasks.offer(task);
             if (pause)
                 thread.interrupt();
-        }
-    }
-
-    private void executeInThisThread(Task task, Object... parameters) {
-        try {
-            task.execute(parameters);
-            task.noticeCompletion();
-        } catch (TaskException e) {
-            task.exception = e.getOriginalException();
-            task.noticeFail();
         }
     }
 
