@@ -7,7 +7,7 @@ import ru.kadei.diaryworkouts.database.Record;
 /**
  * Created by kadei on 15.08.15.
  */
-public class Description extends Record {
+public abstract class Description extends Record {
 
     public String name;
     public String description;
@@ -23,4 +23,6 @@ public class Description extends Record {
         }
         return -1;
     }
+
+    public abstract ArrayList<? extends Description> getContent();
 }

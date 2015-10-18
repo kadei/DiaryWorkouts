@@ -17,4 +17,9 @@ public class DescriptionWorkout extends Description {
         dw.exercises = new ArrayList<>(capacity);
         return dw;
     }
+
+    @Override
+    public ArrayList<? extends Description> getContent() {
+        return exercises;
+    }
 }

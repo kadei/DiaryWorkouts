@@ -1,5 +1,7 @@
 package ru.kadei.diaryworkouts.models.workouts;
 
+import java.util.ArrayList;
+
 /**
  * Created by kadei on 15.08.15.
  */
@@ -34,5 +36,10 @@ public class DescriptionStandardExercise extends DescriptionExercise {
 
     public void setMuscleGroupSpec(int muscleGroupSpec) {
         this.muscleGroupSpec = muscleGroupSpec;
+    }
+
+    @Override
+    public ArrayList<? extends Description> getContent() {
+        return null;
     }
 }

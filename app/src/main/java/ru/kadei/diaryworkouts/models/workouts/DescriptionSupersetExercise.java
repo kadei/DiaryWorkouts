@@ -36,4 +36,9 @@ public class DescriptionSupersetExercise extends DescriptionExercise {
     public DescriptionExercise getExercise(int pos) {
         return exercises.get(pos);
     }
+
+    @Override
+    public ArrayList<? extends Description> getContent() {
+        return exercises;
+    }
 }

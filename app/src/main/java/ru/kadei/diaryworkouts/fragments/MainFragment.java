@@ -224,10 +224,6 @@ public class MainFragment extends CustomFragment implements SelectWorkoutDialog.
         statisticLastProgram = statistic;
     }
 
-    private ProxyWorkoutManagerClient wrapListener(StubWorkoutManagerClient listener) {
-        return new ProxyWorkoutManagerClient(this, listener);
-    }
-
     private void loadHistoryFor(ArrayList<Workout> workouts, WorkoutManagerClient listener) {
         final WorkoutManager wm = getMainActivity().getWorkoutManager();
         for (Workout w : workouts) {

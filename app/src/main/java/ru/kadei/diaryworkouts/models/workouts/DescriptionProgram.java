@@ -17,4 +17,9 @@ public class DescriptionProgram extends Description {
         dp.workouts = new ArrayList<>(capacity);
         return dp;
     }
+
+    @Override
+    public ArrayList<? extends Description> getContent() {
+        return workouts;
+    }
 }

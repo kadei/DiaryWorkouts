@@ -29,7 +29,7 @@ public class Database {
     }
 
     public void load(DatabaseReader reader, DatabaseClient client) {
-        Log.i("TEST", reader.getQuery());
+//        Log.i("TEST", reader.getQuery());
 //        Log.i("TEST", "load client = " + client);
         bgLogic.execute(new ReadTask(reader, client) {
 

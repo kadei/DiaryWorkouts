@@ -101,17 +101,17 @@ public class Navigator {
         fab.hide(false);
 
         final Animation show = loadAnimation(activity, R.anim.fab_scale_up);
-        show.setAnimationListener(notifier.getShowAnimationListener());
+        show.setAnimationListener(fabAnimationNotifier.getShowAnimationListener());
 
         final Animation hide = loadAnimation(activity, R.anim.fab_scale_down);
-        hide.setAnimationListener(notifier.getHideAnimationListener());
+        hide.setAnimationListener(fabAnimationNotifier.getHideAnimationListener());
 
         fab.setShowAnimation(show);
         fab.setHideAnimation(hide);
         return fab;
     }
 
-    private final FABAnimationNotifier notifier = new FABAnimationNotifier();
+    private final FABAnimationNotifier fabAnimationNotifier = new FABAnimationNotifier();
 
     private ActionBarDrawerToggle createToggleFor(DrawerLayout drawer) {
         return new ActionBarDrawerToggle(activity, drawer, R.string.drawer_open, R.string.drawer_close) {
@@ -137,7 +137,7 @@ public class Navigator {
 
             if (id == currentItemID) {
                 getActiveFragment().update();
-                drawer.closeDrawer(GravityCompat.START);
+                closeDrawer();
                 return true;
             }
 
@@ -149,14 +149,18 @@ public class Navigator {
             } else {
                 if (isBound(id))
                     openFragmentBy(id);
-                else if (listenerUnbound != null)
-                    listenerUnbound.onNavigationItemSelected(menuItem);
+                else
+                    delegateHandle(menuItem);
 
-                drawer.closeDrawer(GravityCompat.START);
+                closeDrawer();
             }
             return true;
         }
     };
+
+    private void closeDrawer() {
+        drawer.closeDrawer(GravityCompat.START);
+    }
 
     private boolean isBound(int id) {
         return fragments.indexOfKey(id) >= 0;
@@ -189,7 +193,6 @@ public class Navigator {
         if (prevFragment == null)
             replaceFragment(id);
         else {
-            notifier.setListener(prevFragment);
             prevFragment.prepareForClose(new Inspector(id) {
                 @Override
                 public void iReady() {
@@ -199,12 +202,17 @@ public class Navigator {
         }
     }
 
+    private void delegateHandle(MenuItem menuItem) {
+        if (listenerUnbound != null)
+            listenerUnbound.onNavigationItemSelected(menuItem);
+    }
+
     private void replaceFragment(int id) {
         final Pair<Class<? extends CustomFragment>, Bundle> pair = fragments.get(id);
         final CustomFragment frg = getInstanceFor(pair.first);
         frg.setFloatingActionButton(floatingActionButton);
         frg.restore(pair.second);
-
+        fabAnimationNotifier.setListener(frg);
         activity.getFragmentManager().beginTransaction().replace(idContainer, frg).commit();
     }
 

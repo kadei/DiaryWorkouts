@@ -10,6 +10,8 @@ import com.github.clans.fab.FloatingActionButton;
 
 import ru.kadei.diaryworkouts.activities.MainActivity;
 import ru.kadei.diaryworkouts.managers.ResourceManager;
+import ru.kadei.diaryworkouts.util.ProxyWorkoutManagerClient;
+import ru.kadei.diaryworkouts.util.stubs.StubWorkoutManagerClient;
 import ru.kadei.diaryworkouts.view.ActionBarDecorator;
 
 public class CustomFragment extends Fragment implements FABAnimationNotifier.FABListener {
@@ -95,6 +97,10 @@ public class CustomFragment extends Fragment implements FABAnimationNotifier.FAB
     }
 
     public void restore(Bundle bundle) {
+    }
+
+    protected final ProxyWorkoutManagerClient wrapListener(StubWorkoutManagerClient listener) {
+        return new ProxyWorkoutManagerClient(this, listener);
     }
 
     protected final void putObjectInGeneralStorage(int id, Object object) {

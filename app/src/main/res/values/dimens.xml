@@ -9,6 +9,8 @@
 
     <dimen name="min_touchable_height">48dp</dimen>
 
+    <dimen name="paragraph_margin">16dp</dimen>
+
     <dimen name="toolbar_title_size">20sp</dimen>
 
     <dimen name="navigation_icon_size">24dp</dimen>
